@@ -1,12 +1,24 @@
-pandas
-numpy
-scikit-learn
-xgboost
-matplotlib
-seaborn
-joblib
-jupyter
-ipykernel
-wordcloud
-requests
-tqdm
+# The two packages whose versions change the reported numbers are pinned
+# exactly. The results in the thesis were produced with these versions, and the
+# baseline reproduces bit-for-bit under them.
+scikit-learn==1.8.0
+xgboost==3.2.0
+
+# Everything else is a lower bound. These affect how results are computed and
+# drawn, not what they are.
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+seaborn>=0.12
+joblib>=1.3
+openpyxl>=3.1
+
+# Data collection only (src/collect_github_data.py). Not needed to reproduce
+# any reported number from the committed dataset.
+requests>=2.31
+tqdm>=4.65
+
+# Optional, for exploring the data interactively.
+# jupyter
+# ipykernel
+# wordcloud
