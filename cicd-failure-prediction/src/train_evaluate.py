@@ -48,6 +48,7 @@ from .hybrid_pipeline import (
     build_xgboost_with_preprocessor,
     get_all_pipelines,
 )
+from .threshold_optimization import DEFAULT_FP_COST
 from .utils import ensure_dir, get_logger
 
 
@@ -62,6 +63,26 @@ POSITIVE_LABEL = "failure"  # the class we actually want to detect
 # --------------------------------------------------------------------------- #
 # Metrics
 # --------------------------------------------------------------------------- #
+
+
+# --------------------------------------------------------------------------- #
+# Business cost model (phase4.md section 1.5)
+# --------------------------------------------------------------------------- #
+
+
+# Observed in this dataset: 1,072 failures / 9,772 runs. The previous
+# implementation hardcoded 0.30, which inflated every downstream figure by 2.7x.
+OBSERVED_FAILURE_RATE = 0.1097
+
+# 8 minutes of wasted compute at $0.008/minute.
+COMPUTE_COST_PER_FAILED_BUILD_USD = 0.064
+
+# 15 minutes of developer context-switching at $75/hour.
+CONTEXT_SWITCH_COST_PER_FAILURE_USD = 18.75
+
+# 2 minutes of operator triage at $75/hour. Imported rather than redefined so
+# the threshold sweep and the business model cannot drift apart.
+FALSE_ALARM_COST_USD = DEFAULT_FP_COST
 
 
 def compute_binary_metrics(
@@ -314,57 +335,81 @@ def run_ablation_study(
 
 
 def compute_business_metrics(
-    model_results: dict[str, Any], best_model_name: str
+    failure_recall: float,
+    failure_precision: float,
+    pipelines_per_day: int = 1_000,
+    failure_rate: float = OBSERVED_FAILURE_RATE,
+    avg_latency_ms: float | None = None,
+    label: str = "",
 ) -> dict[str, Any]:
-    """Translate ``failure``-class detection into operational dollar savings."""
-    best = model_results[best_model_name]
-    metrics = best["metrics"]
-    n_test = int(best["n_test_samples"])
-    predict_time_sec = float(best["predict_time_sec"])
-    avg_latency_ms = (predict_time_sec * 1000.0) / max(n_test, 1)
+    """Net operational value of the predictor, per the Phase 4 cost model.
 
-    failure_recall = float(metrics["failure_recall"])
-    failure_precision = float(metrics["failure_precision"])
+    Rebuilt against the specification in ``phase4.md``. The previous
+    implementation had three defects that all pushed the estimate upward: it
+    assumed a 30 per cent failure rate against an observed 11 per cent, priced
+    the benefit as saved triage minutes rather than the specified compute plus
+    context-switch cost, and never subtracted the cost of a false alarm, which
+    made the estimate a function of recall alone. That last defect is why the
+    tuned model previously reported *lower* savings than the untuned one: it
+    traded precision for recall, and only recall was being priced.
 
-    pipelines_per_day = 1_000
-    failure_rate = 0.30  # hypothetical mid-size org failure rate
+    Cost model, all per failed build:
+
+    * ``$0.064`` of wasted compute (8 minutes at ``$0.008``/minute);
+    * ``$18.75`` of developer context-switching (15 minutes at ``$75``/hour);
+    * ``$2.50`` per false alarm (2 minutes of operator triage at ``$75``/hour),
+      taken from :data:`~src.threshold_optimization.DEFAULT_FP_COST` so the
+      project carries one cost model rather than two.
+
+    A caught failure returns compute plus context-switch cost; a false alarm
+    costs triage time. Net savings are the difference, so a model cannot buy a
+    better number purely by flagging more builds.
+    """
     failures_per_day = pipelines_per_day * failure_rate
+    caught_per_day = failures_per_day * failure_recall
 
-    manual_minutes = 5.0
-    auto_minutes = 0.5
-    devops_hourly_rate_usd = 75.0
+    # false alarms = FP, derived from precision: TP/(TP+FP) = precision
+    if failure_precision > 0:
+        false_alarms_per_day = caught_per_day * (1.0 - failure_precision) / failure_precision
+    else:
+        false_alarms_per_day = 0.0
 
-    time_saved_per_caught_min = manual_minutes - auto_minutes
-    caught_failures_per_day = failures_per_day * failure_recall
-    daily_minutes_saved = caught_failures_per_day * time_saved_per_caught_min
-    daily_hours_saved = daily_minutes_saved / 60.0
-    daily_usd_saved = daily_hours_saved * devops_hourly_rate_usd
-    monthly_usd_saved = daily_usd_saved * 30.0
-    annual_usd_saved = daily_usd_saved * 365.0
+    compute_saved = caught_per_day * COMPUTE_COST_PER_FAILED_BUILD_USD
+    developer_time_saved = caught_per_day * CONTEXT_SWITCH_COST_PER_FAILURE_USD
+    gross_daily_saved = compute_saved + developer_time_saved
+    false_alarm_cost = false_alarms_per_day * FALSE_ALARM_COST_USD
+    net_daily_saved = gross_daily_saved - false_alarm_cost
 
-    return {
-        "best_model": best_model_name,
-        "failure_recall": round(failure_recall, 4),
-        "failure_precision": round(failure_precision, 4),
-        "failure_f1": round(float(metrics["failure_f1"]), 4),
-        "average_inference_latency_ms": round(avg_latency_ms, 3),
-        "routing_reduction_per_failure_seconds": round(
-            (manual_minutes - auto_minutes) * 60.0, 1
-        ),
-        "daily_failures_to_triage": int(failures_per_day),
-        "daily_caught_by_model": round(caught_failures_per_day, 1),
-        "daily_usd_saved": round(daily_usd_saved, 2),
-        "monthly_usd_saved": round(monthly_usd_saved, 2),
-        "annual_usd_saved": round(annual_usd_saved, 2),
+    result: dict[str, Any] = {
+        "configuration": label,
+        "failure_recall": round(float(failure_recall), 4),
+        "failure_precision": round(float(failure_precision), 4),
+        "daily_failures": round(failures_per_day, 1),
+        "daily_caught_by_model": round(caught_per_day, 1),
+        "daily_false_alarms": round(false_alarms_per_day, 1),
+        "daily_compute_saved_usd": round(compute_saved, 2),
+        "daily_developer_time_saved_usd": round(developer_time_saved, 2),
+        "daily_gross_saved_usd": round(gross_daily_saved, 2),
+        "daily_false_alarm_cost_usd": round(false_alarm_cost, 2),
+        "daily_net_saved_usd": round(net_daily_saved, 2),
+        "monthly_net_saved_usd": round(net_daily_saved * 30.0, 2),
+        "annual_net_saved_usd": round(net_daily_saved * 365.0, 2),
         "assumptions": {
             "pipelines_per_day": pipelines_per_day,
-            "failure_rate": failure_rate,
-            "manual_minutes_per_failure": manual_minutes,
-            "auto_minutes_per_failure": auto_minutes,
-            "devops_hourly_rate_usd": devops_hourly_rate_usd,
-            "savings_formula": "daily_usd = (failures × recall_failure × Δminutes / 60) × hourly_rate",
+            "failure_rate": round(float(failure_rate), 4),
+            "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+            "compute_cost_per_failed_build_usd": COMPUTE_COST_PER_FAILED_BUILD_USD,
+            "context_switch_cost_per_failure_usd": CONTEXT_SWITCH_COST_PER_FAILURE_USD,
+            "false_alarm_cost_usd": FALSE_ALARM_COST_USD,
+            "savings_formula": (
+                "net_daily = caught x (compute + context_switch) "
+                "- false_alarms x false_alarm_cost"
+            ),
         },
     }
+    if avg_latency_ms is not None:
+        result["average_inference_latency_ms"] = round(float(avg_latency_ms), 3)
+    return result
 
 
 # --------------------------------------------------------------------------- #

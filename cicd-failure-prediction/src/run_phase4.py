@@ -737,7 +737,17 @@ def main() -> None:
     )
     print(f"          BEST → {best_name}")
 
-    business = compute_business_metrics(model_results, best_name)
+    best_metrics = model_results[best_name]["metrics"]
+    n_test = int(model_results[best_name]["n_test_samples"])
+    business = compute_business_metrics(
+        failure_recall=float(best_metrics["failure_recall"]),
+        failure_precision=float(best_metrics["failure_precision"]),
+        avg_latency_ms=(
+            float(model_results[best_name]["predict_time_sec"]) * 1000.0
+            / max(n_test, 1)
+        ),
+        label=f"{best_name} at default threshold 0.5, single grouped fold",
+    )
     (RESULTS_DIR / "business_impact.json").write_text(
         json.dumps(business, indent=2, default=str), encoding="utf-8"
     )

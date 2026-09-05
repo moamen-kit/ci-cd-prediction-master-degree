@@ -48,7 +48,11 @@ from src.threshold_optimization import (  # noqa: E402
     find_optimal_threshold,
     find_threshold_by_business_cost,
 )
-from src.train_evaluate import POSITIVE_LABEL, get_proba_and_classes  # noqa: E402
+from src.train_evaluate import (  # noqa: E402
+    POSITIVE_LABEL,
+    compute_business_metrics,
+    get_proba_and_classes,
+)
 from src.utils import (  # noqa: E402
     FIGURES_DIR,
     MODELS_DIR,
@@ -231,54 +235,24 @@ def compute_business_metrics_optimized(
     predict_time_sec: float,
     optimal_threshold: float,
 ) -> dict[str, Any]:
-    failure_recall = float(metrics_at_opt["recall_failure"])
-    failure_precision = float(metrics_at_opt["precision_failure"])
-    failure_f1 = float(metrics_at_opt["f1_failure"])
-    avg_latency_ms = (predict_time_sec * 1000.0) / max(n_test_samples, 1)
+    """Business impact at the tuned threshold.
 
-    pipelines_per_day = 1_000
-    failure_rate = 0.30
-    failures_per_day = pipelines_per_day * failure_rate
-
-    manual_minutes = 5.0
-    auto_minutes = 0.5
-    devops_hourly_rate_usd = 75.0
-
-    time_saved_per_caught_min = manual_minutes - auto_minutes
-    caught_failures_per_day = failures_per_day * failure_recall
-    daily_minutes_saved = caught_failures_per_day * time_saved_per_caught_min
-    daily_hours_saved = daily_minutes_saved / 60.0
-    daily_usd_saved = daily_hours_saved * devops_hourly_rate_usd
-
-    return {
-        "best_model": name,
-        "optimal_threshold": float(optimal_threshold),
-        "failure_recall": round(failure_recall, 4),
-        "failure_precision": round(failure_precision, 4),
-        "failure_f1": round(failure_f1, 4),
-        "average_inference_latency_ms": round(avg_latency_ms, 3),
-        "routing_reduction_per_failure_seconds": round(
-            (manual_minutes - auto_minutes) * 60.0, 1
-        ),
-        "daily_failures_to_triage": int(failures_per_day),
-        "daily_caught_by_model": round(caught_failures_per_day, 1),
-        "daily_usd_saved": round(daily_usd_saved, 2),
-        "monthly_usd_saved": round(daily_usd_saved * 30.0, 2),
-        "annual_usd_saved": round(daily_usd_saved * 365.0, 2),
-        "assumptions": {
-            "pipelines_per_day": pipelines_per_day,
-            "failure_rate": failure_rate,
-            "manual_minutes_per_failure": manual_minutes,
-            "auto_minutes_per_failure": auto_minutes,
-            "devops_hourly_rate_usd": devops_hourly_rate_usd,
-        },
-    }
-
-
-# --------------------------------------------------------------------------- #
-# Pretty printing
-# --------------------------------------------------------------------------- #
-
+    Delegates to :func:`src.train_evaluate.compute_business_metrics` rather
+    than repeating the cost model. This module previously carried its own copy,
+    which is how the project ended up reporting that the tuned model saved less
+    than the untuned one: both copies priced recall and neither priced a false
+    alarm, so trading precision for recall could only look like a loss.
+    """
+    result = compute_business_metrics(
+        failure_recall=float(metrics_at_opt["recall_failure"]),
+        failure_precision=float(metrics_at_opt["precision_failure"]),
+        avg_latency_ms=(predict_time_sec * 1000.0) / max(n_test_samples, 1),
+        label=f"{name} at tuned threshold {optimal_threshold:.2f}",
+    )
+    result["best_model"] = name
+    result["optimal_threshold"] = float(optimal_threshold)
+    result["failure_f1"] = round(float(metrics_at_opt["f1_failure"]), 4)
+    return result
 
 def _fmt(value: Any) -> str:
     if value is None:
