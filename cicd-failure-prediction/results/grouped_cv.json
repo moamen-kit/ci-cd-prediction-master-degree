@@ -2,7 +2,7 @@
   "models": {
     "Logistic Regression": {
       "n_splits": 5,
-      "fit_time_sec_total": 3.185,
+      "fit_time_sec_total": 3.246,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.8276,
@@ -222,7 +222,7 @@
     },
     "Random Forest": {
       "n_splits": 5,
-      "fit_time_sec_total": 4.986,
+      "fit_time_sec_total": 4.882,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.8008,
@@ -442,7 +442,7 @@
     },
     "XGBoost": {
       "n_splits": 5,
-      "fit_time_sec_total": 11.903,
+      "fit_time_sec_total": 11.604,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.824,
@@ -664,7 +664,7 @@
   "ablation": {
     "hybrid_full": {
       "n_splits": 5,
-      "fit_time_sec_total": 11.793,
+      "fit_time_sec_total": 11.699,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.824,
@@ -884,7 +884,7 @@
     },
     "structured_only": {
       "n_splits": 5,
-      "fit_time_sec_total": 1.817,
+      "fit_time_sec_total": 2.146,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.8197,
@@ -1104,7 +1104,7 @@
     },
     "categorical_only": {
       "n_splits": 5,
-      "fit_time_sec_total": 1.249,
+      "fit_time_sec_total": 1.295,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.8649,
@@ -1324,7 +1324,7 @@
     },
     "text_only": {
       "n_splits": 5,
-      "fit_time_sec_total": 11.085,
+      "fit_time_sec_total": 10.845,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.6654,

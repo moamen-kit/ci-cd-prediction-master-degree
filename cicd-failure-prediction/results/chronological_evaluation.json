@@ -1,0 +1,75 @@
+{
+  "_partition": {
+    "train_rows": 6014,
+    "val_rows": 1197,
+    "test_rows": 1636,
+    "test_failure_rate_pct": 9.413,
+    "train_failure_rate_pct": 11.207
+  },
+  "Logistic Regression": {
+    "at_selected_threshold": {
+      "threshold": 0.69,
+      "accuracy": 87.16,
+      "balanced_accuracy": 67.02,
+      "precision_failure": 34.95,
+      "recall_failure": 42.21,
+      "f1_failure": 38.24,
+      "roc_auc": 81.62,
+      "pr_auc": 36.49
+    },
+    "at_default_threshold": {
+      "threshold": 0.5,
+      "accuracy": 80.01,
+      "balanced_accuracy": 73.26,
+      "precision_failure": 26.81,
+      "recall_failure": 64.94,
+      "f1_failure": 37.95,
+      "roc_auc": 81.62,
+      "pr_auc": 36.49
+    }
+  },
+  "Random Forest": {
+    "at_selected_threshold": {
+      "threshold": 0.51,
+      "accuracy": 86.25,
+      "balanced_accuracy": 68.55,
+      "precision_failure": 33.49,
+      "recall_failure": 46.75,
+      "f1_failure": 39.02,
+      "roc_auc": 82.18,
+      "pr_auc": 38.17
+    },
+    "at_default_threshold": {
+      "threshold": 0.5,
+      "accuracy": 85.21,
+      "balanced_accuracy": 68.56,
+      "precision_failure": 31.36,
+      "recall_failure": 48.05,
+      "f1_failure": 37.95,
+      "roc_auc": 82.18,
+      "pr_auc": 38.17
+    }
+  },
+  "XGBoost": {
+    "at_selected_threshold": {
+      "threshold": 0.05,
+      "accuracy": 89.3,
+      "balanced_accuracy": 66.17,
+      "precision_failure": 42.34,
+      "recall_failure": 37.66,
+      "f1_failure": 39.86,
+      "roc_auc": 80.27,
+      "pr_auc": 41.81
+    },
+    "at_default_threshold": {
+      "threshold": 0.5,
+      "accuracy": 91.38,
+      "balanced_accuracy": 55.68,
+      "precision_failure": 78.26,
+      "recall_failure": 11.69,
+      "f1_failure": 20.34,
+      "roc_auc": 80.27,
+      "pr_auc": 41.81
+    }
+  }
+}

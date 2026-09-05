@@ -661,7 +661,16 @@ def _load_split(
     return x_train, y_train, x_test, y_test
 
 
+# Phase 4 evaluates on one held-out fold. That is not the protocol the thesis
+# reports, because single-fold estimates on this dataset vary by roughly 20
+# points of F1 depending on the fold drawn (see src/cross_validation.py). Its
+# outputs are written to a subdirectory so they cannot be mistaken for the
+# reported results, which src/run_corrected_evaluation.py produces.
+SINGLE_FOLD_DIR = RESULTS_DIR / "single_fold_reference"
+
+
 def main() -> None:
+    ensure_dir(SINGLE_FOLD_DIR)
     ensure_dir(MODELS_DIR)
     ensure_dir(RESULTS_DIR)
     ensure_dir(FIGURES_DIR)
@@ -682,7 +691,7 @@ def main() -> None:
     )
 
     # Snapshot main metrics immediately so a later crash doesn't waste training.
-    (RESULTS_DIR / "phase4_main_metrics.json").write_text(
+    (SINGLE_FOLD_DIR / "main_metrics.json").write_text(
         json.dumps(serializable_results(model_results), indent=2, default=str),
         encoding="utf-8",
     )
@@ -696,7 +705,7 @@ def main() -> None:
         save_dir=MODELS_DIR,
         hybrid_xgb=model_results["XGBoost"]["_pipeline"],
     )
-    (RESULTS_DIR / "ablation_study.json").write_text(
+    (SINGLE_FOLD_DIR / "ablation_study.json").write_text(
         json.dumps(serializable_results(ablation_results), indent=2, default=str),
         encoding="utf-8",
     )
@@ -722,7 +731,7 @@ def main() -> None:
         name: {k: v for k, v in info.items() if k != "_pipeline"}
         for name, info in chronological_models.items()
     }
-    (RESULTS_DIR / "phase4_chronological_eval.json").write_text(
+    (SINGLE_FOLD_DIR / "chronological_eval.json").write_text(
         json.dumps(
             serializable_results(chronological_eval), indent=2, default=str
         ),
@@ -748,7 +757,7 @@ def main() -> None:
         ),
         label=f"{best_name} at default threshold 0.5, single grouped fold",
     )
-    (RESULTS_DIR / "business_impact.json").write_text(
+    (SINGLE_FOLD_DIR / "business_impact.json").write_text(
         json.dumps(business, indent=2, default=str), encoding="utf-8"
     )
 
@@ -778,7 +787,7 @@ def main() -> None:
         "ablation": serializable_results(ablation_results),
         "business": business,
     }
-    summary_path = RESULTS_DIR / "phase4_summary.json"
+    summary_path = SINGLE_FOLD_DIR / "phase4_summary.json"
     summary_path.write_text(
         json.dumps(summary, indent=2, default=str), encoding="utf-8"
     )

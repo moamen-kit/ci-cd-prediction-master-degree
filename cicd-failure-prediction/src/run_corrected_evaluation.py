@@ -695,6 +695,74 @@ def plot_before_after_threshold(
     )
 
 
+def _full_metrics(y_true: np.ndarray, proba: np.ndarray, threshold: float) -> dict[str, float]:
+    from sklearn.metrics import (
+        accuracy_score, balanced_accuracy_score, precision_score, recall_score,
+    )
+    pred = (proba >= threshold).astype(int)
+    return {
+        "threshold": round(float(threshold), 3),
+        "accuracy": round(float(accuracy_score(y_true, pred)) * 100, 2),
+        "balanced_accuracy": round(float(balanced_accuracy_score(y_true, pred)) * 100, 2),
+        "precision_failure": round(float(precision_score(y_true, pred, zero_division=0)) * 100, 2),
+        "recall_failure": round(float(recall_score(y_true, pred, zero_division=0)) * 100, 2),
+        "f1_failure": round(float(f1_score(y_true, pred, zero_division=0)) * 100, 2),
+        "roc_auc": round(float(roc_auc_score(y_true, proba)) * 100, 2),
+        "pr_auc": round(float(average_precision_score(y_true, proba)) * 100, 2),
+    }
+
+
+def evaluate_chronological(df: pd.DataFrame) -> dict[str, Any]:
+    """Secondary evaluation on the per-repository chronological split.
+
+    Trains on the chronological training fold, selects each model's threshold
+    on the chronological validation fold, and reports on the chronological test
+    fold. Training is confined to the chronological partition throughout: a
+    model trained on the grouped partition would already have seen commits that
+    the chronological test fold holds out, so the transfer number would be
+    measured on data the model was fitted to.
+    """
+    train_df = pd.read_csv(PROCESSED_DATA_DIR / "train_chronological.csv")
+    val_df = pd.read_csv(PROCESSED_DATA_DIR / "val_chronological.csv")
+    test_df = pd.read_csv(PROCESSED_DATA_DIR / "test_chronological.csv")
+
+    x_tr, y_tr = prepare_features_targets(train_df)
+    x_val, y_val = prepare_features_targets(val_df)
+    x_te, y_te = prepare_features_targets(test_df)
+    y_val_bin, y_te_bin = _binarise(y_val), _binarise(y_te)
+
+    out: dict[str, Any] = {
+        "_partition": {
+            "train_rows": int(len(train_df)),
+            "val_rows": int(len(val_df)),
+            "test_rows": int(len(test_df)),
+            "test_failure_rate_pct": round(float(y_te_bin.mean() * 100), 3),
+            "train_failure_rate_pct": round(
+                float(_binarise(y_tr).mean() * 100), 3
+            ),
+        }
+    }
+    for name, factory in MODEL_FACTORIES.items():
+        pipe = factory()
+        pipe.fit(x_tr, y_tr)
+        pos = list(pipe.classes_).index("failure")
+        thr = float(
+            find_optimal_threshold(
+                y_val_bin, pipe.predict_proba(x_val)[:, pos], "f1"
+            )["optimal_threshold"]
+        )
+        proba_te = pipe.predict_proba(x_te)[:, pos]
+        out[name] = {
+            "at_selected_threshold": _full_metrics(y_te_bin, proba_te, thr),
+            "at_default_threshold": _full_metrics(y_te_bin, proba_te, 0.5),
+        }
+        _LOGGER.info(
+            "chronological %s: thr=%.3f F1=%.2f%%",
+            name, thr, out[name]["at_selected_threshold"]["f1_failure"],
+        )
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # Orchestration
 # --------------------------------------------------------------------------- #
@@ -843,6 +911,58 @@ def main() -> None:
             f"-> F1 {g['f1_at_that_threshold']:.4f} | "
             f"gap {g['residual_selection_gap']:+.4f}"
         )
+
+    print("\n[corrected] Secondary evaluation on the chronological split ...")
+    chrono = evaluate_chronological(df)
+    (RESULTS_DIR / "chronological_evaluation.json").write_text(
+        json.dumps(chrono, indent=2), encoding="utf-8"
+    )
+
+    print("\n[corrected] Assembling thesis tables ...")
+    tables = {
+        "table_7_1_primary": {
+            name: _full_metrics(y_true, oof[name], chosen[name]) for name in oof
+        },
+        "table_7_1_primary_at_default_threshold": {
+            name: _full_metrics(y_true, oof[name], 0.5) for name in oof
+        },
+        "table_7_1_per_fold_spread": {
+            name: {
+                "f1_failure_mean": cv[name]["f1_failure"]["mean"],
+                "f1_failure_sd": cv[name]["f1_failure"]["std"],
+                "f1_failure_per_fold": cv[name]["f1_failure"]["per_fold"],
+                "threshold_mean": cv[name]["threshold"]["mean"],
+                "threshold_per_fold": cv[name]["threshold"]["per_fold"],
+            }
+            for name in cv
+        },
+        "table_7_2_chronological": chrono,
+        "table_7_3_ablation": {
+            name: {
+                "f1_failure_mean": v["f1_failure"]["mean"],
+                "f1_failure_sd": v["f1_failure"]["std"],
+                "precision_failure_mean": v["precision_failure"]["mean"],
+                "recall_failure_mean": v["recall_failure"]["mean"],
+                "pr_auc_pooled": v["pooled_out_of_fold"]["pr_auc"],
+                "roc_auc_pooled": v["pooled_out_of_fold"]["roc_auc"],
+                "threshold_mean": v["threshold"]["mean"],
+            }
+            for name, v in cv_ab.items()
+        },
+        "table_7_4_attribution": ladder,
+        "table_7_5_business": business_all,
+        "table_7_5_break_even": sensitivity["break_even_false_alarm_cost_usd"],
+        "_note": (
+            "Single source for every table in Chapter 7. Primary metrics are "
+            "computed on pooled out-of-fold predictions from commit-grouped "
+            "five-fold cross-validation at each model's mean validation-selected "
+            "threshold; the per-fold spread is reported separately because a "
+            "pooled figure conceals it."
+        ),
+    }
+    (RESULTS_DIR / "thesis_tables.json").write_text(
+        json.dumps(tables, indent=2, default=str), encoding="utf-8"
+    )
 
     print("\n[corrected] Done.")
 

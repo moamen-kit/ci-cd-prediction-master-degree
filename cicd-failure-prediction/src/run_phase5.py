@@ -425,7 +425,7 @@ def main() -> None:
         }
 
     # Persist immediately.
-    (RESULTS_DIR / "threshold_optimization.json").write_text(
+    (RESULTS_DIR / "superseded" / "threshold_optimization.json").write_text(
         json.dumps(serializable(results), indent=2, default=str),
         encoding="utf-8",
     )
@@ -475,7 +475,7 @@ def main() -> None:
         predict_time_sec=results[winner_name]["predict_time_sec_strat"],
         optimal_threshold=winner_threshold,
     )
-    (RESULTS_DIR / "business_impact_optimized.json").write_text(
+    (RESULTS_DIR / "superseded" / "business_impact_optimized.json").write_text(
         json.dumps(business, indent=2, default=str), encoding="utf-8"
     )
 

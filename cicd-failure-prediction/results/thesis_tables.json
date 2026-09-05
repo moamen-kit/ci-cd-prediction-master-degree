@@ -1,0 +1,386 @@
+{
+  "table_7_1_primary": {
+    "Logistic Regression": {
+      "threshold": 0.646,
+      "accuracy": 83.39,
+      "balanced_accuracy": 71.53,
+      "precision_failure": 34.34,
+      "recall_failure": 56.34,
+      "f1_failure": 42.67,
+      "roc_auc": 82.76,
+      "pr_auc": 40.92
+    },
+    "Random Forest": {
+      "threshold": 0.538,
+      "accuracy": 86.7,
+      "balanced_accuracy": 68.93,
+      "precision_failure": 40.64,
+      "recall_failure": 46.18,
+      "f1_failure": 43.23,
+      "roc_auc": 80.08,
+      "pr_auc": 39.09
+    },
+    "XGBoost": {
+      "threshold": 0.076,
+      "accuracy": 89.71,
+      "balanced_accuracy": 66.86,
+      "precision_failure": 54.46,
+      "recall_failure": 37.59,
+      "f1_failure": 44.48,
+      "roc_auc": 82.4,
+      "pr_auc": 48.03
+    }
+  },
+  "table_7_1_primary_at_default_threshold": {
+    "Logistic Regression": {
+      "threshold": 0.5,
+      "accuracy": 76.29,
+      "balanced_accuracy": 74.09,
+      "precision_failure": 27.55,
+      "recall_failure": 71.27,
+      "f1_failure": 39.74,
+      "roc_auc": 82.76,
+      "pr_auc": 40.92
+    },
+    "Random Forest": {
+      "threshold": 0.5,
+      "accuracy": 83.01,
+      "balanced_accuracy": 70.79,
+      "precision_failure": 33.39,
+      "recall_failure": 55.13,
+      "f1_failure": 41.59,
+      "roc_auc": 80.08,
+      "pr_auc": 39.09
+    },
+    "XGBoost": {
+      "threshold": 0.5,
+      "accuracy": 90.36,
+      "balanced_accuracy": 59.17,
+      "precision_failure": 73.05,
+      "recall_failure": 19.22,
+      "f1_failure": 30.43,
+      "roc_auc": 82.4,
+      "pr_auc": 48.03
+    }
+  },
+  "table_7_1_per_fold_spread": {
+    "Logistic Regression": {
+      "f1_failure_mean": 0.4311,
+      "f1_failure_sd": 0.0633,
+      "f1_failure_per_fold": [
+        0.538,
+        0.4366,
+        0.3788,
+        0.3983,
+        0.4038
+      ],
+      "threshold_mean": 0.646,
+      "threshold_per_fold": [
+        0.68,
+        0.62,
+        0.68,
+        0.65,
+        0.6
+      ]
+    },
+    "Random Forest": {
+      "f1_failure_mean": 0.424,
+      "f1_failure_sd": 0.0812,
+      "f1_failure_per_fold": [
+        0.5233,
+        0.3739,
+        0.4829,
+        0.3213,
+        0.4188
+      ],
+      "threshold_mean": 0.538,
+      "threshold_per_fold": [
+        0.54,
+        0.54,
+        0.54,
+        0.56,
+        0.51
+      ]
+    },
+    "XGBoost": {
+      "f1_failure_mean": 0.4216,
+      "f1_failure_sd": 0.0638,
+      "f1_failure_per_fold": [
+        0.4309,
+        0.42,
+        0.4976,
+        0.3208,
+        0.4386
+      ],
+      "threshold_mean": 0.076,
+      "threshold_per_fold": [
+        0.07,
+        0.05,
+        0.11,
+        0.1,
+        0.05
+      ]
+    }
+  },
+  "table_7_2_chronological": {
+    "_partition": {
+      "train_rows": 6014,
+      "val_rows": 1197,
+      "test_rows": 1636,
+      "test_failure_rate_pct": 9.413,
+      "train_failure_rate_pct": 11.207
+    },
+    "Logistic Regression": {
+      "at_selected_threshold": {
+        "threshold": 0.69,
+        "accuracy": 87.16,
+        "balanced_accuracy": 67.02,
+        "precision_failure": 34.95,
+        "recall_failure": 42.21,
+        "f1_failure": 38.24,
+        "roc_auc": 81.62,
+        "pr_auc": 36.49
+      },
+      "at_default_threshold": {
+        "threshold": 0.5,
+        "accuracy": 80.01,
+        "balanced_accuracy": 73.26,
+        "precision_failure": 26.81,
+        "recall_failure": 64.94,
+        "f1_failure": 37.95,
+        "roc_auc": 81.62,
+        "pr_auc": 36.49
+      }
+    },
+    "Random Forest": {
+      "at_selected_threshold": {
+        "threshold": 0.51,
+        "accuracy": 86.25,
+        "balanced_accuracy": 68.55,
+        "precision_failure": 33.49,
+        "recall_failure": 46.75,
+        "f1_failure": 39.02,
+        "roc_auc": 82.18,
+        "pr_auc": 38.17
+      },
+      "at_default_threshold": {
+        "threshold": 0.5,
+        "accuracy": 85.21,
+        "balanced_accuracy": 68.56,
+        "precision_failure": 31.36,
+        "recall_failure": 48.05,
+        "f1_failure": 37.95,
+        "roc_auc": 82.18,
+        "pr_auc": 38.17
+      }
+    },
+    "XGBoost": {
+      "at_selected_threshold": {
+        "threshold": 0.05,
+        "accuracy": 89.3,
+        "balanced_accuracy": 66.17,
+        "precision_failure": 42.34,
+        "recall_failure": 37.66,
+        "f1_failure": 39.86,
+        "roc_auc": 80.27,
+        "pr_auc": 41.81
+      },
+      "at_default_threshold": {
+        "threshold": 0.5,
+        "accuracy": 91.38,
+        "balanced_accuracy": 55.68,
+        "precision_failure": 78.26,
+        "recall_failure": 11.69,
+        "f1_failure": 20.34,
+        "roc_auc": 80.27,
+        "pr_auc": 41.81
+      }
+    }
+  },
+  "table_7_3_ablation": {
+    "hybrid_full": {
+      "f1_failure_mean": 0.4216,
+      "f1_failure_sd": 0.0638,
+      "precision_failure_mean": 0.5204,
+      "recall_failure_mean": 0.3686,
+      "pr_auc_pooled": 0.4803,
+      "roc_auc_pooled": 0.824,
+      "threshold_mean": 0.076
+    },
+    "structured_only": {
+      "f1_failure_mean": 0.4225,
+      "f1_failure_sd": 0.0655,
+      "precision_failure_mean": 0.538,
+      "recall_failure_mean": 0.3611,
+      "pr_auc_pooled": 0.4825,
+      "roc_auc_pooled": 0.8197,
+      "threshold_mean": 0.09
+    },
+    "categorical_only": {
+      "f1_failure_mean": 0.4808,
+      "f1_failure_sd": 0.0767,
+      "precision_failure_mean": 0.5911,
+      "recall_failure_mean": 0.4319,
+      "pr_auc_pooled": 0.5467,
+      "roc_auc_pooled": 0.8649,
+      "threshold_mean": 0.068
+    },
+    "text_only": {
+      "f1_failure_mean": 0.1962,
+      "f1_failure_sd": 0.0661,
+      "precision_failure_mean": 0.3131,
+      "recall_failure_mean": 0.1559,
+      "pr_auc_pooled": 0.208,
+      "roc_auc_pooled": 0.6654,
+      "threshold_mean": 0.084
+    }
+  },
+  "table_7_4_attribution": {
+    "description": "Controlled decomposition of the originally reported failure-class F1 of 0.5924. XGBoost throughout, identical hyperparameters, random_state=42; each row changes exactly one aspect of the evaluation protocol relative to the row above it.",
+    "steps": [
+      {
+        "step": "A. Row-level stratified split, threshold chosen on the test set",
+        "isolates": "as originally reported",
+        "f1_failure": 0.5924,
+        "pr_auc": 0.5873,
+        "roc_auc": 0.884,
+        "threshold": 0.06,
+        "delta_f1_vs_previous": null
+      },
+      {
+        "step": "B. Commit-grouped split, threshold still chosen on the test set",
+        "isolates": "duplicate-commit leakage (F-1)",
+        "f1_failure": 0.5326,
+        "pr_auc": 0.5404,
+        "roc_auc": 0.8344,
+        "threshold": 0.05,
+        "delta_f1_vs_previous": -0.0598
+      },
+      {
+        "step": "C. Commit-grouped split, threshold chosen on a validation fold",
+        "isolates": "test-set threshold selection (F-3)",
+        "f1_failure": 0.4065,
+        "pr_auc": 0.4784,
+        "roc_auc": 0.802,
+        "threshold": 0.1,
+        "delta_f1_vs_previous": -0.1261
+      },
+      {
+        "step": "D. Commit-grouped 5-fold cross-validation (reported result)",
+        "isolates": "single-fold composition",
+        "f1_failure": 0.4216,
+        "f1_failure_sd": 0.0638,
+        "pr_auc": 0.4803,
+        "roc_auc": 0.824,
+        "threshold": 0.076,
+        "delta_f1_vs_previous": 0.0151
+      }
+    ],
+    "total_change": -0.1708
+  },
+  "table_7_5_business": {
+    "Logistic Regression": {
+      "configuration": "Logistic Regression (commit-grouped 5-fold CV, threshold 0.646)",
+      "failure_recall": 0.5691,
+      "failure_precision": 0.3532,
+      "daily_failures": 109.7,
+      "daily_caught_by_model": 62.4,
+      "daily_false_alarms": 114.3,
+      "daily_compute_saved_usd": 4.0,
+      "daily_developer_time_saved_usd": 1170.57,
+      "daily_gross_saved_usd": 1174.56,
+      "daily_false_alarm_cost_usd": 285.81,
+      "daily_net_saved_usd": 888.75,
+      "monthly_net_saved_usd": 26662.45,
+      "annual_net_saved_usd": 324393.17,
+      "assumptions": {
+        "pipelines_per_day": 1000,
+        "failure_rate": 0.1097,
+        "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+        "compute_cost_per_failed_build_usd": 0.064,
+        "context_switch_cost_per_failure_usd": 18.75,
+        "false_alarm_cost_usd": 2.5,
+        "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+      }
+    },
+    "Random Forest": {
+      "configuration": "Random Forest (commit-grouped 5-fold CV, threshold 0.538)",
+      "failure_recall": 0.4609,
+      "failure_precision": 0.4033,
+      "daily_failures": 109.7,
+      "daily_caught_by_model": 50.6,
+      "daily_false_alarms": 74.8,
+      "daily_compute_saved_usd": 3.24,
+      "daily_developer_time_saved_usd": 948.01,
+      "daily_gross_saved_usd": 951.25,
+      "daily_false_alarm_cost_usd": 187.02,
+      "daily_net_saved_usd": 764.23,
+      "monthly_net_saved_usd": 22926.98,
+      "annual_net_saved_usd": 278944.88,
+      "assumptions": {
+        "pipelines_per_day": 1000,
+        "failure_rate": 0.1097,
+        "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+        "compute_cost_per_failed_build_usd": 0.064,
+        "context_switch_cost_per_failure_usd": 18.75,
+        "false_alarm_cost_usd": 2.5,
+        "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+      }
+    },
+    "XGBoost": {
+      "configuration": "XGBoost (commit-grouped 5-fold CV, threshold 0.076)",
+      "failure_recall": 0.3686,
+      "failure_precision": 0.5204,
+      "daily_failures": 109.7,
+      "daily_caught_by_model": 40.4,
+      "daily_false_alarms": 37.3,
+      "daily_compute_saved_usd": 2.59,
+      "daily_developer_time_saved_usd": 758.16,
+      "daily_gross_saved_usd": 760.75,
+      "daily_false_alarm_cost_usd": 93.16,
+      "daily_net_saved_usd": 667.59,
+      "monthly_net_saved_usd": 20027.67,
+      "annual_net_saved_usd": 243669.95,
+      "assumptions": {
+        "pipelines_per_day": 1000,
+        "failure_rate": 0.1097,
+        "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+        "compute_cost_per_failed_build_usd": 0.064,
+        "context_switch_cost_per_failure_usd": 18.75,
+        "false_alarm_cost_usd": 2.5,
+        "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+      }
+    },
+    "categorical_only": {
+      "configuration": "categorical_only (commit-grouped 5-fold CV, threshold 0.068)",
+      "failure_recall": 0.4319,
+      "failure_precision": 0.5911,
+      "daily_failures": 109.7,
+      "daily_caught_by_model": 47.4,
+      "daily_false_alarms": 32.8,
+      "daily_compute_saved_usd": 3.03,
+      "daily_developer_time_saved_usd": 888.36,
+      "daily_gross_saved_usd": 891.4,
+      "daily_false_alarm_cost_usd": 81.94,
+      "daily_net_saved_usd": 809.46,
+      "monthly_net_saved_usd": 24283.75,
+      "annual_net_saved_usd": 295452.34,
+      "assumptions": {
+        "pipelines_per_day": 1000,
+        "failure_rate": 0.1097,
+        "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+        "compute_cost_per_failed_build_usd": 0.064,
+        "context_switch_cost_per_failure_usd": 18.75,
+        "false_alarm_cost_usd": 2.5,
+        "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+      }
+    }
+  },
+  "table_7_5_break_even": {
+    "Logistic Regression": 10.27,
+    "Random Forest": 12.72,
+    "XGBoost": 20.41,
+    "categorical_only": 27.2
+  },
+  "_note": "Single source for every table in Chapter 7. Primary metrics are computed on pooled out-of-fold predictions from commit-grouped five-fold cross-validation at each model's mean validation-selected threshold; the per-fold spread is reported separately because a pooled figure conceals it."
+}
