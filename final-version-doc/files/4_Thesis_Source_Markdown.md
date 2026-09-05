@@ -465,7 +465,7 @@ Although the system is a machine learning pipeline rather than an end-user appli
 
 **Use Case UC-2 — Practitioner uses the trained model for new prediction.**
 *Actor*: A DevOps engineer or research engineer who has a trained classifier and wishes to score a new commit.
-*Preconditions*: The trained model file (`models/best_optimized.joblib`) and the data preparation module are available.
+*Preconditions*: The trained model file (`models/best_tuned_threshold_xgb.joblib`) and the data preparation module are available.
 *Main flow*: The actor constructs a single-row DataFrame containing the required input features (repository, workflow name, branch, event, lines added, lines deleted, files changed, commit message, and so on), passes it through the data preparation function to produce a feature row in the model's expected schema, calls `pipeline.predict_proba(X)[0, 1]` to obtain the failure probability, and compares it against the optimized threshold of 0.06.
 *Postconditions*: The actor receives a real-valued failure probability and a binary recommendation that can be passed to downstream tooling.
 

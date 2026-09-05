@@ -386,7 +386,7 @@ def save_best_model(
     save_dir = Path(save_dir)
     ensure_dir(save_dir)
 
-    best_path = save_dir / "best_model.joblib"
+    best_path = save_dir / "best_default_threshold_rf.joblib"
     joblib.dump(pipeline, best_path, compress=JOBLIB_COMPRESSION)
 
     test_metrics = {
@@ -407,7 +407,7 @@ def save_best_model(
         "n_test_samples": model_results[name].get("n_test_samples"),
     }
 
-    metadata_path = save_dir / "best_model_metadata.json"
+    metadata_path = save_dir / "best_default_threshold_rf_metadata.json"
     metadata_path.write_text(
         json.dumps(metadata, indent=2, default=str), encoding="utf-8"
     )

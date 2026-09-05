@@ -11,7 +11,7 @@ Steps:
 5. Render ``fig_20`` (F1 vs threshold) and ``fig_21`` (default vs optimised
    metrics, one panel per model).
 6. Recompute business impact at the optimised threshold of the new winner
-   and save it alongside ``best_optimized.joblib``.
+   and save it alongside ``best_tuned_threshold_xgb.joblib``.
 
 Run from project root::
 
@@ -466,7 +466,7 @@ def main() -> None:
           f"thr={winner_threshold:.2f} · F1={winner_f1:.4f}")
 
     # Save best optimized model + metadata.
-    best_optimized_path = MODELS_DIR / "best_optimized.joblib"
+    best_optimized_path = MODELS_DIR / "best_tuned_threshold_xgb.joblib"
     joblib.dump(results[winner_name]["_pipeline"], best_optimized_path, compress=3)
     metadata = {
         "model_name": winner_name,
@@ -489,7 +489,7 @@ def main() -> None:
         "target_column": TARGET,
         "positive_label": POSITIVE_LABEL,
     }
-    (MODELS_DIR / "best_optimized_metadata.json").write_text(
+    (MODELS_DIR / "best_tuned_threshold_xgb_metadata.json").write_text(
         json.dumps(metadata, indent=2, default=str), encoding="utf-8"
     )
 
