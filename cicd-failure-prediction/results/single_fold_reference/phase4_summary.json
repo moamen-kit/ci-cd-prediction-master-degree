@@ -1,0 +1,389 @@
+{
+  "best_model": {
+    "best_model_path": "/home/user/ci-cd-prediction-master-degree/cicd-failure-prediction/models/best_default_threshold_rf.joblib",
+    "best_model_metadata_path": "/home/user/ci-cd-prediction-master-degree/cicd-failure-prediction/models/best_default_threshold_rf_metadata.json",
+    "best_model_name": "Random Forest"
+  },
+  "failure_f1_per_model": {
+    "Logistic Regression": 0.4033,
+    "Random Forest": 0.5133,
+    "XGBoost": 0.3663
+  },
+  "models_stratified": {
+    "Logistic Regression": {
+      "predict_time_sec": 0.058,
+      "predict_proba_time_sec": 0.057,
+      "n_test_samples": 1953,
+      "metrics": {
+        "accuracy": 0.7393753200204813,
+        "balanced_accuracy": 0.7675965884357214,
+        "macro_f1": 0.6182806372299612,
+        "weighted_f1": 0.7861619020077277,
+        "macro_precision": 0.6186035543550497,
+        "macro_recall": 0.7675965884357214,
+        "failure_precision": 0.26917057902973396,
+        "failure_recall": 0.8037383177570093,
+        "failure_f1": 0.40328253223915594,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            172,
+            42
+          ],
+          [
+            467,
+            1272
+          ]
+        ],
+        "roc_auc": 0.8726507875941163,
+        "pr_auc": 0.5122546382392249
+      },
+      "fit_time_sec": 1.825,
+      "model_path": "/home/user/ci-cd-prediction-master-degree/cicd-failure-prediction/models/logistic_regression_full.joblib"
+    },
+    "Random Forest": {
+      "predict_time_sec": 0.113,
+      "predict_proba_time_sec": 0.124,
+      "n_test_samples": 1953,
+      "metrics": {
+        "accuracy": 0.8504864311315924,
+        "balanced_accuracy": 0.7931080812369339,
+        "macro_f1": 0.7125045372050817,
+        "weighted_f1": 0.8680273666492271,
+        "macro_precision": 0.6803370024898241,
+        "macro_recall": 0.7931080812369339,
+        "failure_precision": 0.39896373056994816,
+        "failure_recall": 0.719626168224299,
+        "failure_f1": 0.5133333333333333,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            154,
+            60
+          ],
+          [
+            232,
+            1507
+          ]
+        ],
+        "roc_auc": 0.8761709114164871,
+        "pr_auc": 0.49056980206243456
+      },
+      "fit_time_sec": 0.78,
+      "model_path": "/home/user/ci-cd-prediction-master-degree/cicd-failure-prediction/models/random_forest_full.joblib"
+    },
+    "XGBoost": {
+      "predict_time_sec": 0.085,
+      "predict_proba_time_sec": 0.063,
+      "n_test_samples": 1953,
+      "metrics": {
+        "accuracy": 0.9114183307731695,
+        "balanced_accuracy": 0.6142347358294863,
+        "macro_f1": 0.6593406593406593,
+        "weighted_f1": 0.8881611646588605,
+        "macro_precision": 0.8804341989869884,
+        "macro_recall": 0.6142347358294863,
+        "failure_precision": 0.847457627118644,
+        "failure_recall": 0.2336448598130841,
+        "failure_f1": 0.3663003663003663,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            50,
+            164
+          ],
+          [
+            9,
+            1730
+          ]
+        ],
+        "roc_auc": 0.8726548182702489,
+        "pr_auc": 0.5455975743050173
+      },
+      "fit_time_sec": 1.821,
+      "model_path": "/home/user/ci-cd-prediction-master-degree/cicd-failure-prediction/models/xgboost_full.joblib"
+    }
+  },
+  "models_chronological": {
+    "Logistic Regression": {
+      "predict_time_sec": 0.047,
+      "predict_proba_time_sec": 0.046,
+      "n_test_samples": 1636,
+      "metrics": {
+        "accuracy": 0.8001222493887531,
+        "balanced_accuracy": 0.73257006151743,
+        "macro_f1": 0.6301904791530573,
+        "weighted_f1": 0.8336795601927363,
+        "macro_precision": 0.612670585163628,
+        "macro_recall": 0.73257006151743,
+        "failure_precision": 0.2680965147453083,
+        "failure_recall": 0.6493506493506493,
+        "failure_f1": 0.3795066413662239,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            100,
+            54
+          ],
+          [
+            273,
+            1209
+          ]
+        ],
+        "roc_auc": 0.8162122964754543,
+        "pr_auc": 0.36486235990285554
+      },
+      "fit_time_sec": 0.27,
+      "model_path": null
+    },
+    "Random Forest": {
+      "predict_time_sec": 0.114,
+      "predict_proba_time_sec": 0.112,
+      "n_test_samples": 1636,
+      "metrics": {
+        "accuracy": 0.8520782396088019,
+        "balanced_accuracy": 0.6856038698143961,
+        "macro_f1": 0.6477588569191622,
+        "weighted_f1": 0.8655246195289868,
+        "macro_precision": 0.6282082324455206,
+        "macro_recall": 0.6856038698143961,
+        "failure_precision": 0.3135593220338983,
+        "failure_recall": 0.4805194805194805,
+        "failure_f1": 0.37948717948717947,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            74,
+            80
+          ],
+          [
+            162,
+            1320
+          ]
+        ],
+        "roc_auc": 0.8217878612615455,
+        "pr_auc": 0.38165875746424766
+      },
+      "fit_time_sec": 0.763,
+      "model_path": null
+    },
+    "XGBoost": {
+      "predict_time_sec": 0.072,
+      "predict_proba_time_sec": 0.052,
+      "n_test_samples": 1636,
+      "metrics": {
+        "accuracy": 0.9138141809290954,
+        "balanced_accuracy": 0.556754648859912,
+        "macro_f1": 0.5789162399715233,
+        "weighted_f1": 0.883744523447641,
+        "macro_precision": 0.84914687727432,
+        "macro_recall": 0.556754648859912,
+        "failure_precision": 0.782608695652174,
+        "failure_recall": 0.11688311688311688,
+        "failure_f1": 0.2033898305084746,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            18,
+            136
+          ],
+          [
+            5,
+            1477
+          ]
+        ],
+        "roc_auc": 0.8026819671556513,
+        "pr_auc": 0.41805555744086587
+      },
+      "fit_time_sec": 1.631,
+      "model_path": null
+    }
+  },
+  "ablation": {
+    "hybrid_full": {
+      "predict_time_sec": 0.062,
+      "predict_proba_time_sec": 0.061,
+      "n_test_samples": 1953,
+      "metrics": {
+        "accuracy": 0.9114183307731695,
+        "balanced_accuracy": 0.6142347358294863,
+        "macro_f1": 0.6593406593406593,
+        "weighted_f1": 0.8881611646588605,
+        "macro_precision": 0.8804341989869884,
+        "macro_recall": 0.6142347358294863,
+        "failure_precision": 0.847457627118644,
+        "failure_recall": 0.2336448598130841,
+        "failure_f1": 0.3663003663003663,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            50,
+            164
+          ],
+          [
+            9,
+            1730
+          ]
+        ],
+        "roc_auc": 0.8726548182702489,
+        "pr_auc": 0.5455975743050173
+      },
+      "fit_time_sec": 0.0
+    },
+    "text_only": {
+      "predict_time_sec": 0.086,
+      "predict_proba_time_sec": 0.058,
+      "n_test_samples": 1953,
+      "metrics": {
+        "accuracy": 0.890937019969278,
+        "balanced_accuracy": 0.5125810837681984,
+        "macro_f1": 0.49773431132844337,
+        "weighted_f1": 0.8447448036185319,
+        "macro_precision": 0.7191742346222263,
+        "macro_recall": 0.5125810837681984,
+        "failure_precision": 0.5454545454545454,
+        "failure_recall": 0.028037383177570093,
+        "failure_f1": 0.05333333333333334,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            6,
+            208
+          ],
+          [
+            5,
+            1734
+          ]
+        ],
+        "roc_auc": 0.701297340291176,
+        "pr_auc": 0.2595907865734318
+      },
+      "fit_time_sec": 1.511
+    },
+    "structured_only": {
+      "predict_time_sec": 0.022,
+      "predict_proba_time_sec": 0.02,
+      "n_test_samples": 1953,
+      "metrics": {
+        "accuracy": 0.9088581669226831,
+        "balanced_accuracy": 0.6209928361449538,
+        "macro_f1": 0.6642255534520728,
+        "weighted_f1": 0.8880196359611794,
+        "macro_precision": 0.8324694311536417,
+        "macro_recall": 0.6209928361449538,
+        "failure_precision": 0.75,
+        "failure_recall": 0.2523364485981308,
+        "failure_f1": 0.3776223776223776,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            54,
+            160
+          ],
+          [
+            18,
+            1721
+          ]
+        ],
+        "roc_auc": 0.8621253486534854,
+        "pr_auc": 0.5217487715181253
+      },
+      "fit_time_sec": 0.303
+    },
+    "categorical_only": {
+      "predict_time_sec": 0.017,
+      "predict_proba_time_sec": 0.016,
+      "n_test_samples": 1953,
+      "metrics": {
+        "accuracy": 0.9047619047619048,
+        "balanced_accuracy": 0.5654205607476636,
+        "macro_f1": 0.590320383268974,
+        "weighted_f1": 0.8705794833722582,
+        "macro_precision": 0.9516883116883117,
+        "macro_recall": 0.5654205607476636,
+        "failure_precision": 1.0,
+        "failure_recall": 0.1308411214953271,
+        "failure_f1": 0.23140495867768596,
+        "positive_label": "failure",
+        "classes_ordered": [
+          "failure",
+          "success"
+        ],
+        "confusion_matrix": [
+          [
+            28,
+            186
+          ],
+          [
+            0,
+            1739
+          ]
+        ],
+        "roc_auc": 0.8991686058697392,
+        "pr_auc": 0.6212314297094365
+      },
+      "fit_time_sec": 0.151
+    }
+  },
+  "business": {
+    "configuration": "Random Forest at default threshold 0.5, single grouped fold",
+    "failure_recall": 0.7196,
+    "failure_precision": 0.399,
+    "daily_failures": 109.7,
+    "daily_caught_by_model": 78.9,
+    "daily_false_alarms": 118.9,
+    "daily_compute_saved_usd": 5.05,
+    "daily_developer_time_saved_usd": 1480.18,
+    "daily_gross_saved_usd": 1485.23,
+    "daily_false_alarm_cost_usd": 297.32,
+    "daily_net_saved_usd": 1187.92,
+    "monthly_net_saved_usd": 35637.47,
+    "annual_net_saved_usd": 433589.22,
+    "assumptions": {
+      "pipelines_per_day": 1000,
+      "failure_rate": 0.1097,
+      "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+      "compute_cost_per_failed_build_usd": 0.064,
+      "context_switch_cost_per_failure_usd": 18.75,
+      "false_alarm_cost_usd": 2.5,
+      "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+    },
+    "average_inference_latency_ms": 0.058
+  }
+}

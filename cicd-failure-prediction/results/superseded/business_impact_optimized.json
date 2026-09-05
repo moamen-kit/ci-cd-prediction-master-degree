@@ -1,0 +1,21 @@
+{
+  "best_model": "XGBoost",
+  "optimal_threshold": 0.060000000000000005,
+  "failure_recall": 0.6215,
+  "failure_precision": 0.566,
+  "failure_f1": 0.5924,
+  "average_inference_latency_ms": 0.027,
+  "routing_reduction_per_failure_seconds": 270.0,
+  "daily_failures_to_triage": 300,
+  "daily_caught_by_model": 186.4,
+  "daily_usd_saved": 1048.77,
+  "monthly_usd_saved": 31463.2,
+  "annual_usd_saved": 382802.28,
+  "assumptions": {
+    "pipelines_per_day": 1000,
+    "failure_rate": 0.3,
+    "manual_minutes_per_failure": 5.0,
+    "auto_minutes_per_failure": 0.5,
+    "devops_hourly_rate_usd": 75.0
+  }
+}

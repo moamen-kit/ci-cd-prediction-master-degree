@@ -1,0 +1,181 @@
+{
+  "prepared_dataset": {
+    "rows": 9772,
+    "columns": 24,
+    "column_names": [
+      "repository",
+      "workflow_name",
+      "event",
+      "branch",
+      "conclusion",
+      "created_at",
+      "run_duration_sec",
+      "run_attempt",
+      "commit_message",
+      "lines_added",
+      "lines_deleted",
+      "total_changes",
+      "files_changed",
+      "commit_date",
+      "commit_message_length",
+      "commit_message_word_count",
+      "lines_change_ratio",
+      "avg_lines_per_file",
+      "is_large_commit",
+      "is_many_files",
+      "is_retry",
+      "is_off_hours",
+      "is_weekend",
+      "is_bot_author"
+    ],
+    "engineered_columns": [
+      "commit_message_length",
+      "commit_message_word_count",
+      "lines_change_ratio",
+      "avg_lines_per_file",
+      "is_large_commit",
+      "is_many_files",
+      "is_retry",
+      "is_off_hours",
+      "is_weekend",
+      "is_bot_author"
+    ]
+  },
+  "splits": {
+    "train_rows": 7817,
+    "test_rows": 1955,
+    "train_pct": 79.99,
+    "test_pct": 20.01,
+    "train_feature_count": 23
+  },
+  "class_distribution": {
+    "conclusion": {
+      "all": {
+        "success": 89.03,
+        "failure": 10.97
+      },
+      "train": {
+        "success": 87.949,
+        "failure": 12.051
+      },
+      "test": {
+        "success": 93.35,
+        "failure": 6.65
+      }
+    }
+  },
+  "engineered_feature_summary": {
+    "commit_message_length": {
+      "mean": 294.0654,
+      "std": 330.4123,
+      "min": 5.0,
+      "max": 1000.0
+    },
+    "commit_message_word_count": {
+      "mean": 35.4923,
+      "std": 43.6442,
+      "min": 1.0,
+      "max": 181.0
+    },
+    "lines_change_ratio": {
+      "mean": 462.8227,
+      "std": 43165.7228,
+      "min": 0.0,
+      "max": 4266967.0
+    },
+    "avg_lines_per_file": {
+      "mean": 92.2519,
+      "std": 1165.6042,
+      "min": 0.0,
+      "max": 25765.25
+    },
+    "is_large_commit": {
+      "mean": 0.494,
+      "std": 0.5,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "is_many_files": {
+      "mean": 0.4814,
+      "std": 0.4997,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "is_retry": {
+      "mean": 0.0354,
+      "std": 0.1848,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "is_off_hours": {
+      "mean": 0.5167,
+      "std": 0.4997,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "is_weekend": {
+      "mean": 0.0988,
+      "std": 0.2983,
+      "min": 0.0,
+      "max": 1.0
+    },
+    "is_bot_author": {
+      "mean": 0.1105,
+      "std": 0.3136,
+      "min": 0.0,
+      "max": 1.0
+    }
+  },
+  "sample_rows": [
+    {
+      "repository": "scikit-learn/scikit-learn",
+      "event": "pull_request",
+      "conclusion": "success",
+      "commit_message": "add string y test",
+      "lines_added": 86,
+      "files_changed": 1,
+      "is_bot_author": 0,
+      "is_weekend": 0
+    },
+    {
+      "repository": "huggingface/transformers",
+      "event": "pull_request_target",
+      "conclusion": "success",
+      "commit_message": "Replace assert with raise ImportError for optuna/ray dependency checks\n\nThe assert statements in default_hp_space_optuna() and\ndefault_hp_space_ray() are silently stripped when Python runs with\nthe -O",
+      "lines_added": 4,
+      "files_changed": 1,
+      "is_bot_author": 0,
+      "is_weekend": 0
+    },
+    {
+      "repository": "python/cpython",
+      "event": "pull_request",
+      "conclusion": "failure",
+      "commit_message": "Merge branch 'main' into gh-148874/with-signal-exit-skip",
+      "lines_added": 15048,
+      "files_changed": 300,
+      "is_bot_author": 0,
+      "is_weekend": 0
+    },
+    {
+      "repository": "pandas-dev/pandas",
+      "event": "pull_request",
+      "conclusion": "success",
+      "commit_message": "Remove `_is_plottable` flag from `ExtensionDtype` and instead of raising by default just return `None` in `_get_plot_converter`",
+      "lines_added": 18,
+      "files_changed": 2,
+      "is_bot_author": 0,
+      "is_weekend": 0
+    },
+    {
+      "repository": "ruby/ruby",
+      "event": "push",
+      "conclusion": "success",
+      "commit_message": "Bump taiki-e/install-action\n\nBumps the github-actions group with 1 update in the / directory: [taiki-e/install-action](https://github.com/taiki-e/install-action).\n\n\nUpdates `taiki-e/install-action` fr",
+      "lines_added": 2,
+      "files_changed": 2,
+      "is_bot_author": 1,
+      "is_weekend": 0
+    }
+  ]
+}
