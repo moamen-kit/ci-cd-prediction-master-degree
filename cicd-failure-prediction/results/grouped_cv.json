@@ -2,7 +2,7 @@
   "models": {
     "Logistic Regression": {
       "n_splits": 5,
-      "fit_time_sec_total": 3.717,
+      "fit_time_sec_total": 3.185,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.8276,
@@ -222,7 +222,7 @@
     },
     "Random Forest": {
       "n_splits": 5,
-      "fit_time_sec_total": 4.826,
+      "fit_time_sec_total": 4.986,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.8008,
@@ -442,7 +442,7 @@
     },
     "XGBoost": {
       "n_splits": 5,
-      "fit_time_sec_total": 12.437,
+      "fit_time_sec_total": 11.903,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.824,
@@ -664,7 +664,7 @@
   "ablation": {
     "hybrid_full": {
       "n_splits": 5,
-      "fit_time_sec_total": 11.47,
+      "fit_time_sec_total": 11.793,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.824,
@@ -884,7 +884,7 @@
     },
     "structured_only": {
       "n_splits": 5,
-      "fit_time_sec_total": 1.966,
+      "fit_time_sec_total": 1.817,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.8197,
@@ -1104,7 +1104,7 @@
     },
     "categorical_only": {
       "n_splits": 5,
-      "fit_time_sec_total": 1.155,
+      "fit_time_sec_total": 1.249,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.8649,
@@ -1324,7 +1324,7 @@
     },
     "text_only": {
       "n_splits": 5,
-      "fit_time_sec_total": 10.826,
+      "fit_time_sec_total": 11.085,
       "pooled_out_of_fold": {
         "n_rows": 9772,
         "roc_auc": 0.6654,
@@ -1546,8 +1546,8 @@
   "protocol": {
     "splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)",
     "group_key": "commit_sha",
-    "threshold_selection": "inner StratifiedGroupKFold on training rows of each fold; F1-optimal on validation",
-    "ranking_metrics": "pooled out-of-fold over all 9,772 rows",
-    "decision_metrics": "per-fold, reported as mean +/- sd"
+    "threshold_selection": "inner StratifiedGroupKFold over each fold's training rows; F1-optimal on the inner validation set; never on test",
+    "ranking_metrics": "pooled out-of-fold over all rows",
+    "decision_metrics": "per-fold, reported as mean and standard deviation"
   }
 }

@@ -1,8 +1,9 @@
 {
-  "description": "Controlled decomposition of the originally reported F1 = 0.5924 into duplicate-commit leakage, test-set threshold selection, and single-fold optimism. XGBoost throughout, identical hyperparameters, random_state=42.",
+  "description": "Controlled decomposition of the originally reported failure-class F1 of 0.5924. XGBoost throughout, identical hyperparameters, random_state=42; each row changes exactly one aspect of the evaluation protocol relative to the row above it.",
   "steps": [
     {
-      "step": "A. stratified split, threshold chosen on test",
+      "step": "A. Row-level stratified split, threshold chosen on the test set",
+      "isolates": "as originally reported",
       "f1_failure": 0.5924,
       "pr_auc": 0.5873,
       "roc_auc": 0.884,
@@ -10,7 +11,8 @@
       "delta_f1_vs_previous": null
     },
     {
-      "step": "B. + commit-grouped split (leakage removed)",
+      "step": "B. Commit-grouped split, threshold still chosen on the test set",
+      "isolates": "duplicate-commit leakage (F-1)",
       "f1_failure": 0.5326,
       "pr_auc": 0.5404,
       "roc_auc": 0.8344,
@@ -18,7 +20,8 @@
       "delta_f1_vs_previous": -0.0598
     },
     {
-      "step": "C. + threshold chosen on validation, not test",
+      "step": "C. Commit-grouped split, threshold chosen on a validation fold",
+      "isolates": "test-set threshold selection (F-3)",
       "f1_failure": 0.4065,
       "pr_auc": 0.4784,
       "roc_auc": 0.802,
@@ -26,12 +29,15 @@
       "delta_f1_vs_previous": -0.1261
     },
     {
-      "step": "D. + 5-fold CV instead of one fold (FINAL)",
+      "step": "D. Commit-grouped 5-fold cross-validation (reported result)",
+      "isolates": "single-fold composition",
       "f1_failure": 0.4216,
+      "f1_failure_sd": 0.0638,
       "pr_auc": 0.4803,
       "roc_auc": 0.824,
       "threshold": 0.076,
       "delta_f1_vs_previous": 0.0151
     }
-  ]
+  ],
+  "total_change": -0.1708
 }

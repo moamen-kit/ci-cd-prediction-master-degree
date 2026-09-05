@@ -1,5 +1,5 @@
 {
-  "configuration": "XGBoost (grouped 5-fold CV, threshold 0.076)",
+  "configuration": "XGBoost (commit-grouped 5-fold CV, threshold 0.076)",
   "failure_recall": 0.3686,
   "failure_precision": 0.5204,
   "daily_failures": 109.7,

@@ -1,5 +1,5 @@
 {
-  "description": "Annual net saving as a function of the false-alarm cost, holding the benefit per caught failure at $18.814 (compute $0.064 + context switch $18.75). The specified false-alarm cost is $2.50; the break-even column shows the cost at which each configuration stops paying for itself.",
+  "description": "Annual net saving as a function of the assumed false-alarm cost, holding the benefit per caught failure fixed. The break-even cost is the false-alarm cost at which a configuration's net saving reaches zero; it depends only on precision.",
   "benefit_per_caught_failure_usd": 18.814,
   "annual_net_saved_usd_by_false_alarm_cost": {
     "Logistic Regression": {

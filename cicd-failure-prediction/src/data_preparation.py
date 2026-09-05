@@ -93,6 +93,26 @@ GROUP_KEY: str = "commit_sha"
 TIME_KEY: str = "created_at"
 
 
+# Columns produced by :func:`engineer_features`. Phase 2's figures import this
+# to know what to plot. It was lost when the Phase 2.5 module replaced the
+# Phase 2 one, which left src/run_phase2.py raising ImportError on load — the
+# module has not been runnable since, despite Appendix B claiming the phases
+# reproduce in order.
+ENGINEERED_FEATURE_COLUMNS: list[str] = [
+    "commit_message_length",
+    "was_truncated",
+    "log_lines_added",
+    "log_lines_deleted",
+    "log_files_changed",
+    "avg_lines_per_file",
+    "is_large_commit",
+    "is_many_files",
+    "is_off_hours_commit",
+    "is_weekend_commit",
+    "is_bot_author",
+]
+
+
 ALL_FEATURE_COLUMNS: list[str] = (
     NUMERICAL_FEATURES + CATEGORICAL_FEATURES + BINARY_FEATURES + [TEXT_FEATURE]
 )
@@ -599,6 +619,33 @@ def chronological_split(
     return train_df, val_df, test_df
 
 
+def split_dataset(
+    df: pd.DataFrame,
+    test_size: float = 0.2,
+    random_state: int = 42,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """Compatibility shim for the Phase 2 figures: ``(x_train, x_test, y_train, y_test)``.
+
+    Phase 2 was superseded by Phase 2.5, and this function was removed with the
+    old module, which left ``src/run_phase2.py`` unable to import. That module
+    still owns three EDA figures, so the shim restores it rather than deleting
+    figures the thesis references. It delegates to :func:`grouped_split` so the
+    Phase 2 figures describe the same partition the results are computed on;
+    the validation fold is folded back into training here, because the Phase 2
+    figures predate the validation split and do not use it.
+    """
+    train_df, val_df, test_df = grouped_split(
+        df, test_size=test_size, random_state=random_state
+    )
+    train_df = pd.concat([train_df, val_df], ignore_index=True)
+    return (
+        train_df.drop(columns=[TARGET]),
+        test_df.drop(columns=[TARGET]),
+        train_df[TARGET],
+        test_df[TARGET],
+    )
+
+
 def split_integrity_report(
     train_df: pd.DataFrame,
     val_df: pd.DataFrame | None,
@@ -688,6 +735,7 @@ def class_distribution(series: pd.Series) -> dict[str, float]:
 
 __all__ = [
     "ALL_FEATURE_COLUMNS",
+    "ENGINEERED_FEATURE_COLUMNS",
     "GROUP_KEY",
     "TIME_KEY",
     "BINARY_FEATURES",
@@ -702,6 +750,7 @@ __all__ = [
     "chronological_split",
     "class_distribution",
     "grouped_split",
+    "split_dataset",
     "split_integrity_report",
     "clean_commit_message_for_nlp",
     "engineer_features",
