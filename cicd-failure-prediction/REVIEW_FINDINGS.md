@@ -1,5 +1,20 @@
 # Review Findings
 
+> **STATUS, 2026-09-05.** This document is the record of what was known on
+> 2026-08-29 and is deliberately left unedited below this banner. It is no
+> longer a description of the current code.
+>
+> F-1, F-2, F-3, F-4, F-5, F-10, F-11 and F-12 are **resolved**. F-6, F-7, F-8
+> and F-9 remain **open and disclosed**. Current status, with the measurements
+> that replaced the ones below, is in `CLAUDE.md`. The corrected headline is
+> failure F1 **0.4216 ± 0.0638** under commit-grouped cross-validation, not the
+> 0.533 anticipated here — the difference is that the threshold is now selected
+> on a validation fold rather than on the test set, which cost a further 0.126.
+>
+> Two defects not in this review were found later: `src/run_phase2.py` had never
+> been runnable, and Appendix B instructed the reader to run two scripts that do
+> not exist.
+
 Independent review of the CI/CD failure-prediction project, 2026-08-29.
 Every claim below was verified against the code and data, not inferred from prose.
 Findings are referenced elsewhere as **F-1** … **F-12**.

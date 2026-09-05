@@ -134,15 +134,38 @@ the commits endpoint, which does not return that field at commit level.
 
 ## Splits on disk
 
-| File | Rows | success/failure |
-|---|---|---|
-| `train_stratified.csv` | 7,817 | 89.02 / 10.98 |
-| `test_stratified.csv` | 1,955 | 89.05 / 10.95 |
-| `train_chronological.csv` | 7,817 | 87.95 / 12.05 |
-| `test_chronological.csv` | 1,955 | 93.35 / 6.65 |
+| File | Rows | success/failure | Status |
+|---|---|---|---|
+| `train_grouped.csv` | 6,254 | 89.03 / 10.97 | **PRIMARY** |
+| `val_grouped.csv` | 1,565 | 89.01 / 10.99 | threshold selection only |
+| `test_grouped.csv` | 1,953 | 89.04 / 10.96 | **PRIMARY** |
+| `train_chronological.csv` | 6,014 | 88.79 / 11.21 | secondary |
+| `val_chronological.csv` | 1,197 | 88.64 / 11.36 | secondary |
+| `test_chronological.csv` | 1,636 | 90.59 / 9.41 | secondary |
+| `train_stratified.csv` | 7,817 | 89.02 / 10.98 | leakage demonstration only |
+| `test_stratified.csv` | 1,955 | 89.05 / 10.95 | leakage demonstration only |
 
-`train.csv` / `test.csv` are **stale Phase 2 orphans** — do not use; delete.
+The grouped split is produced by `StratifiedGroupKFold(n_splits=5, shuffle=True,
+random_state=42)` on `commit_sha`. Grouping alone is not enough: plain
+`GroupShuffleSplit` let the failure rate drift to 9.71 / 14.72 / 11.64 per cent
+across the three folds, which would confound threshold transfer.
 
-Both splits have integrity problems (F-1, F-2 in REVIEW_FINDINGS.md). The
-chronological test set covers only **11 hours**, which is why its failure rate
-drops to 6.65% — a sampling artifact, not drift.
+The chronological split cuts **each repository at its own quantiles** of
+`created_at`, assigns whole commits to one side, and discards straddlers
+(925 rows). A single global cut is not viable on this dataset: the 600-run cap
+gives per-repository coverage from 0.4 days (`ruby/ruby`) to 182 days
+(`expressjs/express`), and 88.7 per cent of rows fall in May 2026, so any global
+80/20 cut yields a ~9 hour test window covering 11 of 18 repositories.
+
+**Integrity, verified in `results/split_integrity.json`:**
+
+- grouped and chronological: **zero** commits shared between any pair of folds
+- chronological: `min(test.created_at) >= max(train.created_at)` holds for
+  **all 18 of 18** repositories; pooled test window spans 57 days
+- stratified: **913 commits shared** between train and test — this is the defect
+  it is retained to demonstrate, not a split to evaluate on
+
+Primary results are not read from a single fold. They come from commit-grouped
+5-fold cross-validation (`src/cross_validation.py`), because single-fold
+estimates on this dataset vary by roughly 20 points of failure-class F1
+depending on which fold is drawn.
