@@ -38,6 +38,8 @@ from src.data_preparation import (  # noqa: E402
     TARGET,
     TEXT_FEATURE,
     chronological_split,
+    grouped_split,
+    split_integrity_report,
     class_distribution,
     prepare_dataset,
     stratified_split,
@@ -234,25 +236,56 @@ def main() -> None:
     print(f"  Binary      : {len(BINARY_FEATURES)} — {BINARY_FEATURES}")
     print(f"  Text        : 1 — '{TEXT_FEATURE}'")
 
-    print("\n[Phase 2.5] Generating stratified split (primary) ...")
-    train_s, test_s = stratified_split(df, test_size=0.2, random_state=42)
-    dist_train_s = class_distribution(train_s[TARGET])
-    dist_test_s = class_distribution(test_s[TARGET])
-    print(
-        f"             train rows = {len(train_s):,}   "
-        f"test rows = {len(test_s):,}"
+    print("\n[Phase 2.5] Generating commit-grouped split (PRIMARY) ...")
+    train_g, val_g, test_g = grouped_split(
+        df, test_size=0.2, val_size=0.2, random_state=42
     )
-    _print_dist_table("stratified", dist_train_s, dist_test_s)
+    dist_train_g = class_distribution(train_g[TARGET])
+    dist_test_g = class_distribution(test_g[TARGET])
+    print(
+        f"             train rows = {len(train_g):,}   "
+        f"val rows = {len(val_g):,}   test rows = {len(test_g):,}"
+    )
+    _print_dist_table("grouped", dist_train_g, dist_test_g)
 
-    print("\n[Phase 2.5] Generating chronological split (secondary) ...")
-    train_c, test_c = chronological_split(df, test_size=0.2)
+    print("\n[Phase 2.5] Generating per-repository chronological split (secondary) ...")
+    train_c, val_c, test_c = chronological_split(df)
     dist_train_c = class_distribution(train_c[TARGET])
     dist_test_c = class_distribution(test_c[TARGET])
     print(
         f"             train rows = {len(train_c):,}   "
-        f"test rows = {len(test_c):,}"
+        f"val rows = {len(val_c):,}   test rows = {len(test_c):,}"
     )
     _print_dist_table("chronological", dist_train_c, dist_test_c)
+
+    print("\n[Phase 2.5] Regenerating stratified split (leakage demonstration only) ...")
+    train_s, test_s = stratified_split(df, test_size=0.2, random_state=42)
+    dist_train_s = class_distribution(train_s[TARGET])
+    dist_test_s = class_distribution(test_s[TARGET])
+    _print_dist_table("stratified (leaky)", dist_train_s, dist_test_s)
+
+    print("\n[Phase 2.5] Verifying split integrity ...")
+    integrity = {
+        "grouped": split_integrity_report(train_g, val_g, test_g, "grouped"),
+        "chronological": split_integrity_report(
+            train_c, val_c, test_c, "chronological", per_repository=True
+        ),
+        "stratified_leaky": split_integrity_report(
+            train_s, None, test_s, "stratified_leaky"
+        ),
+    }
+    integrity_path = RESULTS_DIR / "split_integrity.json"
+    integrity_path.write_text(
+        json.dumps(integrity, indent=2, default=str), encoding="utf-8"
+    )
+    for key, rep in integrity.items():
+        print(
+            f"             {key:<18} commit overlap clean = "
+            f"{rep['commit_overlap_clean']}  "
+            f"temporal invariant = {rep['temporal_invariant_holds']}  "
+            f"overlaps = {rep['commit_overlap']}"
+        )
+    print(f"             Integrity report written -> {integrity_path}")
 
     print("\n[Phase 2.5] Regenerating fig_10 with cleaned vocabulary ...")
     plotter = ThesisPlotter(figures_dir=FIGURES_DIR)
@@ -288,18 +321,27 @@ def main() -> None:
             "text_feature": TEXT_FEATURE,
             "target": TARGET,
         },
-        "stratified_split": {
+        "grouped_split": {
+            "train_rows": int(len(train_g)),
+            "val_rows": int(len(val_g)),
+            "test_rows": int(len(test_g)),
+            "train": dist_train_g,
+            "test": dist_test_g,
+        },
+        "chronological_split": {
+            "train_rows": int(len(train_c)),
+            "val_rows": int(len(val_c)),
+            "test_rows": int(len(test_c)),
+            "train": dist_train_c,
+            "test": dist_test_c,
+        },
+        "stratified_split_leaky": {
             "train_rows": int(len(train_s)),
             "test_rows": int(len(test_s)),
             "train": dist_train_s,
             "test": dist_test_s,
         },
-        "chronological_split": {
-            "train_rows": int(len(train_c)),
-            "test_rows": int(len(test_c)),
-            "train": dist_train_c,
-            "test": dist_test_c,
-        },
+        "split_integrity": integrity,
         "top_failure_tokens": [
             {"token": t, "log_odds": round(s, 4)} for t, s in top_failure
         ],

@@ -1,0 +1,37 @@
+{
+  "description": "Controlled decomposition of the originally reported F1 = 0.5924 into duplicate-commit leakage, test-set threshold selection, and single-fold optimism. XGBoost throughout, identical hyperparameters, random_state=42.",
+  "steps": [
+    {
+      "step": "A. stratified split, threshold chosen on test",
+      "f1_failure": 0.5924,
+      "pr_auc": 0.5873,
+      "roc_auc": 0.884,
+      "threshold": 0.06,
+      "delta_f1_vs_previous": null
+    },
+    {
+      "step": "B. + commit-grouped split (leakage removed)",
+      "f1_failure": 0.5326,
+      "pr_auc": 0.5404,
+      "roc_auc": 0.8344,
+      "threshold": 0.05,
+      "delta_f1_vs_previous": -0.0598
+    },
+    {
+      "step": "C. + threshold chosen on validation, not test",
+      "f1_failure": 0.4065,
+      "pr_auc": 0.4784,
+      "roc_auc": 0.802,
+      "threshold": 0.1,
+      "delta_f1_vs_previous": -0.1261
+    },
+    {
+      "step": "D. + 5-fold CV instead of one fold (FINAL)",
+      "f1_failure": 0.4216,
+      "pr_auc": 0.4803,
+      "roc_auc": 0.824,
+      "threshold": 0.076,
+      "delta_f1_vs_previous": 0.0151
+    }
+  ]
+}

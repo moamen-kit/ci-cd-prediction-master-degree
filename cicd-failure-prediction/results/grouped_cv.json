@@ -1,0 +1,1553 @@
+{
+  "models": {
+    "Logistic Regression": {
+      "n_splits": 5,
+      "fit_time_sec_total": 3.717,
+      "pooled_out_of_fold": {
+        "n_rows": 9772,
+        "roc_auc": 0.8276,
+        "pr_auc": 0.4092
+      },
+      "threshold": {
+        "mean": 0.646,
+        "std": 0.0358,
+        "min": 0.6,
+        "max": 0.68,
+        "per_fold": [
+          0.68,
+          0.62,
+          0.68,
+          0.65,
+          0.6
+        ]
+      },
+      "f1_failure": {
+        "mean": 0.4311,
+        "std": 0.0633,
+        "min": 0.3788,
+        "max": 0.538,
+        "per_fold": [
+          0.538,
+          0.4366,
+          0.3788,
+          0.3983,
+          0.4038
+        ]
+      },
+      "precision_failure": {
+        "mean": 0.3532,
+        "std": 0.0716,
+        "min": 0.2733,
+        "max": 0.4615,
+        "per_fold": [
+          0.4615,
+          0.3622,
+          0.2733,
+          0.3626,
+          0.3062
+        ]
+      },
+      "recall_failure": {
+        "mean": 0.5691,
+        "std": 0.0793,
+        "min": 0.4419,
+        "max": 0.6449,
+        "per_fold": [
+          0.6449,
+          0.5493,
+          0.6168,
+          0.4419,
+          0.5926
+        ]
+      },
+      "balanced_accuracy": {
+        "mean": 0.717,
+        "std": 0.0372,
+        "min": 0.673,
+        "max": 0.7761,
+        "per_fold": [
+          0.7761,
+          0.7154,
+          0.7074,
+          0.673,
+          0.7131
+        ]
+      },
+      "roc_auc_per_fold": {
+        "mean": 0.8303,
+        "std": 0.0255,
+        "min": 0.8089,
+        "max": 0.8727,
+        "per_fold": [
+          0.8727,
+          0.8122,
+          0.8089,
+          0.8259,
+          0.8319
+        ]
+      },
+      "pr_auc_per_fold": {
+        "mean": 0.4262,
+        "std": 0.0501,
+        "min": 0.3823,
+        "max": 0.5123,
+        "per_fold": [
+          0.5123,
+          0.4193,
+          0.3823,
+          0.4121,
+          0.405
+        ]
+      },
+      "f1_at_default_0.5": {
+        "mean": 0.3994,
+        "std": 0.0263,
+        "min": 0.3541,
+        "max": 0.4192,
+        "per_fold": [
+          0.4033,
+          0.4167,
+          0.3541,
+          0.4192,
+          0.4038
+        ]
+      },
+      "folds": [
+        {
+          "threshold": 0.6800000000000002,
+          "precision_failure": 0.46153846153846156,
+          "recall_failure": 0.6448598130841121,
+          "f1_failure": 0.5380116959064327,
+          "balanced_accuracy": 0.7761389347191694,
+          "tn": 1578,
+          "fp": 161,
+          "fn": 76,
+          "tp": 138,
+          "fold": 1,
+          "n_fit": 6254,
+          "n_val": 1565,
+          "n_test": 1953,
+          "test_failure_rate_pct": 10.958,
+          "roc_auc": 0.8726507875941163,
+          "pr_auc": 0.5122546382392249,
+          "f1_at_default_0.5": 0.40328253223915594,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.6200000000000001,
+          "precision_failure": 0.3622291021671827,
+          "recall_failure": 0.5492957746478874,
+          "f1_failure": 0.43656716417910446,
+          "balanced_accuracy": 0.7154184451157781,
+          "tn": 1533,
+          "fp": 206,
+          "fn": 96,
+          "tp": 117,
+          "fold": 2,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.912,
+          "roc_auc": 0.8122025231704584,
+          "pr_auc": 0.4193020843438957,
+          "f1_at_default_0.5": 0.4166666666666667,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.6800000000000002,
+          "precision_failure": 0.2732919254658385,
+          "recall_failure": 0.616822429906542,
+          "f1_failure": 0.3787661406025825,
+          "balanced_accuracy": 0.7074330791650086,
+          "tn": 1387,
+          "fp": 351,
+          "fn": 82,
+          "tp": 132,
+          "fold": 3,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.963,
+          "roc_auc": 0.808869632083284,
+          "pr_auc": 0.38230759987406293,
+          "f1_at_default_0.5": 0.35414301929625425,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.6500000000000001,
+          "precision_failure": 0.36259541984732824,
+          "recall_failure": 0.4418604651162791,
+          "f1_failure": 0.39832285115303984,
+          "balanced_accuracy": 0.6729968226844312,
+          "tn": 1575,
+          "fp": 167,
+          "fn": 120,
+          "tp": 95,
+          "fold": 4,
+          "n_fit": 6253,
+          "n_val": 1562,
+          "n_test": 1957,
+          "test_failure_rate_pct": 10.986,
+          "roc_auc": 0.8259391771019677,
+          "pr_auc": 0.41210356859300873,
+          "f1_at_default_0.5": 0.4191780821917808,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.6000000000000002,
+          "precision_failure": 0.3062200956937799,
+          "recall_failure": 0.5925925925925926,
+          "f1_failure": 0.4037854889589905,
+          "balanced_accuracy": 0.7130586384317728,
+          "tn": 1452,
+          "fp": 290,
+          "fn": 88,
+          "tp": 128,
+          "fold": 5,
+          "n_fit": 6250,
+          "n_val": 1564,
+          "n_test": 1958,
+          "test_failure_rate_pct": 11.032,
+          "roc_auc": 0.8319234489943446,
+          "pr_auc": 0.4049919405611241,
+          "f1_at_default_0.5": 0.4038199181446112,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        }
+      ]
+    },
+    "Random Forest": {
+      "n_splits": 5,
+      "fit_time_sec_total": 4.826,
+      "pooled_out_of_fold": {
+        "n_rows": 9772,
+        "roc_auc": 0.8008,
+        "pr_auc": 0.3909
+      },
+      "threshold": {
+        "mean": 0.538,
+        "std": 0.0179,
+        "min": 0.51,
+        "max": 0.56,
+        "per_fold": [
+          0.54,
+          0.54,
+          0.54,
+          0.56,
+          0.51
+        ]
+      },
+      "f1_failure": {
+        "mean": 0.424,
+        "std": 0.0812,
+        "min": 0.3213,
+        "max": 0.5233,
+        "per_fold": [
+          0.5233,
+          0.3739,
+          0.4829,
+          0.3213,
+          0.4188
+        ]
+      },
+      "precision_failure": {
+        "mean": 0.4033,
+        "std": 0.0336,
+        "min": 0.3593,
+        "max": 0.447,
+        "per_fold": [
+          0.447,
+          0.3593,
+          0.424,
+          0.3973,
+          0.3889
+        ]
+      },
+      "recall_failure": {
+        "mean": 0.4609,
+        "std": 0.1419,
+        "min": 0.2698,
+        "max": 0.6308,
+        "per_fold": [
+          0.6308,
+          0.3897,
+          0.5607,
+          0.2698,
+          0.4537
+        ]
+      },
+      "balanced_accuracy": {
+        "mean": 0.6891,
+        "std": 0.0629,
+        "min": 0.6096,
+        "max": 0.7674,
+        "per_fold": [
+          0.7674,
+          0.6523,
+          0.7335,
+          0.6096,
+          0.6826
+        ]
+      },
+      "roc_auc_per_fold": {
+        "mean": 0.8032,
+        "std": 0.0427,
+        "min": 0.7683,
+        "max": 0.8762,
+        "per_fold": [
+          0.8762,
+          0.7683,
+          0.7975,
+          0.777,
+          0.7969
+        ]
+      },
+      "pr_auc_per_fold": {
+        "mean": 0.4005,
+        "std": 0.0759,
+        "min": 0.3222,
+        "max": 0.4906,
+        "per_fold": [
+          0.4906,
+          0.3364,
+          0.4673,
+          0.3222,
+          0.3863
+        ]
+      },
+      "f1_at_default_0.5": {
+        "mean": 0.4157,
+        "std": 0.0582,
+        "min": 0.3784,
+        "max": 0.5133,
+        "per_fold": [
+          0.5133,
+          0.3784,
+          0.3802,
+          0.3803,
+          0.4262
+        ]
+      },
+      "folds": [
+        {
+          "threshold": 0.5400000000000001,
+          "precision_failure": 0.4470198675496689,
+          "recall_failure": 0.6308411214953271,
+          "f1_failure": 0.5232558139534884,
+          "balanced_accuracy": 0.767404459540073,
+          "tn": 1572,
+          "fp": 167,
+          "fn": 79,
+          "tp": 135,
+          "fold": 1,
+          "n_fit": 6254,
+          "n_val": 1565,
+          "n_test": 1953,
+          "test_failure_rate_pct": 10.958,
+          "roc_auc": 0.8761709114164871,
+          "pr_auc": 0.49056980206243456,
+          "f1_at_default_0.5": 0.5133333333333333,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.5400000000000001,
+          "precision_failure": 0.3593073593073593,
+          "recall_failure": 0.38967136150234744,
+          "f1_failure": 0.3738738738738739,
+          "balanced_accuracy": 0.652282489261812,
+          "tn": 1591,
+          "fp": 148,
+          "fn": 130,
+          "tp": 83,
+          "fold": 2,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.912,
+          "roc_auc": 0.7682913659839041,
+          "pr_auc": 0.3363588087667215,
+          "f1_at_default_0.5": 0.3783783783783784,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.5400000000000001,
+          "precision_failure": 0.42402826855123676,
+          "recall_failure": 0.5607476635514018,
+          "f1_failure": 0.482897384305835,
+          "balanced_accuracy": 0.7334808513384167,
+          "tn": 1575,
+          "fp": 163,
+          "fn": 94,
+          "tp": 120,
+          "fold": 3,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.963,
+          "roc_auc": 0.7975046513878881,
+          "pr_auc": 0.46733911650436816,
+          "f1_at_default_0.5": 0.38023952095808383,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.5600000000000002,
+          "precision_failure": 0.3972602739726027,
+          "recall_failure": 0.26976744186046514,
+          "f1_failure": 0.32132963988919666,
+          "balanced_accuracy": 0.6096253971644461,
+          "tn": 1654,
+          "fp": 88,
+          "fn": 157,
+          "tp": 58,
+          "fold": 4,
+          "n_fit": 6253,
+          "n_val": 1562,
+          "n_test": 1957,
+          "test_failure_rate_pct": 10.986,
+          "roc_auc": 0.7770485675379809,
+          "pr_auc": 0.32219822908109635,
+          "f1_at_default_0.5": 0.38028169014084506,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.5100000000000001,
+          "precision_failure": 0.3888888888888889,
+          "recall_failure": 0.4537037037037037,
+          "f1_failure": 0.4188034188034188,
+          "balanced_accuracy": 0.6826497852617256,
+          "tn": 1588,
+          "fp": 154,
+          "fn": 118,
+          "tp": 98,
+          "fold": 5,
+          "n_fit": 6250,
+          "n_val": 1564,
+          "n_test": 1958,
+          "test_failure_rate_pct": 11.032,
+          "roc_auc": 0.7968663626312881,
+          "pr_auc": 0.3862509127533796,
+          "f1_at_default_0.5": 0.4262295081967213,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        }
+      ]
+    },
+    "XGBoost": {
+      "n_splits": 5,
+      "fit_time_sec_total": 12.437,
+      "pooled_out_of_fold": {
+        "n_rows": 9772,
+        "roc_auc": 0.824,
+        "pr_auc": 0.4803
+      },
+      "threshold": {
+        "mean": 0.076,
+        "std": 0.0279,
+        "min": 0.05,
+        "max": 0.11,
+        "per_fold": [
+          0.07,
+          0.05,
+          0.11,
+          0.1,
+          0.05
+        ]
+      },
+      "f1_failure": {
+        "mean": 0.4216,
+        "std": 0.0638,
+        "min": 0.3208,
+        "max": 0.4976,
+        "per_fold": [
+          0.4309,
+          0.42,
+          0.4976,
+          0.3208,
+          0.4386
+        ]
+      },
+      "precision_failure": {
+        "mean": 0.5204,
+        "std": 0.0552,
+        "min": 0.4492,
+        "max": 0.6026,
+        "per_fold": [
+          0.527,
+          0.4492,
+          0.5204,
+          0.6026,
+          0.503
+        ]
+      },
+      "recall_failure": {
+        "mean": 0.3686,
+        "std": 0.0939,
+        "min": 0.2186,
+        "max": 0.4766,
+        "per_fold": [
+          0.3645,
+          0.3944,
+          0.4766,
+          0.2186,
+          0.3889
+        ]
+      },
+      "balanced_accuracy": {
+        "mean": 0.6624,
+        "std": 0.0398,
+        "min": 0.6004,
+        "max": 0.7113,
+        "per_fold": [
+          0.6621,
+          0.6676,
+          0.7113,
+          0.6004,
+          0.6706
+        ]
+      },
+      "roc_auc_per_fold": {
+        "mean": 0.8255,
+        "std": 0.0297,
+        "min": 0.7915,
+        "max": 0.8727,
+        "per_fold": [
+          0.8727,
+          0.8178,
+          0.8292,
+          0.7915,
+          0.8166
+        ]
+      },
+      "pr_auc_per_fold": {
+        "mean": 0.4848,
+        "std": 0.0392,
+        "min": 0.4358,
+        "max": 0.5456,
+        "per_fold": [
+          0.5456,
+          0.4778,
+          0.4823,
+          0.4358,
+          0.4823
+        ]
+      },
+      "f1_at_default_0.5": {
+        "mean": 0.3022,
+        "std": 0.0524,
+        "min": 0.2258,
+        "max": 0.3663,
+        "per_fold": [
+          0.3663,
+          0.2857,
+          0.33,
+          0.2258,
+          0.303
+        ]
+      },
+      "folds": [
+        {
+          "threshold": 0.07,
+          "precision_failure": 0.527027027027027,
+          "recall_failure": 0.3644859813084112,
+          "f1_failure": 0.430939226519337,
+          "balanced_accuracy": 0.662116481165994,
+          "tn": 1669,
+          "fp": 70,
+          "fn": 136,
+          "tp": 78,
+          "fold": 1,
+          "n_fit": 6254,
+          "n_val": 1565,
+          "n_test": 1953,
+          "test_failure_rate_pct": 10.958,
+          "roc_auc": 0.8726548182702489,
+          "pr_auc": 0.5455975743050173,
+          "f1_at_default_0.5": 0.3663003663003663,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.05,
+          "precision_failure": 0.44919786096256686,
+          "recall_failure": 0.39436619718309857,
+          "f1_failure": 0.42,
+          "balanced_accuracy": 0.6675683774874664,
+          "tn": 1636,
+          "fp": 103,
+          "fn": 129,
+          "tp": 84,
+          "fold": 2,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.912,
+          "roc_auc": 0.8177572238105651,
+          "pr_auc": 0.4778243410664991,
+          "f1_at_default_0.5": 0.2857142857142857,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.11000000000000001,
+          "precision_failure": 0.5204081632653061,
+          "recall_failure": 0.4766355140186916,
+          "f1_failure": 0.4975609756097561,
+          "balanced_accuracy": 0.7112751793338568,
+          "tn": 1644,
+          "fp": 94,
+          "fn": 112,
+          "tp": 102,
+          "fold": 3,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.963,
+          "roc_auc": 0.8292362582407538,
+          "pr_auc": 0.48228221280761097,
+          "f1_at_default_0.5": 0.33003300330033003,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.1,
+          "precision_failure": 0.6025641025641025,
+          "recall_failure": 0.2186046511627907,
+          "f1_failure": 0.32081911262798635,
+          "balanced_accuracy": 0.6004045069820843,
+          "tn": 1711,
+          "fp": 31,
+          "fn": 168,
+          "tp": 47,
+          "fold": 4,
+          "n_fit": 6253,
+          "n_val": 1562,
+          "n_test": 1957,
+          "test_failure_rate_pct": 10.986,
+          "roc_auc": 0.7914506181080287,
+          "pr_auc": 0.4358369240329075,
+          "f1_at_default_0.5": 0.22580645161290322,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.05,
+          "precision_failure": 0.5029940119760479,
+          "recall_failure": 0.3888888888888889,
+          "f1_failure": 0.4386422976501306,
+          "balanced_accuracy": 0.670621252710805,
+          "tn": 1659,
+          "fp": 83,
+          "fn": 132,
+          "tp": 84,
+          "fold": 5,
+          "n_fit": 6250,
+          "n_val": 1564,
+          "n_test": 1958,
+          "test_failure_rate_pct": 11.032,
+          "roc_auc": 0.8165569056427264,
+          "pr_auc": 0.48234485640918556,
+          "f1_at_default_0.5": 0.30303030303030304,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        }
+      ]
+    }
+  },
+  "ablation": {
+    "hybrid_full": {
+      "n_splits": 5,
+      "fit_time_sec_total": 11.47,
+      "pooled_out_of_fold": {
+        "n_rows": 9772,
+        "roc_auc": 0.824,
+        "pr_auc": 0.4803
+      },
+      "threshold": {
+        "mean": 0.076,
+        "std": 0.0279,
+        "min": 0.05,
+        "max": 0.11,
+        "per_fold": [
+          0.07,
+          0.05,
+          0.11,
+          0.1,
+          0.05
+        ]
+      },
+      "f1_failure": {
+        "mean": 0.4216,
+        "std": 0.0638,
+        "min": 0.3208,
+        "max": 0.4976,
+        "per_fold": [
+          0.4309,
+          0.42,
+          0.4976,
+          0.3208,
+          0.4386
+        ]
+      },
+      "precision_failure": {
+        "mean": 0.5204,
+        "std": 0.0552,
+        "min": 0.4492,
+        "max": 0.6026,
+        "per_fold": [
+          0.527,
+          0.4492,
+          0.5204,
+          0.6026,
+          0.503
+        ]
+      },
+      "recall_failure": {
+        "mean": 0.3686,
+        "std": 0.0939,
+        "min": 0.2186,
+        "max": 0.4766,
+        "per_fold": [
+          0.3645,
+          0.3944,
+          0.4766,
+          0.2186,
+          0.3889
+        ]
+      },
+      "balanced_accuracy": {
+        "mean": 0.6624,
+        "std": 0.0398,
+        "min": 0.6004,
+        "max": 0.7113,
+        "per_fold": [
+          0.6621,
+          0.6676,
+          0.7113,
+          0.6004,
+          0.6706
+        ]
+      },
+      "roc_auc_per_fold": {
+        "mean": 0.8255,
+        "std": 0.0297,
+        "min": 0.7915,
+        "max": 0.8727,
+        "per_fold": [
+          0.8727,
+          0.8178,
+          0.8292,
+          0.7915,
+          0.8166
+        ]
+      },
+      "pr_auc_per_fold": {
+        "mean": 0.4848,
+        "std": 0.0392,
+        "min": 0.4358,
+        "max": 0.5456,
+        "per_fold": [
+          0.5456,
+          0.4778,
+          0.4823,
+          0.4358,
+          0.4823
+        ]
+      },
+      "f1_at_default_0.5": {
+        "mean": 0.3022,
+        "std": 0.0524,
+        "min": 0.2258,
+        "max": 0.3663,
+        "per_fold": [
+          0.3663,
+          0.2857,
+          0.33,
+          0.2258,
+          0.303
+        ]
+      },
+      "folds": [
+        {
+          "threshold": 0.07,
+          "precision_failure": 0.527027027027027,
+          "recall_failure": 0.3644859813084112,
+          "f1_failure": 0.430939226519337,
+          "balanced_accuracy": 0.662116481165994,
+          "tn": 1669,
+          "fp": 70,
+          "fn": 136,
+          "tp": 78,
+          "fold": 1,
+          "n_fit": 6254,
+          "n_val": 1565,
+          "n_test": 1953,
+          "test_failure_rate_pct": 10.958,
+          "roc_auc": 0.8726548182702489,
+          "pr_auc": 0.5455975743050173,
+          "f1_at_default_0.5": 0.3663003663003663,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.05,
+          "precision_failure": 0.44919786096256686,
+          "recall_failure": 0.39436619718309857,
+          "f1_failure": 0.42,
+          "balanced_accuracy": 0.6675683774874664,
+          "tn": 1636,
+          "fp": 103,
+          "fn": 129,
+          "tp": 84,
+          "fold": 2,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.912,
+          "roc_auc": 0.8177572238105651,
+          "pr_auc": 0.4778243410664991,
+          "f1_at_default_0.5": 0.2857142857142857,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.11000000000000001,
+          "precision_failure": 0.5204081632653061,
+          "recall_failure": 0.4766355140186916,
+          "f1_failure": 0.4975609756097561,
+          "balanced_accuracy": 0.7112751793338568,
+          "tn": 1644,
+          "fp": 94,
+          "fn": 112,
+          "tp": 102,
+          "fold": 3,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.963,
+          "roc_auc": 0.8292362582407538,
+          "pr_auc": 0.48228221280761097,
+          "f1_at_default_0.5": 0.33003300330033003,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.1,
+          "precision_failure": 0.6025641025641025,
+          "recall_failure": 0.2186046511627907,
+          "f1_failure": 0.32081911262798635,
+          "balanced_accuracy": 0.6004045069820843,
+          "tn": 1711,
+          "fp": 31,
+          "fn": 168,
+          "tp": 47,
+          "fold": 4,
+          "n_fit": 6253,
+          "n_val": 1562,
+          "n_test": 1957,
+          "test_failure_rate_pct": 10.986,
+          "roc_auc": 0.7914506181080287,
+          "pr_auc": 0.4358369240329075,
+          "f1_at_default_0.5": 0.22580645161290322,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.05,
+          "precision_failure": 0.5029940119760479,
+          "recall_failure": 0.3888888888888889,
+          "f1_failure": 0.4386422976501306,
+          "balanced_accuracy": 0.670621252710805,
+          "tn": 1659,
+          "fp": 83,
+          "fn": 132,
+          "tp": 84,
+          "fold": 5,
+          "n_fit": 6250,
+          "n_val": 1564,
+          "n_test": 1958,
+          "test_failure_rate_pct": 11.032,
+          "roc_auc": 0.8165569056427264,
+          "pr_auc": 0.48234485640918556,
+          "f1_at_default_0.5": 0.30303030303030304,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        }
+      ]
+    },
+    "structured_only": {
+      "n_splits": 5,
+      "fit_time_sec_total": 1.966,
+      "pooled_out_of_fold": {
+        "n_rows": 9772,
+        "roc_auc": 0.8197,
+        "pr_auc": 0.4825
+      },
+      "threshold": {
+        "mean": 0.09,
+        "std": 0.0387,
+        "min": 0.05,
+        "max": 0.14,
+        "per_fold": [
+          0.05,
+          0.08,
+          0.14,
+          0.12,
+          0.06
+        ]
+      },
+      "f1_failure": {
+        "mean": 0.4225,
+        "std": 0.0655,
+        "min": 0.3162,
+        "max": 0.4949,
+        "per_fold": [
+          0.445,
+          0.4257,
+          0.4949,
+          0.3162,
+          0.4309
+        ]
+      },
+      "precision_failure": {
+        "mean": 0.538,
+        "std": 0.0491,
+        "min": 0.4785,
+        "max": 0.6053,
+        "per_fold": [
+          0.4785,
+          0.5615,
+          0.5385,
+          0.6053,
+          0.5062
+        ]
+      },
+      "recall_failure": {
+        "mean": 0.3611,
+        "std": 0.093,
+        "min": 0.214,
+        "max": 0.4579,
+        "per_fold": [
+          0.4159,
+          0.3427,
+          0.4579,
+          0.214,
+          0.375
+        ]
+      },
+      "balanced_accuracy": {
+        "mean": 0.6606,
+        "std": 0.0395,
+        "min": 0.5984,
+        "max": 0.7048,
+        "per_fold": [
+          0.6801,
+          0.655,
+          0.7048,
+          0.5984,
+          0.6648
+        ]
+      },
+      "roc_auc_per_fold": {
+        "mean": 0.8221,
+        "std": 0.0239,
+        "min": 0.7997,
+        "max": 0.8621,
+        "per_fold": [
+          0.8621,
+          0.8098,
+          0.8223,
+          0.8165,
+          0.7997
+        ]
+      },
+      "pr_auc_per_fold": {
+        "mean": 0.4846,
+        "std": 0.0296,
+        "min": 0.454,
+        "max": 0.5217,
+        "per_fold": [
+          0.5217,
+          0.4694,
+          0.5104,
+          0.454,
+          0.4672
+        ]
+      },
+      "f1_at_default_0.5": {
+        "mean": 0.3267,
+        "std": 0.0399,
+        "min": 0.2656,
+        "max": 0.3776,
+        "per_fold": [
+          0.3776,
+          0.3333,
+          0.3299,
+          0.2656,
+          0.3271
+        ]
+      },
+      "folds": [
+        {
+          "threshold": 0.05,
+          "precision_failure": 0.478494623655914,
+          "recall_failure": 0.4158878504672897,
+          "f1_failure": 0.445,
+          "balanced_accuracy": 0.6800543335142659,
+          "tn": 1642,
+          "fp": 97,
+          "fn": 125,
+          "tp": 89,
+          "fold": 1,
+          "n_fit": 6254,
+          "n_val": 1565,
+          "n_test": 1953,
+          "test_failure_rate_pct": 10.958,
+          "roc_auc": 0.8621253486534854,
+          "pr_auc": 0.5217487715181253,
+          "f1_at_default_0.5": 0.3776223776223776,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.08000000000000002,
+          "precision_failure": 0.5615384615384615,
+          "recall_failure": 0.3427230046948357,
+          "f1_failure": 0.42565597667638483,
+          "balanced_accuracy": 0.6549727731927313,
+          "tn": 1682,
+          "fp": 57,
+          "fn": 140,
+          "tp": 73,
+          "fold": 2,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.912,
+          "roc_auc": 0.8097943613376637,
+          "pr_auc": 0.4694281031426598,
+          "f1_at_default_0.5": 0.3333333333333333,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.14,
+          "precision_failure": 0.5384615384615384,
+          "recall_failure": 0.45794392523364486,
+          "f1_failure": 0.494949494949495,
+          "balanced_accuracy": 0.7048062549068109,
+          "tn": 1654,
+          "fp": 84,
+          "fn": 116,
+          "tp": 98,
+          "fold": 3,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.963,
+          "roc_auc": 0.8223398363141651,
+          "pr_auc": 0.5103982289854337,
+          "f1_at_default_0.5": 0.32989690721649484,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.12000000000000001,
+          "precision_failure": 0.6052631578947368,
+          "recall_failure": 0.21395348837209302,
+          "f1_failure": 0.3161512027491409,
+          "balanced_accuracy": 0.5983659519931648,
+          "tn": 1712,
+          "fp": 30,
+          "fn": 169,
+          "tp": 46,
+          "fold": 4,
+          "n_fit": 6253,
+          "n_val": 1562,
+          "n_test": 1957,
+          "test_failure_rate_pct": 10.986,
+          "roc_auc": 0.8165247109710837,
+          "pr_auc": 0.4539854774105414,
+          "f1_at_default_0.5": 0.265625,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.060000000000000005,
+          "precision_failure": 0.50625,
+          "recall_failure": 0.375,
+          "f1_failure": 0.4308510638297872,
+          "balanced_accuracy": 0.6648249138920781,
+          "tn": 1663,
+          "fp": 79,
+          "fn": 135,
+          "tp": 81,
+          "fold": 5,
+          "n_fit": 6250,
+          "n_val": 1564,
+          "n_test": 1958,
+          "test_failure_rate_pct": 11.032,
+          "roc_auc": 0.7996661989199301,
+          "pr_auc": 0.46721952353422486,
+          "f1_at_default_0.5": 0.3271375464684015,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        }
+      ]
+    },
+    "categorical_only": {
+      "n_splits": 5,
+      "fit_time_sec_total": 1.155,
+      "pooled_out_of_fold": {
+        "n_rows": 9772,
+        "roc_auc": 0.8649,
+        "pr_auc": 0.5467
+      },
+      "threshold": {
+        "mean": 0.068,
+        "std": 0.0249,
+        "min": 0.05,
+        "max": 0.11,
+        "per_fold": [
+          0.05,
+          0.06,
+          0.11,
+          0.07,
+          0.05
+        ]
+      },
+      "f1_failure": {
+        "mean": 0.4808,
+        "std": 0.0767,
+        "min": 0.3914,
+        "max": 0.5874,
+        "per_fold": [
+          0.5874,
+          0.468,
+          0.5234,
+          0.434,
+          0.3914
+        ]
+      },
+      "precision_failure": {
+        "mean": 0.5911,
+        "std": 0.1641,
+        "min": 0.339,
+        "max": 0.785,
+        "per_fold": [
+          0.586,
+          0.5753,
+          0.785,
+          0.6699,
+          0.339
+        ]
+      },
+      "recall_failure": {
+        "mean": 0.4319,
+        "std": 0.1011,
+        "min": 0.3209,
+        "max": 0.5888,
+        "per_fold": [
+          0.5888,
+          0.3944,
+          0.3925,
+          0.3209,
+          0.463
+        ]
+      },
+      "balanced_accuracy": {
+        "mean": 0.6928,
+        "std": 0.0448,
+        "min": 0.6507,
+        "max": 0.7688,
+        "per_fold": [
+          0.7688,
+          0.6794,
+          0.6896,
+          0.6507,
+          0.6755
+        ]
+      },
+      "roc_auc_per_fold": {
+        "mean": 0.8643,
+        "std": 0.0265,
+        "min": 0.8314,
+        "max": 0.8992,
+        "per_fold": [
+          0.8992,
+          0.8458,
+          0.8762,
+          0.8687,
+          0.8314
+        ]
+      },
+      "pr_auc_per_fold": {
+        "mean": 0.5381,
+        "std": 0.0766,
+        "min": 0.4238,
+        "max": 0.6212,
+        "per_fold": [
+          0.6212,
+          0.5283,
+          0.5945,
+          0.5226,
+          0.4238
+        ]
+      },
+      "f1_at_default_0.5": {
+        "mean": 0.2119,
+        "std": 0.0513,
+        "min": 0.1223,
+        "max": 0.2531,
+        "per_fold": [
+          0.2314,
+          0.2531,
+          0.2241,
+          0.1223,
+          0.2286
+        ]
+      },
+      "folds": [
+        {
+          "threshold": 0.05,
+          "precision_failure": 0.586046511627907,
+          "recall_failure": 0.5887850467289719,
+          "f1_failure": 0.5874125874125874,
+          "balanced_accuracy": 0.7688031041580454,
+          "tn": 1650,
+          "fp": 89,
+          "fn": 88,
+          "tp": 126,
+          "fold": 1,
+          "n_fit": 6254,
+          "n_val": 1565,
+          "n_test": 1953,
+          "test_failure_rate_pct": 10.958,
+          "roc_auc": 0.8991686058697392,
+          "pr_auc": 0.6212314297094365,
+          "f1_at_default_0.5": 0.23140495867768596,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.060000000000000005,
+          "precision_failure": 0.5753424657534246,
+          "recall_failure": 0.39436619718309857,
+          "f1_failure": 0.467966573816156,
+          "balanced_accuracy": 0.6793567616162761,
+          "tn": 1677,
+          "fp": 62,
+          "fn": 129,
+          "tp": 84,
+          "fold": 2,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.912,
+          "roc_auc": 0.8458168987087177,
+          "pr_auc": 0.5282785438651284,
+          "f1_at_default_0.5": 0.2530612244897959,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.11000000000000001,
+          "precision_failure": 0.7850467289719626,
+          "recall_failure": 0.3925233644859813,
+          "f1_failure": 0.5233644859813084,
+          "balanced_accuracy": 0.6896448813223922,
+          "tn": 1715,
+          "fp": 23,
+          "fn": 130,
+          "tp": 84,
+          "fold": 3,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.963,
+          "roc_auc": 0.8762125872471312,
+          "pr_auc": 0.5944758118075901,
+          "f1_at_default_0.5": 0.22406639004149378,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.07,
+          "precision_failure": 0.6699029126213593,
+          "recall_failure": 0.3209302325581395,
+          "f1_failure": 0.4339622641509434,
+          "balanced_accuracy": 0.6507062184604705,
+          "tn": 1708,
+          "fp": 34,
+          "fn": 146,
+          "tp": 69,
+          "fold": 4,
+          "n_fit": 6253,
+          "n_val": 1562,
+          "n_test": 1957,
+          "test_failure_rate_pct": 10.986,
+          "roc_auc": 0.8687461618561931,
+          "pr_auc": 0.5226300963696444,
+          "f1_at_default_0.5": 0.1222707423580786,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.05,
+          "precision_failure": 0.3389830508474576,
+          "recall_failure": 0.46296296296296297,
+          "f1_failure": 0.3913894324853229,
+          "balanced_accuracy": 0.6755113322277502,
+          "tn": 1547,
+          "fp": 195,
+          "fn": 116,
+          "tp": 100,
+          "fold": 5,
+          "n_fit": 6250,
+          "n_val": 1564,
+          "n_test": 1958,
+          "test_failure_rate_pct": 11.032,
+          "roc_auc": 0.8314078645235362,
+          "pr_auc": 0.42381857411826074,
+          "f1_at_default_0.5": 0.22857142857142856,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        }
+      ]
+    },
+    "text_only": {
+      "n_splits": 5,
+      "fit_time_sec_total": 10.826,
+      "pooled_out_of_fold": {
+        "n_rows": 9772,
+        "roc_auc": 0.6654,
+        "pr_auc": 0.208
+      },
+      "threshold": {
+        "mean": 0.084,
+        "std": 0.027,
+        "min": 0.05,
+        "max": 0.11,
+        "per_fold": [
+          0.05,
+          0.06,
+          0.1,
+          0.11,
+          0.1
+        ]
+      },
+      "f1_failure": {
+        "mean": 0.1962,
+        "std": 0.0661,
+        "min": 0.1217,
+        "max": 0.3007,
+        "per_fold": [
+          0.3007,
+          0.2045,
+          0.1667,
+          0.1217,
+          0.1875
+        ]
+      },
+      "precision_failure": {
+        "mean": 0.3131,
+        "std": 0.0439,
+        "min": 0.259,
+        "max": 0.375,
+        "per_fold": [
+          0.3073,
+          0.259,
+          0.2907,
+          0.3333,
+          0.375
+        ]
+      },
+      "recall_failure": {
+        "mean": 0.1559,
+        "std": 0.0844,
+        "min": 0.0744,
+        "max": 0.2944,
+        "per_fold": [
+          0.2944,
+          0.169,
+          0.1168,
+          0.0744,
+          0.125
+        ]
+      },
+      "balanced_accuracy": {
+        "mean": 0.5559,
+        "std": 0.03,
+        "min": 0.528,
+        "max": 0.6064,
+        "per_fold": [
+          0.6064,
+          0.5549,
+          0.5409,
+          0.528,
+          0.5496
+        ]
+      },
+      "roc_auc_per_fold": {
+        "mean": 0.6662,
+        "std": 0.0503,
+        "min": 0.5945,
+        "max": 0.7044,
+        "per_fold": [
+          0.7013,
+          0.6315,
+          0.6993,
+          0.5945,
+          0.7044
+        ]
+      },
+      "pr_auc_per_fold": {
+        "mean": 0.2185,
+        "std": 0.0431,
+        "min": 0.1561,
+        "max": 0.2596,
+        "per_fold": [
+          0.2596,
+          0.1917,
+          0.243,
+          0.1561,
+          0.2419
+        ]
+      },
+      "f1_at_default_0.5": {
+        "mean": 0.0576,
+        "std": 0.0213,
+        "min": 0.0263,
+        "max": 0.0778,
+        "per_fold": [
+          0.0533,
+          0.0773,
+          0.0778,
+          0.0263,
+          0.0533
+        ]
+      },
+      "folds": [
+        {
+          "threshold": 0.05,
+          "precision_failure": 0.3073170731707317,
+          "recall_failure": 0.29439252336448596,
+          "f1_failure": 0.30071599045346065,
+          "balanced_accuracy": 0.6063681995775851,
+          "tn": 1597,
+          "fp": 142,
+          "fn": 151,
+          "tp": 63,
+          "fold": 1,
+          "n_fit": 6254,
+          "n_val": 1565,
+          "n_test": 1953,
+          "test_failure_rate_pct": 10.958,
+          "roc_auc": 0.701297340291176,
+          "pr_auc": 0.2595907865734318,
+          "f1_at_default_0.5": 0.05333333333333334,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.060000000000000005,
+          "precision_failure": 0.2589928057553957,
+          "recall_failure": 0.16901408450704225,
+          "f1_failure": 0.20454545454545456,
+          "balanced_accuracy": 0.5548923211494383,
+          "tn": 1636,
+          "fp": 103,
+          "fn": 177,
+          "tp": 36,
+          "fold": 2,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.912,
+          "roc_auc": 0.6314553990610329,
+          "pr_auc": 0.19170695898788867,
+          "f1_at_default_0.5": 0.07725321888412018,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.1,
+          "precision_failure": 0.29069767441860467,
+          "recall_failure": 0.11682242990654206,
+          "f1_failure": 0.16666666666666666,
+          "balanced_accuracy": 0.5408623081638579,
+          "tn": 1677,
+          "fp": 61,
+          "fn": 189,
+          "tp": 25,
+          "fold": 3,
+          "n_fit": 6255,
+          "n_val": 1565,
+          "n_test": 1952,
+          "test_failure_rate_pct": 10.963,
+          "roc_auc": 0.699291806029059,
+          "pr_auc": 0.24295573675376905,
+          "f1_at_default_0.5": 0.07782101167315175,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.11000000000000001,
+          "precision_failure": 0.3333333333333333,
+          "recall_failure": 0.07441860465116279,
+          "f1_failure": 0.12167300380228137,
+          "balanced_accuracy": 0.5280244573198409,
+          "tn": 1710,
+          "fp": 32,
+          "fn": 199,
+          "tp": 16,
+          "fold": 4,
+          "n_fit": 6253,
+          "n_val": 1562,
+          "n_test": 1957,
+          "test_failure_rate_pct": 10.986,
+          "roc_auc": 0.5945104531012202,
+          "pr_auc": 0.15610302220017158,
+          "f1_at_default_0.5": 0.02631578947368421,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        },
+        {
+          "threshold": 0.1,
+          "precision_failure": 0.375,
+          "recall_failure": 0.125,
+          "f1_failure": 0.1875,
+          "balanced_accuracy": 0.5495838117106774,
+          "tn": 1697,
+          "fp": 45,
+          "fn": 189,
+          "tp": 27,
+          "fold": 5,
+          "n_fit": 6250,
+          "n_val": 1564,
+          "n_test": 1958,
+          "test_failure_rate_pct": 11.032,
+          "roc_auc": 0.7043641302036825,
+          "pr_auc": 0.241943071018456,
+          "f1_at_default_0.5": 0.05333333333333334,
+          "commit_overlap_fit_test": 0,
+          "commit_overlap_val_test": 0
+        }
+      ]
+    }
+  },
+  "protocol": {
+    "splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)",
+    "group_key": "commit_sha",
+    "threshold_selection": "inner StratifiedGroupKFold on training rows of each fold; F1-optimal on validation",
+    "ranking_metrics": "pooled out-of-fold over all 9,772 rows",
+    "decision_metrics": "per-fold, reported as mean +/- sd"
+  }
+}

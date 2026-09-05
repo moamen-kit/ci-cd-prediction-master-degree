@@ -1,18 +1,18 @@
 {
   "Logistic Regression": {
-    "predict_time_sec": 0.044,
-    "predict_proba_time_sec": 0.075,
-    "n_test_samples": 1955,
+    "predict_time_sec": 0.06,
+    "predict_proba_time_sec": 0.07,
+    "n_test_samples": 1636,
     "metrics": {
-      "accuracy": 0.8782608695652174,
-      "balanced_accuracy": 0.8133403582718651,
-      "macro_f1": 0.6890604116546377,
-      "weighted_f1": 0.8993520681519704,
-      "macro_precision": 0.6497280966767371,
-      "macro_recall": 0.8133403582718651,
-      "failure_precision": 0.32,
-      "failure_recall": 0.7384615384615385,
-      "failure_f1": 0.44651162790697674,
+      "accuracy": 0.8001222493887531,
+      "balanced_accuracy": 0.73257006151743,
+      "macro_f1": 0.6301904791530573,
+      "weighted_f1": 0.8336795601927363,
+      "macro_precision": 0.612670585163628,
+      "macro_recall": 0.73257006151743,
+      "failure_precision": 0.2680965147453083,
+      "failure_recall": 0.6493506493506493,
+      "failure_f1": 0.3795066413662239,
       "positive_label": "failure",
       "classes_ordered": [
         "failure",
@@ -20,32 +20,34 @@
       ],
       "confusion_matrix": [
         [
-          96,
-          34
+          100,
+          54
         ],
         [
-          204,
-          1621
+          273,
+          1209
         ]
       ],
-      "roc_auc": 0.9219831401475237,
-      "pr_auc": 0.5547759735790755
-    }
+      "roc_auc": 0.8162122964754543,
+      "pr_auc": 0.36486235990285554
+    },
+    "fit_time_sec": 0.387,
+    "model_path": null
   },
   "Random Forest": {
-    "predict_time_sec": 0.151,
-    "predict_proba_time_sec": 0.121,
-    "n_test_samples": 1955,
+    "predict_time_sec": 0.158,
+    "predict_proba_time_sec": 0.17,
+    "n_test_samples": 1636,
     "metrics": {
-      "accuracy": 0.9217391304347826,
-      "balanced_accuracy": 0.7723287671232877,
-      "macro_f1": 0.731183085604592,
-      "weighted_f1": 0.9274118194971638,
-      "macro_precision": 0.7032374553324274,
-      "macro_recall": 0.7723287671232877,
-      "failure_precision": 0.43575418994413406,
-      "failure_recall": 0.6,
-      "failure_f1": 0.5048543689320388,
+      "accuracy": 0.8520782396088019,
+      "balanced_accuracy": 0.6856038698143961,
+      "macro_f1": 0.6477588569191622,
+      "weighted_f1": 0.8655246195289868,
+      "macro_precision": 0.6282082324455206,
+      "macro_recall": 0.6856038698143961,
+      "failure_precision": 0.3135593220338983,
+      "failure_recall": 0.4805194805194805,
+      "failure_f1": 0.37948717948717947,
       "positive_label": "failure",
       "classes_ordered": [
         "failure",
@@ -53,32 +55,34 @@
       ],
       "confusion_matrix": [
         [
-          78,
-          52
+          74,
+          80
         ],
         [
-          101,
-          1724
+          162,
+          1320
         ]
       ],
-      "roc_auc": 0.8962507903055847,
-      "pr_auc": 0.5357818485055524
-    }
+      "roc_auc": 0.8217878612615455,
+      "pr_auc": 0.38165875746424766
+    },
+    "fit_time_sec": 0.984,
+    "model_path": null
   },
   "XGBoost": {
-    "predict_time_sec": 0.048,
-    "predict_proba_time_sec": 0.048,
-    "n_test_samples": 1955,
+    "predict_time_sec": 0.108,
+    "predict_proba_time_sec": 0.091,
+    "n_test_samples": 1636,
     "metrics": {
-      "accuracy": 0.9478260869565217,
-      "balanced_accuracy": 0.6184088514225501,
-      "macro_f1": 0.6754098680869349,
-      "weighted_f1": 0.9332242125782524,
-      "macro_precision": 0.9301145236855803,
-      "macro_recall": 0.6184088514225501,
-      "failure_precision": 0.9117647058823529,
-      "failure_recall": 0.23846153846153847,
-      "failure_f1": 0.3780487804878049,
+      "accuracy": 0.9138141809290954,
+      "balanced_accuracy": 0.556754648859912,
+      "macro_f1": 0.5789162399715233,
+      "weighted_f1": 0.883744523447641,
+      "macro_precision": 0.84914687727432,
+      "macro_recall": 0.556754648859912,
+      "failure_precision": 0.782608695652174,
+      "failure_recall": 0.11688311688311688,
+      "failure_f1": 0.2033898305084746,
       "positive_label": "failure",
       "classes_ordered": [
         "failure",
@@ -86,16 +90,18 @@
       ],
       "confusion_matrix": [
         [
-          31,
-          99
+          18,
+          136
         ],
         [
-          3,
-          1822
+          5,
+          1477
         ]
       ],
-      "roc_auc": 0.936023182297155,
-      "pr_auc": 0.6586085339224365
-    }
+      "roc_auc": 0.8026819671556513,
+      "pr_auc": 0.41805555744086587
+    },
+    "fit_time_sec": 2.357,
+    "model_path": null
   }
 }

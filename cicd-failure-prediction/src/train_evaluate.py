@@ -42,6 +42,7 @@ from .data_preparation import (
 )
 from .hybrid_pipeline import (
     LabelEncoderForBinary,
+    build_categorical_only_preprocessor,
     build_structured_only_preprocessor,
     build_text_only_preprocessor,
     build_xgboost_with_preprocessor,
@@ -201,11 +202,18 @@ def train_all_models(
     y_train: pd.Series,
     x_test: pd.DataFrame,
     y_test: pd.Series,
-    save_dir: Path,
+    save_dir: Path | None,
 ) -> dict[str, Any]:
-    """Fit each of the three pipelines, persist them, then evaluate."""
-    save_dir = Path(save_dir)
-    ensure_dir(save_dir)
+    """Fit each of the three pipelines, persist them, then evaluate.
+
+    ``save_dir=None`` fits and evaluates without persisting, which the
+    chronological secondary evaluation uses: those models exist to produce a
+    transfer number, not to be shipped, and writing them would overwrite the
+    primary models of the same name.
+    """
+    if save_dir is not None:
+        save_dir = Path(save_dir)
+        ensure_dir(save_dir)
 
     pipelines = get_all_pipelines()
     results: dict[str, Any] = {}
@@ -221,13 +229,16 @@ def train_all_models(
         fit_time = time.perf_counter() - t0
         _LOGGER.info("%s fitted in %.1fs", name, fit_time)
 
-        model_path = save_dir / f"{slug}_full.joblib"
-        joblib.dump(pipeline, model_path, compress=JOBLIB_COMPRESSION)
-        _LOGGER.info("Saved %s → %s", name, model_path)
+        if save_dir is not None:
+            model_path = save_dir / f"{slug}_full.joblib"
+            joblib.dump(pipeline, model_path, compress=JOBLIB_COMPRESSION)
+            _LOGGER.info("Saved %s → %s", name, model_path)
+        else:
+            model_path = None
 
         eval_result = evaluate_pipeline(pipeline, x_test, y_test)
         eval_result["fit_time_sec"] = round(fit_time, 3)
-        eval_result["model_path"] = str(model_path)
+        eval_result["model_path"] = str(model_path) if model_path else None
         eval_result["_pipeline"] = pipeline
         results[name] = eval_result
 
@@ -247,7 +258,11 @@ def run_ablation_study(
     save_dir: Path,
     hybrid_xgb: Any | None = None,
 ) -> dict[str, Any]:
-    """Compare text-only / structured-only / full-hybrid XGBoost variants.
+    """Compare reduced feature sets against the full hybrid, XGBoost throughout.
+
+    Configurations: ``hybrid_full``, ``text_only``, ``structured_only`` and
+    ``categorical_only``. The last is the discriminating experiment — see
+    :func:`~src.hybrid_pipeline.build_categorical_only_preprocessor`.
 
     If ``hybrid_xgb`` is supplied it is reused as the ``hybrid_full`` row so
     we don't retrain the same model twice.
@@ -267,10 +282,11 @@ def run_ablation_study(
     hybrid_eval["_pipeline"] = hybrid_xgb
     results["hybrid_full"] = hybrid_eval
 
-    # 2) text-only
+    # 2) each reduced feature set, classifier configuration held identical
     for config_name, preprocessor in (
         ("text_only", build_text_only_preprocessor()),
         ("structured_only", build_structured_only_preprocessor()),
+        ("categorical_only", build_categorical_only_preprocessor()),
     ):
         _LOGGER.info("[ablation] %s → training XGBoost ...", config_name)
         pipeline = build_xgboost_with_preprocessor(preprocessor)
