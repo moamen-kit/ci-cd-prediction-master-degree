@@ -3,7 +3,11 @@
 ## MSc Thesis: Predicting CI/CD Pipeline Build Failures Using Machine Learning Techniques
 
 **Student:** Moamen Mohamed Aly Hussein (ID: 202401681)
-**Defense Date:** Saturday, June 7, 2026
+**Defense Date:** Friday, September 11, 2026
+
+> **⚠️ هذه نسخة محدثة.** الأرقام في النسخة القديمة (F1 = 0.59، $383k، +27pp) لم تعد صحيحة.
+> تم تصحيح منهجية التقييم، والأرقام الجديدة أقل ولكنها قابلة للدفاع عنها.
+> **لا تحفظ الإجابات القديمة** — بعضها يناقض ما هو مكتوب الآن في الرسالة.
 
 ---
 
@@ -11,11 +15,46 @@
 
 ## Golden Rules
 
-1. **اعرف أرقامك ظاهر** — F1 = 0.59, Recall = 0.62, ROC-AUC = 0.88
-2. **كن صريح في النواقص** — الـ Hybrid claim كان ضعيف، قول كده وفسره أكاديمياً
-3. **استخدم الـ "Because" technique** — كل جواب يبدأ بحقيقة وينتهي بـ "لأن..."
-4. **لو ما تعرفش، قول "I don't know but I would investigate by..."**
-5. **اربط بالتطبيق العملي** — وأنت DevOps engineer، عندك ميزة فريدة
+1. **اشرح CI/CD و GitHub في الأول** — اللجنة الفاتت ما كانتش فاهمة. ده أهم سطر في الملف ده.
+2. **اعرف أرقامك الجديدة** — F1 = 0.4216 ± 0.064 · PR-AUC = 0.480 · categorical_only = 0.4808 · $243,670
+3. **الأرقام نزلت، والسبب ده نقطة قوة مش ضعف** — أنا لقيت الغلط بنفسي وقِسته وصححته
+4. **كن صريح في النواقص** — كل limitation في الملف ده أنا قِسته، مش بس ذكرته
+5. **لو ما تعرفش، قول "I don't know, but I would investigate by..."**
+6. **اربط بالتطبيق العملي** — إنت DevOps engineer، وده ميزة حقيقية
+
+---
+
+# 🎯 Section 0: الأسئلة التأسيسية (اشرحها قبل ما تتسأل)
+
+## Q0-A: يعني إيه CI/CD؟ ويعني إيه GitHub؟
+
+**قول ده في أول العرض من غير ما حد يسأل:**
+
+> Imagine that every time a student uploads a draft chapter, the university automatically runs a formatting check, a plagiarism check, and a reference check, and emails back "accepted" or "rejected". No human does this — a machine does, every single time.
+>
+> **GitHub** is the shared filing cabinet where all the drafts are kept, recording who changed what and when. **A commit** is one saved change. **CI/CD** is that automatic checking machine: in software, it rebuilds the entire program and runs thousands of automated tests every time anyone saves a change.
+>
+> The problem is that this checking is slow and expensive — minutes to hours, real compute cost — and when it fails, a developer has to stop and come back to fix it.
+>
+> **My research asks: at the moment the change is saved, before the checking machine starts, can we predict that it is going to fail?**
+
+## Q0-B: ليه المشكلة دي صعبة؟
+
+> Only 11 percent of these checks fail. So if I simply guess "it will pass" every single time, I am right 89 percent of the time and I have learned nothing. Accuracy is therefore a useless measure for this problem, and I report F1 on the failure class, which rewards only the catching of actual failures.
+
+## Q0-C: أرقامك اتغيرت عن المرة اللي فاتت. ليه؟
+
+**ده أهم سؤال ممكن يتسأل. الإجابة دي بتقلب الموقف لصالحك:**
+
+> Yes, and I want to explain exactly why, because the change is the result I am most confident in.
+>
+> I previously reported a failure-class F1 of 0.5924. I now report 0.4216 for the same model on the same data. The model did not get worse — the measuring instrument got honest.
+>
+> Two defects were found in the evaluation protocol. First, my data has 9,772 workflow runs but only 2,835 distinct commits, so the same commit appears many times. My original split scattered near-identical copies of the same commit across both training and test, and the model was rewarded for recognising things it had already seen. Second, I selected the decision threshold by maximising F1 on the test set, and then reported that same F1 as the result — which is circular.
+>
+> I corrected both, and because each correction can be applied independently, I can attribute the difference exactly: 0.060 from the commit leakage, 0.126 from the threshold selection. The finding I did not expect is that the threshold error — the less conspicuous one — cost more than twice what the leakage did.
+>
+> I found this myself, measured it, corrected it, and published the correction inside the thesis as Section 7.4.5.
 
 ---
 
@@ -23,121 +62,87 @@
 
 ## Q1: ليه اخترت Binary Classification بدل Multi-class؟
 
-**الإجابة:**
+> The choice reflects the operational use case: at commit time the system needs to answer one question — "will this build fail?" — to inform a single decision, whether to allocate full pipeline resources or apply an intervention. A multi-class formulation predicting *which* stage fails is academically interesting but does not change that decision, since any failure justifies the same intervention. Additionally, the GitHub Actions API exposes only the final conclusion, not the failure stage, so multi-class would have required a different data source or log parsing, both outside scope.
 
-> The choice of binary classification reflects the operational use case: at commit time, the system needs to answer one question — "will this build fail?" — to inform a single decision: whether to allocate full pipeline resources or to apply some intervention like a smaller pre-flight test. A multi-class formulation (predicting WHICH stage will fail) is academically interesting but does not change the operational decision, since any failure justifies the same intervention. Additionally, the GitHub Actions API only exposes the final conclusion (success/failure), not the failure stage, so a multi-class formulation would have required either a different data source or extracting failure stages from raw logs, both of which were outside the project scope.
+## Q2: لو الـ Ablation أثبت إن الـ Structured أحسن، ليه سميته Hybrid؟
 
-## Q2: ليه استخدمت Hybrid Pipeline لو الـ Ablation Study أثبت إن الـ Structured-only أحسن؟
+**⚠️ الإجابة دي اتغيرت تماماً. النتيجة الجديدة أقوى:**
 
-**الإجابة (صريحة):**
-
-> This is a fair and important question. The empirical finding from the ablation study is that at the default 0.5 threshold, the structured-only configuration achieves a slightly higher failure-class F1 (0.38 vs 0.32 for hybrid). However, three considerations justify keeping the hybrid framing in the project:
+> The finding is now stronger than that, and it goes against my own hypothesis. Under the corrected protocol I ran a fourth configuration that the original ablation never tested: categorical-only, where the model is told nothing but the repository, the workflow name, the branch, and the trigger.
 >
-> First, on threshold-independent metrics — ROC-AUC and PR-AUC — the hybrid configuration is marginally ahead (0.884 vs 0.877 ROC-AUC), indicating that the textual modality contributes weakly to the model's ranking ability even when it harms the default decision rule.
+> That configuration achieves a failure-class F1 of 0.4808 against 0.4216 for the full hybrid, and a PR-AUC of 0.5467 against 0.4803. It wins on every metric.
 >
-> Second, after threshold optimization, the hybrid configuration becomes the winning model with F1 = 0.59, demonstrating that the text branch's contribution becomes useful when the decision rule is properly calibrated.
->
-> Third, and most importantly, this is an honest academic finding that contradicts the hypothesis with which the project began. Reporting it openly — rather than hiding it behind a more favorable framing — is itself a contribution to the literature, which has not previously documented this limitation on real GitHub Actions data with TF-IDF text features.
+> So the honest conclusion is that the hybrid hypothesis is refuted, and more comprehensively than I first reported. The text branch contributes nothing measurable, and the numerical and binary features contribute nothing beyond the categorical ones. I keep the hybrid architecture in the thesis because it is what I built and what the ablation is measured against, but I describe the system accurately: it is substantially a project-level risk estimator, not a commit-level one.
 
 ## Q3: ليه ما استخدمتش Deep Learning (BERT, Transformers)؟
 
-**الإجابة:**
+> The ablation answers this. Text in isolation scores 0.196, and adding text to the structured features produces no measurable lift at all. A more sophisticated text encoder would be optimising the branch that carries the least signal. The bottleneck is what the features can know, not how they are encoded.
+>
+> Beyond that: a transformer would require GPU compute, contradicting the non-functional requirement that the system run on commodity hardware, and it introduces training stochasticity that would complicate the reproducibility this project achieves.
 
-> Three reasons:
->
-> First, scope and reproducibility: a deep learning solution at the scale needed for transformer-based text encoding would require GPU compute, which contradicts one of the project's non-functional requirements that the system run on commodity hardware without specialized accelerators.
->
-> Second, baseline first: the project's research strategy was to establish a well-understood baseline (TF-IDF) and document its strengths and weaknesses, before any deep learning extension. This is the standard methodological order in applied machine learning, and it ensures that any future deep learning result can be compared against a credible reference point — which is exactly what this thesis provides.
->
-> Third, training stability: transformer training introduces stochasticity (dropout, initialization randomness) that complicates the bit-for-bit reproducibility the project achieves with TF-IDF. Replacing this stability with a stochastic alternative was not justified within the academic timeline.
->
-> The conclusion chapter explicitly identifies transformer-based encoders as the highest-priority future work item.
+## Q4: ليه ما عملتش Cross-Validation؟
 
-## Q4: ليه ما عملتش Cross-Validation بدل Single Train/Test Split؟
+**⚠️ الإجابة القديمة كانت بتدافع عن عدم عمل CV. دلوقتي إحنا بنعملها:**
 
-**الإجابة:**
-
-> The project does perform a form of cross-validation, but in a less common configuration: instead of k-fold CV on a single test partition, it uses dual independent splits (stratified random + chronological). This dual reporting provides two independent estimates of model performance under genuinely different conditions: the stratified split tests intrinsic discriminative ability, while the chronological split tests temporal robustness. This is arguably stronger evidence than k-fold CV alone, because k-fold rotates the same data around multiple times whereas dual-split tests two fundamentally different sampling regimes.
+> I do. The primary results are five-fold commit-grouped cross-validation.
 >
-> That said, k-fold CV would be a valuable addition for a future extension: it would provide a tighter variance estimate around the headline F1 of 0.59 and would allow standard hypothesis testing between the three classifiers.
+> I moved to it because a single split was demonstrably unsafe on this dataset. Repository identity is the model's strongest feature, and no grouped splitter balances the repository mix across folds, so the composition of any one fold moves the result substantially. Single-fold estimates of F1 varied across a range of about 20 percentage points depending on which fold was drawn. Cross-validation is therefore not a refinement here — it is a precondition for reporting a number at all.
+>
+> Every one of the 9,772 runs receives exactly one prediction, from a model that never saw any run of that run's commit.
 
 ## Q5: إزاي تأكدت إن ما فيش Data Leakage؟
 
-**الإجابة:**
+**ده بقى أقوى سؤال ليك:**
 
-> Data leakage was addressed at three levels:
+> I did not just check for it — I found some, measured it, and corrected it.
 >
-> First, post-execution feature exclusion: The features `run_duration_sec`, `run_attempt`, `status`, and `updated_at` are explicitly dropped from the feature set before training. An automated test (TC-002 in Section 7.2) asserts that no post-execution column is present in the final feature matrix, and this test fails the build if any of these columns leak back in. This is the most important leakage defense and protects the project's central scientific claim of pre-execution prediction.
+> Three kinds are addressed. **Post-execution leakage:** run duration, retry count, and status are known only after the run finishes, so they are excluded from every feature set by construction. A failing build's duration is a consequence of the failure, not a cause.
 >
-> Second, chronological split verification: An automated test (TC-001) asserts that the minimum timestamp in the chronological test set is greater than or equal to the maximum timestamp in the chronological train set. This guarantees no future commits leak into training.
+> **Identity leakage in the text:** author logins and project names were leaking into the TF-IDF features, so I built a 693-token stoplist from the author and repository vocabularies to remove them.
 >
-> Third, identity leakage in text features: The 693-token stoplist removes all observed author logins, all repository names, and known bot signatures before TF-IDF vectorization. While not perfect (Section 8.3 acknowledges residual project-vocabulary leakage), this represents a substantially more rigorous defense than the prior literature.
+> **Duplicate-commit leakage:** this is the one I found later and it was real. 88.3 percent of my original test rows shared a commit with the training set. Every split is now grouped on the commit hash, and I verify programmatically that no commit appears in more than one partition — it is recorded in `results/split_integrity.json`, which anyone can open.
+>
+> One mild case remains and I disclose it: the median thresholds, category vocabularies and stoplist are computed over all the data before splitting. They are target-independent, so the effect is mild, but they belong inside the pipeline and that is on the future-work list.
 
 ---
 
 # 🎯 Section 2: أسئلة عن النتائج (Results)
 
-## Q6: الـ F1 = 0.59 ده كويس ولا وحش؟
+## Q6: الـ F1 = 0.42 ده كويس ولا وحش؟
 
-**الإجابة:**
+> It is a measured number rather than a flattering one, and I would rather defend 0.42 that is real than 0.59 that is not.
+>
+> Three things depress it relative to published work, in order of size. First, I refuse post-execution telemetry, which is the single biggest constraint and the entire point of the contribution — a prediction made after the run cannot save the cost of the run. Second, I measure honestly: 0.171 of the figure I originally reported was protocol rather than model. Third, the task is genuinely hard — my own ablation shows most of the available signal is project-level, and commit metadata carries limited information about whether a test suite will fail.
 
-> By itself, F1 = 0.59 is a moderate score, but in context it represents strong performance for three reasons:
->
-> First, the baseline: A naive classifier that always predicts "success" would achieve F1 = 0 on the failure class. A random classifier with 11% failure prior would achieve F1 ≈ 0.20. So F1 = 0.59 is roughly three times better than chance.
->
-> Second, the literature: Published studies on similar CI/CD failure prediction tasks report F1 scores in the range 0.40-0.60, and most of those rely on post-execution features that this project deliberately excludes. Achieving 0.59 with strictly pre-execution features is therefore competitive with the state of the art under harder constraints.
->
-> Third, the practical translation: at this F1 level, the model catches 62% of true failures with 57% precision. This is sufficient to drive meaningful operational decisions, as the business-impact analysis demonstrates ($383,000 annual savings under the documented scenario).
+## Q7: ليه الـ Recall أعلى من الـ Precision؟
 
-## Q7: ليه الـ Recall بتاعك أعلى من الـ Precision؟ ده مش وحش؟
+> It depends on which model. Logistic Regression has recall 0.569 against precision 0.353 — a high-vigilance posture. XGBoost inverts it, at precision 0.520 and recall 0.369.
+>
+> Which is preferable is an economic question, not a statistical one, and I answer it in the business analysis. Because a missed failure costs $18.81 and a false alarm $2.50, the cost model structurally rewards recall. But that ratio is assumed, not measured, so I report the break-even false-alarm cost instead: Logistic Regression stops paying for itself above $10.27, XGBoost above $20.41.
 
-**الإجابة:**
+## Q8: إيه الفرق بين الـ splits اللي عندك؟
 
-> The recall-precision balance is a deliberate operational choice, not a model defect. At threshold = 0.06, the optimized XGBoost has recall = 0.62 and precision = 0.57.
+> There are three, and only two are used for results.
 >
-> The choice reflects the cost asymmetry: a missed failure (false negative) costs an organization roughly $18.75 in developer time plus compute, while a false alarm (false positive) costs about $2.50 in triage time. This 7.5x cost ratio justifies a decision rule that errs on the side of higher recall. The threshold optimization explicitly accounts for this when using the business-cost objective (Section 7.4.4).
+> **Commit-grouped cross-validation** is the primary. It guarantees that every run of a given commit lands on one side of the split, which is required because my rows are runs but my features describe commits.
 >
-> An organization with a different cost structure could trivially re-calibrate: the threshold is a hyperparameter that can be tuned without retraining, and the threshold sweep curves (Figure 7.8) explicitly show the trade-off across the full threshold range.
+> **Per-repository chronological** is the secondary deployment check. Each project is cut at its own point in time, so for all 18 projects the model trains on that project's past and is tested on its future.
+>
+> **The stratified random split** is retained but never used for results. It exists solely to demonstrate the defect it contains: 913 commits shared between its training and test sets. Keeping it lets the thesis quantify what that defect was worth.
 
-## Q8: إيه الفرق بين الـ Stratified و Chronological splits؟ ليه عملت الاتنين؟
+## Q9: ليه الـ XGBoost اتحسن كده بعد الـ threshold tuning؟
 
-**الإجابة:**
+**⚠️ الرقم القديم (+27pp) كان غلط:**
 
-> The stratified random split partitions the data 80/20 while preserving the 89:11 class ratio in both partitions. This split isolates the classifier's intrinsic discriminative ability from any confound introduced by temporal distribution shift.
+> The improvement is real but much smaller than I first reported. Under honest selection it is +9.3 percentage points, from 0.304 at the default threshold to 0.397 at the selected one.
 >
-> The chronological split sorts the data by commit timestamp and uses the most recent 20% as the test set. This split simulates a production deployment in which a model is trained on historical data and applied to future commits.
+> The +27 points I reported in June came from choosing the threshold on the test set and then reporting the score on that same test set. A quantity selected to maximise a value cannot also be an unbiased estimate of it. The threshold is now chosen on a validation partition carved from the training data, and I measured the residual optimism that the old procedure would still have bought: about 0.009 of F1 for XGBoost.
 >
-> Reporting both is important because they answer different questions: the stratified split answers "how well does this model classify, in principle?" while the chronological split answers "how well does this model classify in deployment?". On this dataset, the two answers happen to agree within ±3 percentage points of F1, which is a positive finding — it means the model is robust to the temporal drift observed in the underlying repositories.
->
-> Reporting only one split would either inflate or deflate the expected performance depending on which is chosen, and would deny the reader the information needed to assess deployment readiness.
+> The methodological lesson survives, and is arguably strengthened: threshold selection is powerful, and precisely because it is powerful it must be done on data you do not then report on.
 
-## Q9: ليه الـ XGBoost كان فاشل أولاً وبقى أحسن واحد بعد threshold tuning؟
+## Q10: ليه ما عملتش Hyperparameter Tuning؟
 
-**الإجابة:**
-
-> XGBoost is fundamentally a strong ranking model on this task — its ROC-AUC of 0.884 was already the highest of the three classifiers before any threshold tuning. However, its raw probability outputs are systematically biased toward the majority class, even with `scale_pos_weight = 8.12` applied to compensate for the imbalance.
->
-> The default 0.5 threshold is implicitly calibrated for a balanced class prior. Under the actual 89:11 prior, applying this default to XGBoost's biased probabilities means very few predictions cross into the failure class — only 20% of true failures are flagged. The model has good information but a miscalibrated decision rule.
->
-> Threshold tuning moves the decision boundary to where the model actually has confident failure predictions. For XGBoost, this is at threshold = 0.06 — an order of magnitude below the default — and the result is a 27 percentage point improvement in F1.
->
-> The lesson generalizes: for imbalanced binary classification, threshold calibration should be treated as a first-class hyperparameter, not as a deployment-time concern. Logistic Regression and Random Forest also benefited from threshold tuning, though less dramatically (+6 and +3 percentage points respectively).
-
-## Q10: ليه ما عملتش Hyperparameter Tuning للموديلز؟
-
-**الإجابة:**
-
-> The project applies sensible default hyperparameters from the standard machine learning practice — `n_estimators=200`, `max_depth=25` for Random Forest; `learning_rate=0.1`, `n_estimators=300`, `max_depth=8` for XGBoost — without an exhaustive grid search.
->
-> The decision was made on three grounds:
->
-> First, scope: a full grid search across three classifiers with reasonable parameter ranges would have required ~1,000 model fits at 30 seconds each, or roughly 8 hours of additional compute time. This is feasible but was deprioritized in favor of the ablation study and threshold optimization, both of which proved more impactful.
->
-> Second, returns: Empirically, threshold tuning produced a 27 percentage point gain in F1 from a single hyperparameter, far exceeding what typical grid search yields. Spending time on the most impactful hyperparameter first is a sound strategy.
->
-> Third, transferability: The published hyperparameters used here are well-documented and standard. A future researcher reproducing the work knows exactly what was used and could easily run their own grid search starting from these defaults.
->
-> If asked to extend the project, a Bayesian hyperparameter search over a constrained budget would be the natural next step.
+> A limited amount was done, but I deliberately did not invest heavily, and the ablation explains why. The gap between feature sets — 0.196 for text-only against 0.481 for categorical-only — is far larger than anything hyperparameter search would recover. The variation across cross-validation folds is ±0.06 to ±0.08, so any tuning gain smaller than that would not be distinguishable from noise on this sample size. Tuning against fold noise is how models get overfitted to a validation set.
 
 ---
 
@@ -145,113 +150,63 @@
 
 ## Q11: لو الـ Text features ضعيفة، ليه ما شيلتهاش؟
 
-**الإجابة:**
+> Because removing them would have hidden the finding rather than reporting it. The ablation is the experiment; the hybrid is what it is measured against. Reporting that a component I built contributes nothing is the result, and deleting the component would delete the evidence.
+>
+> For a production deployment I would recommend the categorical-only configuration: it performs better, it is far cheaper to compute, and it needs no text pipeline or stoplist at all.
 
-> Three reasons to keep them:
->
-> First, the ranking contribution: ROC-AUC and PR-AUC are marginally higher with text included (0.884 vs 0.877). This represents weak but non-zero contribution to the model's ranking ability.
->
-> Second, threshold-optimized performance: After threshold tuning, the hybrid model achieves F1 = 0.59, beating the structured-only configuration. The text branch becomes useful when the decision rule is properly calibrated.
->
-> Third, future-proofing: The infrastructure for text features (cleaning pipeline, stoplist, TF-IDF vectorizer) is in place. A future extension can replace TF-IDF with a transformer-based encoder by changing a single class — the rest of the pipeline carries over. Removing the text branch entirely would lose this capability.
->
-> That said, the thesis Discussion (Section 8.3) honestly acknowledges that the unconditional hybrid claim is not supported. If asked for the strongest single-modality baseline, I would point to structured-only XGBoost at F1 = 0.38, which remains a credible reference point.
+## Q12: ليه الكلمات اللي طلعت مش زي المتوقع (fix, bug, revert)؟
 
-## Q12: ليه الكلمات اللي طلعت في الـ Failure vocabulary مش زي اللي توقعتها (fix, bug, revert)؟
-
-**الإجابة:**
-
-> This was one of the most interesting empirical findings of the project, and it has implications beyond the specific dataset.
+> The failure-discriminative vocabulary is timezone, utc, thresholds, borrow — not the emotional vocabulary one expects. The reason is that developers do not know at commit time that their build will fail. If they knew, they would fix it first. So the signal is not "the developer was worried", it is "this commit touched a fragile area of the code".
 >
-> The original hypothesis assumed that developers would write commit messages like "fix the broken authentication" or "revert the bad migration," with vocabulary that signals failure-causing intent. The actual most-discriminative tokens for failures are things like "timezone", "utc", "thresholds", "inodesfree", "borrow", and "stderr" — terms that describe what part of the codebase the commit touches, not the developer's expectation of build outcome.
->
-> The interpretation is straightforward: at commit time, the developer does not know whether the build will fail. They describe the change neutrally. The failure signal in commit text comes from the topic of the change — clock and timezone handling is notoriously flaky, threshold tests have brittle assumptions, Rust borrow-checker code involves subtle correctness traps — rather than from the developer's intent.
->
-> This finding contradicts an assumption that runs through some of the prior literature, namely that bug-fix vocabulary is the primary text signal. For pre-execution prediction, what matters is what the commit touches, not what the developer thinks of it.
+> That said, the ablation shows these tokens add nothing once project identity is known, so this is an interesting observation about the data rather than a driver of the model.
 
 ## Q13: مش ممكن الـ Repository feature هي اللي عاملة كل الشغل؟
 
-**الإجابة:**
+**⚠️ الإجابة هنا "أيوة، وأنا قِستها":**
 
-> This is a sharp question and deserves a direct answer. Looking at the feature importance chart (Figure 7.7), the top 30 features include both repository categorical encodings (e.g., `repository_prisma/prisma` at rank 3) and TF-IDF text tokens (e.g., `dotenv` at rank 1). The categorical and text features are both contributing, but the text tokens contribute more in aggregate.
+> Substantially yes — and I ran the experiment that establishes it rather than waiting to be asked.
 >
-> A cleaner test would be: train the model with repository excluded, and see how much performance drops. The ablation study didn't include this specific variant, but the structured-only configuration includes repository and achieves F1 = 0.38 alone. If repository were doing "all the work," the structured-only configuration would already approach the hybrid's 0.59 F1 score — but it doesn't.
+> A categorical-only model, given nothing but repository, workflow, branch and trigger, outperforms my full model on every metric. The mechanism is visible in the data: failure rates vary 38-fold across the eighteen projects, from zero for elastic/elasticsearch, which contributes 600 runs and not one failure, to 38.3 percent for prisma/prisma. A one-hot encoding of repository identity therefore encodes a strong prior before any property of the individual commit is consulted.
 >
-> So repository identity is a strong feature, possibly the strongest single categorical feature, but it is not the sole driver of model performance. This is consistent with the per-repository failure rate analysis in Section 7.4 (Figure 7.2), which shows that repository identity itself carries information.
+> I report this as a finding rather than a failure, because it tells you what the useful deployment is: project-level and workflow-level triage, not per-commit advice to a developer. It also bounds the claim honestly — the system cannot distinguish two commits to the same repository on the same branch.
 
 ---
 
 # 🎯 Section 4: أسئلة عن الـ Dataset
 
-## Q14: ليه اخترت 18 repo بالظبط؟ ليه مش 100؟
+## Q14: ليه 18 repo بالظبط؟
 
-**الإجابة:**
-
-> The choice of 18 repositories was a deliberate trade-off between three factors: diversity, statistical sufficiency, and collection cost.
->
-> Diversity: The 18 repos cover six programming languages (JavaScript, Python, Rust, Ruby, TypeScript, C++) and multiple project types (web frameworks, ML libraries, language runtimes, infrastructure). This breadth ensures that the model is not overfit to a single technology stack.
->
-> Statistical sufficiency: With 600 workflow runs per repository (capped during collection) and 18 repositories, the dataset contains 9,772 records after filtering. This is enough to produce credible statistical estimates with binomial confidence intervals of ±1-2 percentage points on the headline metrics.
->
-> Collection cost: The GitHub Actions API enforces a rate limit of 5,000 authenticated requests per hour, and each workflow run requires two API calls (one for the run, one for the commit). Collecting from 100 repositories at 600 runs each would require ~120,000 API calls and roughly 24 hours of wall-clock time, with no proportional gain in result quality.
->
-> The future-work section explicitly identifies dataset scale as a high-priority extension. With more time, the same methodology could be applied to a 100-repository or 1000-repository dataset.
+> They are large, active, public projects spanning six languages — JavaScript, Python, Rust, C, Ruby, Java — chosen so the result is not an artifact of one language or one team's conventions. They are public so the dataset is redistributable and the work reproducible. The constraint was API rate limits: collection takes roughly two hours, and 18 projects at 600 runs each gave close to 10,000 runs, which was the target.
 
 ## Q15: ليه ما اخترتش corporate dataset؟
 
-**الإجابة:**
+> Access. Corporate CI/CD data is rarely shareable, and a thesis whose dataset cannot be published is not reproducible. I chose reproducibility over representativeness and I disclose the trade: corporate environments differ in commit cadence, branch policy and tooling, and transfer is unverified.
 
-> Two reasons:
->
-> First, access: Corporate CI/CD data is by definition proprietary. Obtaining it would require a data-use agreement with a specific company, which would impose timeline risk on the project and would prevent the dataset from being shared with the academic community. The open-source GitHub Actions data, by contrast, is collectible by any researcher and reproducible without permissions.
->
-> Second, generalization: The 18-repository sample spans companies (Facebook, Microsoft, Google), foundations (Python, Rust), and community projects (Express, NestJS), providing a credible cross-section of how CI/CD pipelines fail in practice. While the model's transfer behavior to a specific corporate environment is unverified — and this is explicitly noted as a limitation in Section 8.3 — the open-source data provides a defensible academic foundation.
->
-> A corporate dataset validation is identified as a future-work item in Section 9.3.
+## Q16: الـ Class Imbalance 89:11 هيكون مختلف في corporate setting؟
 
-## Q16: الـ Class Imbalance 89:11 ده مش هيكون مختلف في corporate setting؟
-
-**الإجابة:**
-
-> Probably, but the direction is unclear. Industry surveys (State of DevOps Report, GitHub's Octoverse) suggest that corporate CI/CD pipelines have failure rates ranging from 5% to 25% depending on the team's engineering maturity and the strictness of pre-merge checks. So the 11% observed here is well within the typical range, but a specific corporate environment could differ.
->
-> The methodology is robust to this variation. The class weighting (`class_weight='balanced'`, `scale_pos_weight`) and the threshold optimization both adapt automatically to whatever class ratio is observed in the training data. A re-deployment on a corporate dataset would re-tune these without changing the architecture.
->
-> The one thing that would change materially is the optimal threshold: for a balanced 50:50 dataset, the F1-optimal threshold for XGBoost would not be 0.06 but somewhere near 0.5. The threshold is dataset-specific, which the thesis emphasizes in Section 7.4.4.
+> Almost certainly, and in both directions. A team with strict pre-merge gates would see fewer failures; a team with flaky infrastructure would see more. This matters operationally because my decision thresholds are calibrated to an 11 percent prior and would need recalibration. That is a strength of the threshold work rather than a weakness: the calibration step is explicit, documented, and takes seconds to redo.
 
 ---
 
 # 🎯 Section 5: أسئلة عن الـ Business Impact
 
-## Q17: الـ $383k savings ده رقم حقيقي ولا مفتعل؟
+## Q17: الـ $243,670 ده رقم حقيقي؟
 
-**الإجابة:**
+**⚠️ الرقم القديم كان $383,000 وكان مبني على حسابات غلط:**
 
-> The number is an estimate, not a precise forecast, and the thesis is explicit about this in Section 7.4.5. The estimate depends on five documented assumptions:
+> It is an order-of-magnitude estimate under stated assumptions, and I would not defend it to the dollar.
 >
-> First, scale: 1,000 pipeline executions per day. This is representative of a mid-sized engineering organization but would scale linearly with team size.
+> The previous figure of $382,802 was wrong for two structural reasons, not just imprecise. It assumed a 30 percent failure rate against the 11 percent actually observed, and it charged nothing at all for false alarms. That second omission meant the estimated saving was a function of recall alone, which is why the earlier work reported the odd result that its tuned model saved *less* than its untuned one.
 >
-> Second, failure rate: 11%, derived from the observed data. Different organizations might see different rates.
+> The rebuilt model uses the observed 11 percent and prices false alarms at $2.50. The estimate is $243,670 per year net.
 >
-> Third, compute cost: $0.008 per minute, taken from GitHub's published pricing for standard Linux runners.
->
-> Fourth, developer time cost: $75 per hour fully loaded, derived from typical industry surveys.
->
-> Fifth, false alarm cost: $2.50 per false flag, derived from estimated triage time.
->
-> Adjusting any one of these by 50% changes the headline number by roughly $100k, so the range $250k-$500k is a more honest summary than the point estimate. The contribution is not the specific dollar figure but the methodology for computing it: any organization can plug in its own assumptions and compute its own version.
+> But the honest answer is that I do not lead with that number. I lead with the break-even: the false-alarm cost at which each configuration stops paying for itself. For my selected model that is $20.41. That is a more defensible basis for a decision than a point estimate resting on a ratio I assumed rather than measured.
 
-## Q18: ليه الـ False Alarm cost ($2.50) أقل بكتير من الـ Missed Failure cost ($18.75)?
+## Q18: ليه الـ False Alarm cost أقل بكتير من الـ Missed Failure cost؟
 
-**الإجابة:**
-
-> The asymmetry reflects two empirical observations from operational software engineering practice.
+> Because they are different events. A false alarm costs an operator about two minutes to dismiss. A missed failure costs the wasted compute plus roughly fifteen minutes of a developer's context switching, which is the expensive part.
 >
-> A false alarm — the model flags a build that turns out to succeed — costs only the time required for an operator or developer to glance at the alert, recognize it as a false positive, and dismiss it. This is typically a 1-2 minute interruption at a $75/hour rate, hence approximately $2.50.
->
-> A missed failure — the model fails to flag a build that turns out to fail — costs the full developer context-switching penalty plus the wasted compute. The context-switching literature (Eyrolle and Cellier 2000) places this at 10-20 minutes of recovered focus time, hence approximately $18.75.
->
-> The 7.5x ratio justifies a decision rule that errs toward higher recall at the cost of lower precision. This is the standard cost-asymmetric treatment in imbalanced binary classification, and it is the basis for the threshold optimization's business-cost objective (Section 7.4.4).
+> The ratio is 7.5 to 1, and I want to be explicit that this ratio drives the entire ranking of configurations — it is what makes the cost model reward recall. Since I assumed it rather than measured it, Table 7.6 reports the break-even cost for each configuration so a reader can substitute their own assumption. The configuration with the highest estimated saving turns out to be the least robust to that assumption being wrong.
 
 ---
 
@@ -259,106 +214,65 @@
 
 ## Q19: ليه TF-IDF مش Word2Vec أو GloVe؟
 
-**الإجابة:**
-
-> TF-IDF was chosen as the textual baseline for three reasons:
->
-> First, interpretability: TF-IDF produces per-token coefficients that can be directly inspected. The discriminative vocabulary analysis in Section 6.2.2 is only possible because TF-IDF features are recognizable English tokens with explicit weights. Word2Vec and GloVe produce dense vector embeddings that are opaque without dimensionality reduction.
->
-> Second, no pretrained dependency: TF-IDF learns from the training data directly. Word2Vec and GloVe typically require either training on a large external corpus or downloading pretrained vectors, both of which complicate reproducibility.
->
-> Third, performance: For specialized domains like commit messages, where the vocabulary is technical and small (~5,000 unique tokens after cleaning), TF-IDF is often competitive with pretrained embeddings. Pretrained embeddings shine on broad-domain English, not on narrow technical vocabularies.
->
-> Future work item #1 in the conclusion chapter is to replace TF-IDF with a domain-pretrained encoder like CodeBERT, which would address all three of these issues simultaneously while bringing transformer-quality representations.
+> TF-IDF is deterministic, interpretable, and needs no pretrained artifact, which supports the reproducibility requirement. And the ablation retrospectively justifies not investing further: the text branch contributes nothing measurable, so a richer text representation would have been effort spent on the weakest signal in the system.
 
 ## Q20: ليه XGBoost مش LightGBM أو CatBoost؟
 
-**الإجابة:**
+> XGBoost is the most widely benchmarked of the three, which makes the result easier to compare against published work, and it handles sparse matrices natively — my fused feature matrix is about 3,090 columns and mostly sparse.
+>
+> I would add that under the corrected evaluation the three classifiers I did compare are statistically indistinguishable on F1, differing by less than 0.01 while the cross-fold standard deviation exceeds 0.06. That strongly suggests the choice of gradient-boosting library is not where the remaining performance is.
 
-> XGBoost was selected as the gradient boosting representative because:
->
-> First, ecosystem maturity: XGBoost has the most documentation, the largest user base, and the most stable API of the three. For an academic project that prioritizes reproducibility, this matters.
->
-> Second, scikit-learn compatibility: XGBoost integrates seamlessly with scikit-learn's Pipeline and ColumnTransformer abstractions, which is the architectural foundation of the project. LightGBM has a compatible wrapper but it is slightly less idiomatic. CatBoost's scikit-learn API is the least mature of the three.
->
-> Third, baseline status: In the published literature on CI/CD failure prediction, XGBoost is the most commonly cited gradient boosting algorithm. Using it makes the project's results directly comparable with the prior art.
->
-> Empirically, all three algorithms typically achieve very similar performance on tabular tasks, so the choice is more about ecosystem fit than raw performance. A future extension comparing all three would be a defensible academic contribution.
+## Q21: ليه scikit-learn مش PyTorch أو TensorFlow؟
 
-## Q21: ليه استخدمت scikit-learn مش PyTorch أو TensorFlow؟
-
-**الإجابة:**
-
-> The project uses scikit-learn because the architecture is classical machine learning (TF-IDF + Logistic Regression / Random Forest / XGBoost) rather than deep learning. scikit-learn is the de facto standard for classical ML in Python, and it provides the ColumnTransformer abstraction that is central to the hybrid architecture.
->
-> If the project were to incorporate deep learning components — for example, transformer-based text encoders as identified in future work — PyTorch would be the natural choice for those components, with the deep model embedded into a scikit-learn pipeline via a custom transformer wrapper. The current architecture is designed to accommodate this extension cleanly.
+> The task is tabular with a small text branch, which is the regime where gradient-boosted trees remain state of the art. A deep learning framework would add GPU dependencies and training stochasticity for no expected gain — and the ablation confirms the text branch, the only part a neural encoder would improve, contributes nothing.
 
 ---
 
 # 🎯 Section 7: الأسئلة الصعبة (Tricky Questions)
 
-## Q22: لو حد عاوز يستخدم النظام بتاعك، عملياً إزاي يدمجه؟
+## Q22: عملياً إزاي حد يدمج النظام ده؟
 
-**الإجابة (تطبيقية):**
-
-> The trained model is a single joblib file under 3 MB. To deploy it as an operational predictor, the following architecture would suffice:
+> As a webhook on the commit-creation event. The model is a single joblib file under three megabytes, loaded into a Python process, queried with sub-millisecond latency. It returns a failure probability, and downstream tooling decides what to do with it — route to a smaller pre-flight suite, defer to off-peak capacity, or flag for review.
 >
-> 1. A lightweight Python web service (Flask or FastAPI) loads the joblib file on startup.
-> 2. The service exposes a single POST endpoint accepting a JSON payload with the seventeen feature columns (repository, workflow name, branch, event, lines changed, commit message, etc.).
-> 3. The handler reconstructs a single-row DataFrame, passes it through the data preparation function from `src/data_preparation.py`, calls `pipeline.predict_proba(X)[0, 1]`, and compares against the threshold of 0.06.
-> 4. The response returns a JSON object with the failure probability and the binary recommendation.
+> Given the ablation, I would be honest with an adopter about what they are buying: reliable project-level and workflow-level risk triage, not per-commit advice to an individual developer.
+
+## Q23: إيه أكبر مفاجأة في المشروع؟
+
+> Two, and both changed what the thesis says.
 >
-> The service can be triggered by a GitHub webhook on the `push` or `pull_request` events. End-to-end latency from commit to recommendation would be under 100 milliseconds (the model itself runs in ~1 ms; the remainder is HTTP overhead).
+> The first is that a model told nothing but which project, workflow and branch beats the model I spent the project building. That refuted my hypothesis.
 >
-> As a DevOps engineer professionally, I would deploy this as a Docker container behind an nginx reverse proxy with SSL, integrate it into the CI/CD provider's webhook configuration, and monitor it with standard observability tooling. The trained model is small enough that no specialized infrastructure is required.
+> The second is the one I consider most transferable: when I decomposed my own inflated result, choosing the decision threshold on the test set cost 0.126 of F1, while the data leakage everyone looks for cost 0.060. The less conspicuous error was worth more than twice the conspicuous one. Both defects leave every individual step of the analysis looking correct, and neither is visible in the reported metrics.
 
-## Q23: إيه أكبر مفاجأة قابلتك في المشروع؟
+## Q24: لو رجعتلك وقت زيادة، إيه اللي كنت هتعمله مختلف؟
 
-**الإجابة (شخصية وحقيقية):**
-
-> Two surprises stand out.
+> Three things, in order.
 >
-> The first was the failure of the initial synthetic dataset. I started the project on a publicly available 45,000-row dataset of CI/CD failure logs, and only after a full exploratory data analysis phase did I discover that the columns were statistically independent of one another — essentially random noise dressed up as data. Recovering from this required pivoting to real GitHub Actions data collection, which cost two days of project timeline but produced the credible foundation for everything that followed. The lesson: data quality is the rate-limiting step in applied ML, and synthetic data is not a substitute for real data.
+> First, I would have grouped the split on the commit from the beginning. The defect existed because I did not ask early enough what a single row actually represents.
 >
-> The second surprise was the threshold optimization result. At F1 = 0.32, XGBoost looked like a failed model. The 27-percentage-point improvement from a single-line threshold change was an order of magnitude larger than anything else I tried — larger than the gain from feature engineering, larger than the gain from class weighting, larger than what hyperparameter tuning typically yields. The methodological lesson is that probability calibration deserves first-class evaluation attention, not deferral to deployment.
-
-## Q24: لو رجعتلك ساعتين بس، إيه اللي كنت هتعمله مختلف؟
-
-**الإجابة:**
-
-> The most impactful change I would make is to add a test-set hyperparameter holdout. Currently, the threshold optimization is performed on the same test set on which the final metrics are reported. This is acceptable because the threshold is a single hyperparameter and the test set is independent of training, but it would be cleaner methodologically to use a separate validation set for threshold selection and reserve the test set strictly for final reporting.
+> Second, I would move the preprocessing — the medians, the vocabularies, the stoplist — inside the pipeline so it fits on training folds only. It is a mild issue but it is the one methodological weakness I know about and have not fixed.
 >
-> If I had more than two hours, I would also run k-fold cross-validation to produce confidence intervals around the F1 estimate, and I would add SHAP-value-based explanations for individual predictions to support the human-interpretability surface of any future deployment.
+> Third, I would collect differently. Capping at 600 runs per repository is what limits my temporal evaluation to a short horizon. Sampling a fixed time window per project instead of a fixed count would have let me test whether the model survives months of drift rather than hours.
 
-## Q25: مين أكبر منافس للنظام بتاعك؟ ولماذا أنت أحسن؟
+## Q25: مين أكبر منافس، وليه إنت أحسن؟
 
-**الإجابة (بصراحة وثقة):**
+**⚠️ ما تقولش إنك أحسن. الإجابة دي أقوى:**
 
-> The closest published academic work is Patel 2019, which uses a similar tri-classifier approach (LR, RF, XGBoost) on CI/CD failure prediction. Patel's work is methodologically sound but uses post-execution telemetry as its primary input. This makes Patel's predictions useful for retrospective analysis but not for proactive resource conservation, since by the time the predictor has its input, the resources have already been spent.
+> I would not claim to be better, and I would be suspicious of anyone who did on these numbers.
 >
-> The closest industrial offering is Datadog's CI Visibility product, which provides post-execution observability over pipeline runs. It is excellent for visualization and trend analysis but does not produce per-commit predictive estimates.
+> The closest prior work is Patel 2019 and, further back, Hassan and Zhang 2006. Published figures in this space sit around 0.40 to 0.60 F1, and mine is 0.42. But those numbers are not comparable, for two reasons. Most of that work consumes post-execution telemetry, which I deliberately refuse. And most published papers do not state whether they grouped their splits or where they selected their threshold — and I measured, on my own data, that those two choices together are worth 0.171 of F1, which is larger than the entire spread between the published results.
 >
-> The differentiation of this project is the strict pre-execution constraint. By using only features available at commit time, the model can drive operational decisions that conserve resources rather than diagnose their loss. This is, to the best of my knowledge, the strongest published result for the pre-execution setting on real GitHub Actions data.
->
-> Whether this is "better" than Patel or Datadog depends on the use case. For retrospective analysis, Patel's post-execution approach reports higher F1 scores. For proactive resource conservation — the use case this project targets — pre-execution prediction is the only viable approach.
+> So my contribution is not a better number. It is a number that can actually be interpreted, accompanied by the protocol and the verification artifacts to check it.
 
 ---
 
 # 🎯 Section 8: أسئلة عن الـ Future Work
 
-## Q26: لو هتكمل المشروع PhD، إيه أول حاجة تعملها؟
+## Q26: لو هتكمل PhD، إيه أول حاجة؟
 
-**الإجابة:**
-
-> Three priorities, in order:
+> Given what the ablation found, the priority is not a better model — it is better features. The system is currently a project-level risk estimator because commit metadata carries little commit-level signal. To get genuine per-commit discrimination I would need features about *what the change touches*: which files, their historical failure rates, test-to-code coupling, dependency changes. That is the direction with the most headroom.
 >
-> First, replace TF-IDF with a transformer-based encoder. Specifically, I would experiment with CodeBERT (pre-trained on source code) and Sentence-BERT (general-purpose semantic embeddings) and compare them empirically against TF-IDF. My hypothesis is that the unconditional hybrid claim, which the present project refuted with TF-IDF features, would be restored with a richer text representation that captures semantic similarity rather than surface-form lexical overlap.
->
-> Second, scale the dataset to one million workflow runs across hundreds of repositories. This would tighten the variance on the headline metrics and would surface effects that are invisible at the present sample size, such as language-specific failure patterns and repository-archetype clusters.
->
-> Third, validate on a corporate proprietary dataset under an appropriate data-use agreement. This would establish whether the methodology transfers across the open-source/corporate boundary, which is the most uncertain generalization in the present results.
->
-> Beyond these three, I would add online learning capability, SHAP-value explanations, and a live operationalized deployment as practical follow-ups.
+> Second would be a corporate validation study, and third a live deployment measuring whether developers actually act on the predictions.
 
 ---
 
@@ -366,72 +280,61 @@
 
 ## الأرقام الأساسية
 
-- **Dataset:** 9,772 real GitHub Actions workflow runs from 18 repos
-- **Class balance:** 89% success / 11% failure (8.12:1 imbalance)
-- **Train/test split:** 7,817 / 1,955 (stratified)
-- **Features:** 5 numerical + 4 categorical + 6 binary + 1 text = 16 total
-- **Feature matrix:** ~3,090 columns after one-hot + TF-IDF
-- **Winning model:** XGBoost @ threshold = 0.06
-- **F1 (failure):** 0.5924 stratified, 0.6207 chronological
-- **ROC-AUC:** 0.884
-- **PR-AUC:** 0.587
-- **Annual savings:** ~$383,000 (mid-sized org, 1000 builds/day)
+| الرقم | القيمة |
+|---|---|
+| Rows / commits | 9,772 runs · 2,835 commits · 3.45 runs per commit |
+| Repositories | 18 |
+| Class balance | 89.03% success / 10.97% failure |
+| **XGBoost failure F1** | **0.4216 ± 0.0638** |
+| XGBoost PR-AUC / ROC-AUC | 0.480 / 0.824 |
+| **categorical_only F1** | **0.4808 ± 0.0767** (الأفضل) |
+| text_only F1 | 0.1962 |
+| Selected threshold | 0.076 (XGB) · 0.538 (RF) · 0.646 (LR) |
+| Chronological F1 | 0.399 |
+| **Annual net saving** | **$243,670** |
+| Break-even false-alarm cost | $20.41 (XGB) · $10.27 (LR) |
+| Attribution | −0.060 leakage · −0.126 threshold · +0.015 CV |
+| Repository failure spread | 38× (0.0% إلى 38.3%) |
 
 ## النقاط الذهبية (Golden Points)
 
-1. **Pre-execution prediction** — distinguishes from Patel 2019 and prior art
-2. **Dual-split evaluation** — stratified + chronological for honest robustness
-3. **Ablation study** — empirical test of the hybrid claim
-4. **Threshold optimization** — 27pp F1 improvement from single hyperparameter
-5. **Identity-leakage defense** — 693-token stoplist for TF-IDF
-6. **Full reproducibility** — fixed seed 42, all artefacts committed
-7. **Honest negative result** — hybrid claim refuted at default threshold, openly reported
-8. **Business impact** — $383k/year estimate with documented assumptions
+1. اشرح CI/CD و GitHub في الأول — من غير ما حد يسأل
+2. الموديلات التلاتة **مش مختلفين إحصائياً** — ما تقولش "الفايز"
+3. `categorical_only` بيكسب الكل — ودي أهم نتيجة عندك
+4. الأرقام نزلت لأن القياس بقى أمين — وأنا اللي لقيت الغلط
+5. الـ threshold error كلّف ضعف الـ leakage — دي النتيجة اللي محدش قاسها قبل كده
 
 ## Phrases للاستخدام
 
-- "The empirical finding contradicts the hypothesis with which the project began..."
-- "An honest interpretation requires acknowledging that..."
-- "The methodological lesson generalizes beyond this specific dataset..."
-- "I would refer the committee to Section X.Y for the full evidence..."
-- "I don't know definitively, but I would investigate by..."
-- "From my professional DevOps engineering experience..."
+- "I found this myself, measured it, corrected it, and published the correction."
+- "I would rather defend 0.42 that is real than 0.59 that is not."
+- "That is a finding, not a failure."
+- "I do not know, but I would investigate it by..."
+- "Let me be precise about the limitation..."
 
 ## Closing Statement (محفوظة للنهاية)
 
-> "This project began with a hypothesis that the combination of structured and textual commit features would predict CI/CD failures more accurately than either modality alone. The empirical results refined that hypothesis: the structured modalities carry the bulk of the predictive signal on this dataset, and the textual modality contributes weakly through TF-IDF. After threshold calibration, the combined hybrid model achieves a failure-class F1 of 0.59 with strictly pre-execution features, which is competitive with the prior art that relies on post-execution telemetry and represents, to the best of my knowledge, the strongest published result for the pre-execution setting on real GitHub Actions data. The project's full code, data, and trained models are reproducible from a clean checkout, and the methodology is documented in sufficient detail to support both academic verification and operational adoption. Thank you."
+> This project set out to predict CI/CD build failures before they happen, using only what is knowable at commit time. It achieves a failure-class F1 of 0.42 under an evaluation protocol I can fully defend.
+>
+> Along the way it produced two findings I did not expect. The first is that project identity alone outperforms the model I built, which means the system is a project-level risk estimator and I say so. The second is that when I decomposed my own earlier, higher result, selecting the decision threshold on the test set had cost more than twice what the data leakage did.
+>
+> Both findings are less flattering than what I set out to prove. Reporting them, with the measurements and the code to check them, is what I consider the contribution.
 
 ---
 
-# 🎯 Bonus: نصايح عملية للـ Defense
+# 🎯 Bonus: نصايح عملية
 
 ## قبل الـ Defense
-
-1. **بات كويس قبلها بليلة** — متسهرش تذاكر
-2. **عندك مية في الكاس** — ممكن تحتاجها وأنت بتتكلم
-3. **لبس رسمي** — first impression matters
-4. **اوصل قبل الموعد بساعة** — اضبط الـ projector والـ laptop
-5. **معاك نسخة احتياطية على USB** — في حالة طلع PowerPoint بعب
+- افتح الـ deck وشوف مفيش نص خارج البوكسات
+- افتح `Dataset_Guide.xlsx` وجرب تشرح منه — **ما تفتحش الـ CSV الخام قدامهم**
+- اتمرن على Q0-A بصوت عالي ٣ مرات — دي أهم دقيقتين في العرض كله
+- راجع رقم واحد بس لو نسيت كل حاجة: **0.4216**
 
 ## أثناء الـ Defense
-
-1. **خد نفس قبل ما ترد** على أي سؤال — 3 ثواني تفكير أحسن من رد سريع غلط
-2. **اعمل eye contact** مع الـ examiners الـ 3 بالتساوي
-3. **لو الإجابة طويلة، قسّمها** — "First... Second... Third..."
-4. **اعترف بالـ limitations بثقة** — ده بيوريك ناضج أكاديمياً
-5. **اربط دايماً بالـ figures والـ tables** — "As shown in Figure 7.X..."
+- اتكلم بالراحة، وابدأ من الصفر في الشرح
+- لو سألوك رقم مش فاكره: "It is in Chapter 7, I would rather check than misquote it"
+- لما تذكر limitation، اذكر إنك قِسته
 
 ## لو وقعت في سؤال
-
-1. **اقول "That's an excellent point"** — يديك 5 ثواني تفكر
-2. **اطلب التوضيح** — "Could you elaborate on which aspect you'd like me to address?"
-3. **استخدم الـ "Bridge" technique** — "While I haven't directly investigated X, my work on Y suggests..."
-4. **اعترف بصراحة لو ما تعرفش** — "I don't have a definitive answer, but I would investigate by..."
-
----
-
-**حظ سعيد! 🍀**
-
-كل اللي عملته من Phase 0 لحد Phase 5 يخليك مستعد. الورقة قوية، النتايج محترمة، والمنهجية صلبة. أنت **مهندس عارف بيشتغل**.
-
-Believe in your work.
+- "That is a good question and I do not have a measured answer. What I would do is..."
+- ما تخترعش رقم. أبداً.

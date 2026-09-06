@@ -1,9 +1,14 @@
-# 📦 MSc Thesis Defense Package — Final Delivery
+# 📦 MSc Thesis Defense Package
 
 **Student:** Moamen Mohamed Aly Hussein (ID: 202401681)
 **Thesis:** Predicting CI/CD Pipeline Build Failures Using Machine Learning Techniques
-**Defense Date:** Saturday, June 7, 2026
-**Time remaining:** 8 days
+**Defense Date:** Friday, September 11, 2026
+
+> **⚠️ This package supersedes the June version.** The evaluation protocol was
+> corrected and every reported figure regenerated. The headline failure-class F1
+> is now **0.4216**, not 0.5924. See `6_Corrections_Since_Submission.md` for
+> what changed and why. Any document quoting 0.5924, $383,000 or "+27pp" as a
+> current result is out of date.
 
 ---
 
@@ -11,157 +16,119 @@
 
 | # | File | Purpose | Action Required |
 |---|------|---------|----------------|
-| 1 | `1_MSc_Thesis_FINAL.docx` | **The thesis document** — 9 chapters + abstract + appendices + 11 figures embedded | Replace `[Insert supervisor full name]` × 1, then submit |
-| 2 | `2_Defense_Presentation.pptx` | **22-slide defense deck** with all key visuals | Replace `[Insert Supervisor Name]` on title slide |
-| 3 | `3_QA_Defense_Prep_Guide.docx` | **26 Q&A pairs** + golden rules + closing statement | Read & practice |
-| 4 | `4_Thesis_Source_Markdown.md` | Markdown source (backup, for editing) | Optional |
-| 5 | `5_Manual_Insertion_Guide.md` | Instructions for adding remaining 8 figures (optional) | Optional |
+| 0 | `0_README_DELIVERY_PACKAGE.md` | This index | — |
+| 1 | `1_MSc_Thesis_FINAL.docx` | **The thesis document** — 9 chapters, appendices, embedded figures | Replace `[Insert supervisor full name]`, then submit |
+| 2 | `2_Defense_Presentation.pptx` | **26-slide defense deck** | Replace `[Insert Supervisor Name]` on title slide; open once to check text fits |
+| 3 | `3_QA_Defense_Prep_Guide.md` | **Q&A preparation** — updated, several answers changed | Read & practice |
+| 4 | `4_Thesis_Source_Markdown.md` | Markdown source — **the authoritative text** | The `.docx` is derived from this |
+| 5 | `5_Manual_Insertion_Guide.md` | Instructions for adding remaining figures | Optional |
+| 6 | `6_Corrections_Since_Submission.md` | **What changed since June, and why** | Read before the defense |
+
+**Also in the repository, outside this folder:**
+
+| File | Purpose |
+|---|---|
+| `defence/DEFENCE_BRIEF.md` | Speaking aid — opens with a CI/CD-from-zero explanation |
+| `defence/Dataset_Guide.xlsx` | Committee-readable dataset description — **show this, not the raw CSV** |
+| `cicd-failure-prediction/README.md` | Source package overview |
+| `cicd-failure-prediction/reproduce.sh` | One command, ~3 min, regenerates every reported number |
+| `cicd-failure-prediction/results/README.md` | Which results file is authoritative for what |
 
 ---
 
-## 📊 What's in the Thesis Document (`1_MSc_Thesis_FINAL.docx`)
+## 📊 Headline Results
 
-**Stats:**
-- **25,275 words** across 9 chapters
-- **11 figures** embedded (the 5 most important + 6 supporting EDA/results)
-- **103 table rows** (Tables 3.1, 4.1, 5.1-5.3, 7.1-7.4, 8.1, C.1, D.1)
-- **20 IEEE-format references**
-- **Acknowledgments section** ✓
-- **Appendices A–E** ✓ (source code summary, reproduction instructions, complete metrics, hyperparameters, submission checklist)
+Commit-grouped five-fold cross-validation, decision threshold selected on a
+validation fold and never on the test data:
+
+| Configuration | Failure F1 | PR-AUC | ROC-AUC |
+|---|---|---|---|
+| Logistic Regression | 0.4311 ± 0.0633 | 0.4092 | 0.8276 |
+| Random Forest | 0.4240 ± 0.0812 | 0.3909 | 0.8008 |
+| XGBoost *(selected on PR-AUC)* | 0.4216 ± 0.0638 | 0.4803 | 0.8240 |
+| **Categorical only** | **0.4808 ± 0.0767** | **0.5467** | **0.8649** |
+
+**Two things to know before presenting:**
+
+1. The three classifiers are **not separable** — they differ by less than 0.01
+   while the standard deviation across folds exceeds 0.06. Do not call any of
+   them "the winner" on F1.
+2. **Categorical-only beats them all.** A model told nothing but the repository,
+   workflow, branch and trigger outperforms the full hybrid on every metric.
+   This is the central finding: the system is a project-level risk estimator.
+
+Business estimate: **$243,670** per year net of false alarms, with a break-even
+false-alarm cost of **$20.41**.
+
+---
+
+## 📖 What's in the Thesis (`1_MSc_Thesis_FINAL.docx`)
 
 **Chapters:**
 1. Introduction (objectives + scope)
 2. Problem Definition (stakeholders + as-is)
-3. Existing Solution Approaches (Patel 2019 review + comparison)
+3. Existing Solution Approaches (prior work + comparison)
 4. Proposed Solution (Hybrid Pipeline architecture)
 5. System Analysis and Design (FRs/NFRs + use cases)
 6. Implementation (module-level details)
-7. Testing and Evaluation (full results + ablation + threshold)
+7. Testing and Evaluation — **includes new Section 7.3.1** (evaluation protocol
+   and the correction of an earlier design) and **new Section 7.4.5**
+   (attribution of the previously reported result)
 8. Discussion (achievements + limitations)
-9. Conclusion (8 future-work items)
+9. Conclusion (future work)
+
+**Appendices A–E**, of which B (reproduction instructions) and C (complete
+metrics tables) were rewritten. **24 IEEE-format references**, four of them
+added to support the corrected methodology.
 
 ---
 
 ## 🎤 What's in the Presentation (`2_Defense_Presentation.pptx`)
 
-**22 slides, ~20 minutes presentation time, professional Ocean Gradient color palette**
+**26 slides.** Four are new; ten carried figures that were corrected.
 
-| # | Slide |
-|---|-------|
-| 1 | Title — Cairo University, thesis title, your name |
-| 2 | Agenda — 7-point roadmap |
-| 3 | The Problem — 11%, $0.008/min, 10–20 min stats |
-| 4 | Literature Gap — Prior work vs. This project (side-by-side) |
-| 5 | Research Objectives — 4 numbered cards |
-| 6 | The Dataset — 9,772 runs, 18 repos, profile + rationale |
-| 7 | **Hybrid Pipeline Architecture** (with diagram) |
-| 8 | Feature Engineering — 4 modality cards |
-| 9 | Evaluation Regime — Stratified vs Chronological |
-| 10 | Baseline Results — Table + key observation |
-| 11 | **Ablation Study** (with chart) — honest finding callout |
-| 12 | **Feature Importance** (with chart) — surprising vocabulary finding |
-| 13 | **Threshold Optimization** (with chart) — +27pp callout |
-| 14 | **Before/After Threshold** (with chart) |
-| 15 | **Final Results** — 4 big metric cards on dark background |
-| 16 | Business Impact — $383,000 callout |
-| 17 | Objectives Achieved — 4 ✓ ACHIEVED items |
-| 18 | Key Contributions — 6 contribution cards |
-| 19 | Honest Limitations — 6 limitation cards |
-| 20 | Future Work — 8 directions |
-| 21 | In Summary — 5 key points |
-| 22 | Thank You / Q&A |
+| # | Slide | Note |
+|---|-------|------|
+| 1 | Title | Replace supervisor name |
+| 2 | Agenda | |
+| 3 | **What Is CI/CD? And What Is GitHub?** | **NEW — do not skip this** |
+| 4 | **Why This Problem Is Hard** | **NEW** — the 89/11 split |
+| 5 | The Problem | |
+| 6 | Literature Gap | |
+| 7 | Research Objectives | |
+| 8 | The Dataset | |
+| 9 | Hybrid Pipeline Architecture | with diagram |
+| 10 | Feature Engineering | |
+| 11 | Evaluation Regime | rewritten for grouped CV |
+| 12 | Results — Default Threshold | corrected table |
+| 13 | Ablation Study | corrected chart |
+| 14 | **The Discriminating Experiment** | **NEW** — categorical-only wins |
+| 15 | Feature Importance | corrected chart |
+| 16 | Threshold Optimization | corrected: +9.3pp, not +27 |
+| 17 | Before/After Threshold | corrected chart |
+| 18 | **Where The Original Number Went** | **NEW** — the attribution |
+| 19 | Final Results | 0.422 |
+| 20 | Business Impact | $243,670 + break-even |
+| 21 | Objectives Achieved | Objective 3 now *partially* achieved |
+| 22 | Key Contributions | rewritten |
+| 23 | Honest Limitations | two limitations replaced |
+| 24 | Future Work | |
+| 25 | In Summary | rewritten |
+| 26 | Thank You / Q&A | |
 
-**Tip:** The deck is designed to be read in 20 minutes. Practice timing: ~50-60 seconds per slide average. The chart-heavy slides (7, 11, 12, 13, 14) deserve 1:30 each; the simpler ones (3, 5, 17) can run faster.
-
----
-
-## 🎯 What's in the Q&A Guide (`3_QA_Defense_Prep_Guide.docx`)
-
-**26 questions across 9 sections:**
-
-| Section | Questions | Topic |
-|---------|-----------|-------|
-| Methodology | Q1–Q5 | Why binary, why hybrid, why TF-IDF, leakage |
-| Results | Q6–Q10 | F1 = 0.59, precision/recall balance, splits |
-| Hybrid Claim | Q11–Q13 | Why keep text features, repository dominance |
-| Dataset | Q14–Q16 | Why 18 repos, why open-source, class imbalance |
-| Business Impact | Q17–Q18 | $383k justification, cost asymmetry |
-| Technology | Q19–Q21 | Why TF-IDF/XGBoost/scikit-learn |
-| Tricky | Q22–Q25 | Deployment, surprises, improvements, competitors |
-| Future Work | Q26 | PhD priorities |
-
-**Plus:**
-- 5 Golden Rules
-- Quick Reference Card with all key numbers
-- Closing statement (memorized template)
-- Practical tips (before / during / recovery)
+**Slide 3 is the most important slide in the deck.** The previous committee did
+not know what CI/CD or GitHub are, and every number afterwards landed on
+nothing. Practice it out loud.
 
 ---
 
-## ✅ Action Checklist (in order)
+## ✅ Before You Submit
 
-### Tonight / Tomorrow
-- [ ] Open `1_MSc_Thesis_FINAL.docx`
-- [ ] `Ctrl+F` → search for `[Insert supervisor full name]` → replace
-- [ ] Review the Acknowledgments section — confirm wording is good
-- [ ] Right-click on Table of Contents → Update Field
-- [ ] Optional: Read through Abstract one more time
-- [ ] Save as: `MSc_Thesis_Moamen_Aly_FINAL_v1.docx`
-
-### This Week
-- [ ] Open `2_Defense_Presentation.pptx`
-- [ ] Update the supervisor name on title slide
-- [ ] Practice slides 1–7 (intro half) in front of mirror — aim for 8 minutes
-- [ ] Practice slides 8–14 (results half) — aim for 10 minutes
-- [ ] Practice slides 15–22 (conclusion) — aim for 4 minutes
-- [ ] Practice closing statement at slide 22 — should sound natural
-
-### Day Before Defense
-- [ ] Re-read `3_QA_Defense_Prep_Guide.docx` end-to-end
-- [ ] Memorize the **Quick Reference Card** numbers
-- [ ] Memorize the **Closing Statement**
-- [ ] Charge laptop, prepare USB backup of pptx + docx
-- [ ] Print thesis on A4 paper if required
-- [ ] Sleep 8 hours minimum
-
-### Defense Day
-- [ ] Arrive 1 hour early
-- [ ] Test projector, fonts, animations
-- [ ] Have water bottle ready
-- [ ] Take 3 deep breaths before starting
-- [ ] **Smile and look confident** — you've done the work
-
----
-
-## 🎯 Key Numbers to Memorize
-
-| Number | What it means |
-|--------|--------------|
-| **9,772** | Real GitHub Actions runs collected |
-| **18** | Repositories sampled |
-| **89% / 11%** | Success / Failure class balance |
-| **0.5924** | Final Failure F1 (stratified test) |
-| **0.6207** | Final Failure F1 (chronological test) |
-| **0.884** | ROC-AUC |
-| **0.587** | PR-AUC |
-| **+27pp** | F1 improvement from threshold optimization |
-| **0.06** | F1-optimal threshold for XGBoost |
-| **$383,000** | Estimated annual savings |
-| **693** | Tokens in identity-leakage stoplist |
-| **3,090** | Columns in fused feature matrix |
-
----
-
-## 💪 The Closing Statement (Memorize This)
-
-> "This project began with a hypothesis that the combination of structured and textual commit features would predict CI/CD failures more accurately than either modality alone. The empirical results refined that hypothesis: the structured modalities carry the bulk of the predictive signal on this dataset, and the textual modality contributes weakly through TF-IDF. After threshold calibration, the combined hybrid model achieves a failure-class F1 of 0.59 with strictly pre-execution features, which is competitive with the prior art that relies on post-execution telemetry. The project's full code, data, and trained models are reproducible from a clean checkout, and the methodology is documented in sufficient detail to support both academic verification and operational adoption. Thank you."
-
----
-
-## 🔥 Pre-Defense Mantra
-
-You are not a beginner. You are a **DevOps engineer with hands-on production experience**, doing academic research on a problem you understand from both ends. The committee respects practitioners who bring real engineering rigor to academic work. **Trust the data, trust the methodology, trust yourself.**
-
-Defense is in 8 days. **You're ready.**
-
-🍀 **Best of luck, Moamen.**
+- [ ] Replace `[Insert supervisor full name]` in the thesis
+- [ ] Replace `[Insert Supervisor Name]` on the title slide
+- [ ] Open the deck in PowerPoint and check no text overflows its box
+- [ ] **Verify reference [1] (Patel 2019) against the source PDF** — the cited
+      venue could not be confirmed, and Chapter 3 positions the whole
+      contribution relative to it
+- [ ] Read `6_Corrections_Since_Submission.md`
+- [ ] Practice the CI/CD explanation (slide 3) three times out loud

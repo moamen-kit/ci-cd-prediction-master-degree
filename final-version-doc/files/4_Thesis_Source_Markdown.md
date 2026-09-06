@@ -17,7 +17,7 @@
 | **Track** | Coursework Track |
 | **Supervisor Name** | [Insert supervisor full name] |
 | **Academic Year** | 2025 / 2026 |
-| **Submission Date** | June 7, 2026 |
+| **Submission Date** | September 11, 2026 |
 
 *Submitted in partial fulfillment of the requirements for the Professional Master's Degree in Software Engineering.*
 
@@ -28,6 +28,7 @@
 | Version | Date | Prepared / Updated By | Notes |
 |---|---|---|---|
 | 0.1 | May 30, 2026 | Moamen Mohamed Aly Hussein | Initial complete draft |
+| 1.0 | September 5, 2026 | Moamen Mohamed Aly Hussein | Evaluation protocol corrected: splits grouped on commit, decision threshold selected on a validation partition, results cross-validated. All reported figures regenerated. New Sections 7.3.1 and 7.4.5 document the correction and attribute its effect. |
 
 ---
 
