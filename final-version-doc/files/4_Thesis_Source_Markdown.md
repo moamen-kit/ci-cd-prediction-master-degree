@@ -1243,4 +1243,4 @@ The following checklist was completed before final submission of this thesis.
 
 [26] R. Dhawan and M. Dhawan, "AI-Augmented Reliability in CI/CD: A Framework for Predictive, Adaptive, and Self-Correcting Pipelines," Frontiers in Artificial Intelligence, vol. 9, art. 1776546, 2026. doi: 10.3389/frai.2026.1776546.
 
-[27] R. Sharma, E. Petrova, and J. O. Connolly, "Machine Learning-Based Failure Prediction in Continuous Integration and Deployment Workflows," unpublished manuscript, Nov. 2025. (No publication venue is printed on the document.)
+[27] R. Sharma, E. Petrova, and J. O. Connolly, "Machine Learning-Based Failure Prediction in Continuous Integration and Deployment Workflows," unpublished manuscript, Nov. 12, 2025. [Online]. Available: https://www.researchgate.net/publication/401540054 (accessed Sep. 7, 2026).

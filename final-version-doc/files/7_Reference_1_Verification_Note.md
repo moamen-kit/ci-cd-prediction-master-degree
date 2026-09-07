@@ -110,7 +110,23 @@ kind this thesis builds is the input such a framework consumes.
 
 > R. Sharma, E. Petrova, and J. O. Connolly, "Machine Learning-Based Failure
 > Prediction in Continuous Integration and Deployment Workflows," unpublished
-> manuscript, Nov. 2025.
+> manuscript, Nov. 12, 2025. [Online]. Available:
+> https://www.researchgate.net/publication/401540054 (accessed Sep. 7, 2026).
+
+**Resolved as far as it can be.** The author supplied the ResearchGate URL, and
+the file he supplied is byte-identical to the copy in `dataset/` (matching MD5).
+The paper is self-archived: no journal, conference, volume, ISSN or DOI appears
+anywhere in its thirteen pages, and none is discoverable. The citation above is
+the correct IEEE form for a self-archived manuscript — authors, title,
+"unpublished manuscript", date, and the online location with an access date.
+
+**One item for the author to check on the ResearchGate page**, which is
+reachable from a normal browser but blocked from this build environment: a
+search index lists the record with a **fourth author, "Uthman Usman"**, which
+does not appear anywhere in the PDF — the title page names three. Open the page
+and compare. If the record does list four authors, add the fourth to reference
+[27]; if it lists three, the entry is already correct. Do not add a name on the
+strength of a search summary alone.
 
 **This is the most useful of the three, and it needs one caution.**
 
@@ -124,8 +140,9 @@ declines to cross. It converts the gap between 0.88 and 0.4216 from an
 embarrassment into the measured cost of the constraint. Section 3.1 now makes
 that argument explicitly.
 
-**The caution:** no publication venue, volume, ISSN or DOI for the paper itself
-appears anywhere in the document. It carries a full reference list and a
+**The caution (unchanged by the URL):** a ResearchGate link establishes where the
+document lives, not that it was peer-reviewed. No publication venue, volume,
+ISSN or DOI for the paper itself appears anywhere in the document. It carries a full reference list and a
 conventional academic structure, but it was produced in Microsoft Word and its
 PDF metadata lists the author as "ola". It is cited above as an unpublished
 manuscript, which is the honest form. **If a committee member asks whether it is
