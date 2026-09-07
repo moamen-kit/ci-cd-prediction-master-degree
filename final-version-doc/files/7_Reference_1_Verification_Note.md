@@ -1,6 +1,9 @@
 # Verification note — reference [1] (Patel)
 
-**Status: UNRESOLVED. Requires the author to check the source PDF.**
+**Status: UNRESOLVED, and now materially weaker.** The author holds three
+reference PDFs in `dataset/`, and **none of them is the Patel paper.** All three
+have been identified from their own title pages and added to the thesis as
+references [25], [26] and [27]. See the section at the end of this note.
 
 Chapter 3 positions this project's contribution relative to reference [1], so
 the citation needs to be right. It could not be confirmed from here.
@@ -72,3 +75,70 @@ If asked in the defence and unsure, the safe answer is factual: *"That citation
 is to a paper I have read; I would want to double-check the exact volume and
 issue before quoting them, because two journals with similar names publish in
 this area."* Do not guess a volume number aloud.
+
+
+---
+
+# The three reference PDFs the author actually holds
+
+Identified by reading each file's own title page — these details are taken from
+the documents, not from a search engine.
+
+## `dataset/1703.04142.pdf` — reference [25]
+
+> L. Madeyski and M. Kawalerowicz, "Continuous Defect Prediction: The Idea and a
+> Related Dataset," in *Proceedings of the 14th International Conference on
+> Mining Software Repositories*, Buenos Aires, Argentina, 2017, pp. 515–518.
+> doi: 10.1109/MSR.2017.46.
+
+Peer-reviewed, MSR 2017. The DOI and page range are printed on the paper's first
+page. A file-level dataset of 11 million records across 1,265 projects, built on
+TravisTorrent. Cited in Section 3.1 for establishing the feasibility of joining
+continuous-integration outcomes to repository-mined process metrics at scale.
+
+## `dataset/frai-9-1776546.pdf` — reference [26]
+
+> R. Dhawan and M. Dhawan, "AI-Augmented Reliability in CI/CD: A Framework for
+> Predictive, Adaptive, and Self-Correcting Pipelines," *Frontiers in Artificial
+> Intelligence*, vol. 9, art. 1776546, 2026. doi: 10.3389/frai.2026.1776546.
+
+Peer-reviewed, open access (CC BY), published 01 April 2026. Type: Hypothesis
+and Theory. Cited in Section 3.1 as complementary framing — a predictor of the
+kind this thesis builds is the input such a framework consumes.
+
+## `dataset/osh-1.pdf` — reference [27]
+
+> R. Sharma, E. Petrova, and J. O. Connolly, "Machine Learning-Based Failure
+> Prediction in Continuous Integration and Deployment Workflows," unpublished
+> manuscript, Nov. 2025.
+
+**This is the most useful of the three, and it needs one caution.**
+
+Useful, because it is the most directly comparable recent work: XGBoost, Random
+Forest and SVM on 116,000 workflows from 25,000 projects, reporting failure-class
+F1 = 0.88 at 89.7 per cent accuracy. Its SHAP analysis names **build duration**
+as the single most influential predictor. Build duration is not known until the
+build has finished, so their result is an upper bound on what is achievable
+*with* post-execution telemetry — which is exactly the boundary this thesis
+declines to cross. It converts the gap between 0.88 and 0.4216 from an
+embarrassment into the measured cost of the constraint. Section 3.1 now makes
+that argument explicitly.
+
+**The caution:** no publication venue, volume, ISSN or DOI for the paper itself
+appears anywhere in the document. It carries a full reference list and a
+conventional academic structure, but it was produced in Microsoft Word and its
+PDF metadata lists the author as "ola". It is cited above as an unpublished
+manuscript, which is the honest form. **If a committee member asks whether it is
+peer-reviewed, the answer is that no venue is printed on it.** If a published
+version exists, find it and update the entry; if not, the citation stands as a
+manuscript and the argument it supports does not depend on its peer-review
+status, only on what it reports about its own features.
+
+## Consequence for reference [1]
+
+Chapter 3 no longer rests on [1] alone. It now cites [24] Hassan and Zhang
+(verified, ASE 2006) for the origin of build-outcome prediction and [27] Sharma
+et al. for the modern comparison. Reference [1] remains in place and remains
+unverified. The options are to correct its venue against the source PDF, or — if
+that PDF cannot be produced — to remove it, since the argument it was carrying is
+now carried by [24] and [27].
