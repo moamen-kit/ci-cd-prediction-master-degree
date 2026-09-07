@@ -17,7 +17,7 @@
 | **Track** | Coursework Track |
 | **Supervisor Name** | [Insert supervisor full name] |
 | **Academic Year** | 2025 / 2026 |
-| **Submission Date** | June 7, 2026 |
+| **Submission Date** | September 11, 2026 |
 
 *Submitted in partial fulfillment of the requirements for the Professional Master's Degree in Software Engineering.*
 
@@ -28,6 +28,7 @@
 | Version | Date | Prepared / Updated By | Notes |
 |---|---|---|---|
 | 0.1 | May 30, 2026 | Moamen Mohamed Aly Hussein | Initial complete draft |
+| 1.0 | September 5, 2026 | Moamen Mohamed Aly Hussein | Evaluation protocol corrected: splits grouped on commit, decision threshold selected on a validation partition, results cross-validated. All reported figures regenerated. New Sections 7.3.1 and 7.4.5 document the correction and attribute its effect. |
 
 ---
 
@@ -59,9 +60,9 @@ This thesis presents a Hybrid Machine Learning Pipeline for predicting the outco
 
 A dataset of 9,772 real workflow runs was collected from eighteen popular open-source repositories on GitHub, covering languages and project types including React, TensorFlow, PyTorch, Rust, CPython, and Elasticsearch. The collected data exhibits a realistic class imbalance of 89.0 percent successes and 11.0 percent failures. Sixteen features were engineered from the raw API responses, spanning five numerical features capturing commit size and complexity, four categorical features capturing repository and workflow context, six binary indicators capturing temporal and authorial signals, and one textual feature (the cleaned commit message) consumed by a TF-IDF vectorizer. An aggressive text-cleaning pipeline together with an algorithmically constructed 693-token stoplist guards against identity leakage from author logins and project-specific identifiers.
 
-Three machine learning classifiers (Logistic Regression, Random Forest, XGBoost) were trained and evaluated under a dual-split regime: a stratified random split serving as the primary evaluation and a chronological split serving as a secondary deployment-realism check. An ablation study isolated the contribution of each feature modality, and a threshold-optimization experiment calibrated the decision rule of each classifier for the observed class imbalance.
+Three machine learning classifiers (Logistic Regression, Random Forest, XGBoost) were trained and evaluated under commit-grouped five-fold cross-validation, with the decision threshold of each classifier selected on a validation partition and applied unchanged to the held-out fold. A per-repository chronological partition serves as a secondary deployment-realism check. An ablation study isolated the contribution of each feature modality, and a threshold-optimization experiment calibrated the decision rule of each classifier for the observed class imbalance.
 
-The winning configuration is XGBoost with an F1-optimized threshold of 0.06, which achieves a failure-class F1 of 0.5924 on the stratified test set and 0.6207 on the chronological test set, a balanced accuracy of 0.7815, a ROC-AUC of 0.884, and a PR-AUC of 0.587. The ablation study revealed that the textual modality, when used in isolation, is insufficient to overcome the class imbalance, and that the structured features dominate the model's predictive performance. The threshold optimization experiment produced a 27-percentage-point improvement in failure-class F1 from a single hyperparameter change, demonstrating that probability calibration is a first-class concern for imbalanced binary classification. Under a documented operational scenario, the trained classifier is estimated to save approximately $383,000 per year for a mid-sized engineering organization operating one thousand pipeline executions per day. The project's complete code, raw data, processed data, trained models, and twenty-one publication-quality figures are committed to the project repository under a fixed random seed, supporting bit-for-bit reproduction by independent readers.
+The three classifiers are separated by less than one hundredth of a point of mean failure-class F1, while the standard deviation across folds exceeds six hundredths, so no claim of superiority among them can be sustained. XGBoost is selected on PR-AUC, the threshold-independent metric appropriate under class imbalance, and attains a failure-class F1 of 0.4216 with a standard deviation of 0.0638, a ROC-AUC of 0.824, and a PR-AUC of 0.480. The ablation study establishes the project's central finding: a configuration given nothing but categorical identity, namely the repository, the workflow name, the branch and the triggering event, outperforms the full hybrid model on every metric, attaining a failure-class F1 of 0.4808 and a PR-AUC of 0.5467. The hybrid hypothesis with which the project was framed is therefore refuted, and the system is best understood as a project-level risk estimator rather than a commit-level one. An earlier version of this work reported a failure-class F1 of 0.5924 under an evaluation protocol subsequently found to be unsound; the difference is attributed in full, with 0.060 arising from duplicate commits shared between partitions and 0.126 from selecting the decision threshold on the test set that was then used to report it. Under a documented operational scenario the classifier is estimated to save approximately $244,000 per year for a mid-sized engineering organization operating one thousand pipeline executions per day, an estimate that is reported alongside the false-alarm cost at which it reaches zero. The project's complete code, raw data, processed data, trained models, and twenty-two publication-quality figures are committed to the project repository under a fixed random seed, and every reported metric is regenerated from the raw data by a single command, so that an independent reader can reproduce each figure in this thesis rather than take it on trust.
 
 **Keywords:** CI/CD pipelines, build failure prediction, machine learning, hybrid pipeline, TF-IDF, XGBoost, class imbalance, threshold optimization, GitHub Actions, software engineering analytics.
 
@@ -246,11 +247,11 @@ The remainder of the thesis describes how each of these requirements has been ad
 
 The prediction of failures in continuous integration and continuous deployment pipelines is a topic that has attracted sustained academic and industrial attention over the past decade, intersecting the established research areas of defect prediction, software analytics, and applied machine learning. This section surveys the principal threads of work that bear on the problem, organized into three complementary perspectives: classical defect prediction at the file or class level, build-outcome prediction at the pipeline level, and the more recent line of work that applies natural language processing to commit messages and code reviews as predictive signals.
 
-The classical line of defect prediction work, exemplified by Hassan and Holt (2005) and the subsequent decade of refinements by Kim, Zimmermann, and others, focuses on identifying which files or classes in a codebase are likely to contain bugs based on historical patterns of change frequency, code complexity, and developer activity. This body of work established the methodological foundations that more recent CI/CD failure prediction studies build upon, including the use of cross-validation for evaluation, the careful separation of training and test data along temporal boundaries, and the use of precision-recall metrics in preference to raw accuracy when the failure class is rare. While these classical studies operated at the file granularity rather than the pipeline granularity, the algorithmic toolkit they developed (logistic regression, random forests, gradient boosting) is precisely the toolkit that pipeline failure prediction studies, including the present project, continue to use today.
+The classical line of defect prediction work, exemplified by Hassan and Holt [13] and the subsequent decade of refinements by Kim et al. [15], Zimmermann et al. [14] and others, focuses on identifying which files or classes in a codebase are likely to contain bugs based on historical patterns of change frequency, code complexity, and developer activity. This body of work established the methodological foundations that more recent CI/CD failure prediction studies build upon, including the use of cross-validation for evaluation, the careful separation of training and test data along temporal boundaries, and the use of precision-recall metrics in preference to raw accuracy when the failure class is rare. While these classical studies operated at the file granularity rather than the pipeline granularity, the algorithmic toolkit they developed (logistic regression, random forests, gradient boosting) is precisely the toolkit that pipeline failure prediction studies, including the present project, continue to use today.
 
-The build-outcome prediction line of work, which more directly corresponds to the problem addressed by this project, was substantially advanced by Patel's 2019 study "Research the Use of Machine Learning Models to Predict and Prevent Failures in CI/CD Pipelines and Infrastructure". Patel proposes a multi-classifier framework that ingests post-execution telemetry from CI/CD runs (resource utilization metrics, build durations, retry counts, and other runtime signals) and produces a probabilistic estimate of whether the corresponding pipeline execution constitutes an anomaly. The study reports promising results on a synthetic dataset and identifies several methodological gaps, in particular the difficulty of obtaining realistic ground-truth data and the challenge of distinguishing transient infrastructure failures from genuine code-level failures. The present project positions itself in direct dialogue with Patel's framework: it accepts the broad outline of using ensemble machine learning for CI/CD failure prediction, but it shifts the temporal anchor from post-execution to pre-execution. This shift is the central methodological contribution of the project and is what makes the proposed system useful for resource savings, since post-execution prediction can only diagnose failures after the resources have already been spent.
+The build-outcome prediction line of work, which more directly corresponds to the problem addressed by this project, originates with Hassan and Zhang [24], who in 2006 used decision trees to predict whether a build would pass certification testing, motivated by the observation that certification of a large project could itself take days. The framing of that work anticipates the present project's: the value of a prediction lies in its availability before the expensive process completes. The line was more recently advanced by Patel's 2019 study [1] "Research the Use of Machine Learning Models to Predict and Prevent Failures in CI/CD Pipelines and Infrastructure". Patel proposes a multi-classifier framework that ingests post-execution telemetry from CI/CD runs (resource utilization metrics, build durations, retry counts, and other runtime signals) and produces a probabilistic estimate of whether the corresponding pipeline execution constitutes an anomaly. The study reports promising results on a synthetic dataset and identifies several methodological gaps, in particular the difficulty of obtaining realistic ground-truth data and the challenge of distinguishing transient infrastructure failures from genuine code-level failures. The present project positions itself in direct dialogue with Patel's framework: it accepts the broad outline of using ensemble machine learning for CI/CD failure prediction, but it shifts the temporal anchor from post-execution to pre-execution. This shift is the central methodological contribution of the project and is what makes the proposed system useful for resource savings, since post-execution prediction can only diagnose failures after the resources have already been spent.
 
-The natural language processing line of work, which has matured rapidly in the past five years, applies textual analysis to commit messages, pull-request descriptions, and code-review comments as auxiliary signals for software engineering tasks. The TravisTorrent dataset (Beller, Gousios, and Zaidman 2017), which aggregates millions of build records from Travis CI across thousands of open-source repositories, has been the standard benchmark for this line of research, and a number of follow-up studies have explored TF-IDF, word embeddings, and more recently transformer-based encoders as representations of the textual signal. The consensus finding from this body of work is that textual features carry non-trivial predictive signal that complements the structured features, but that the magnitude of the complementarity varies widely with the specific task and dataset. The ablation study reported in Chapter 7 of this project contributes a new data point to this body of evidence by showing that on a fresh GitHub Actions dataset, the TF-IDF text signal in isolation is insufficient to overcome an 8:1 class imbalance, while in combination with the structured features it produces a competitive ranking even when its standalone decision-rule performance is poor.
+The natural language processing line of work, which has matured rapidly in the past five years, applies textual analysis to commit messages, pull-request descriptions, and code-review comments as auxiliary signals for software engineering tasks. The TravisTorrent dataset [2], which aggregates millions of build records from Travis CI across thousands of open-source repositories, has been the standard benchmark for this line of research, and a number of follow-up studies have explored TF-IDF, word embeddings, and more recently transformer-based encoders as representations of the textual signal. The consensus finding from this body of work is that textual features carry non-trivial predictive signal that complements the structured features, but that the magnitude of the complementarity varies widely with the specific task and dataset. The ablation study reported in Chapter 7 of this project contributes a new data point to this body of evidence by showing that on a fresh GitHub Actions dataset, the TF-IDF text signal in isolation is insufficient to overcome an 8:1 class imbalance, while in combination with the structured features it produces a competitive ranking even when its standalone decision-rule performance is poor.
 
 On the industrial side, several commercial offerings target the CI/CD pipeline reliability problem from different angles. Trunk.io and Buildkite provide analytics dashboards that surface flaky tests and elevated failure rates by repository, branch, or workflow, but they do not produce per-commit predictive estimates. Datadog's CI Visibility product instruments pipeline runs and provides observability over their execution, but again does not predict failures before execution. Recent academic startups such as Aviator and Mergify focus on intelligent merging strategies but do not include predictive failure modeling in their published feature sets. The market gap that the present project addresses is therefore the absence of a documented open-source approach for pre-execution failure prediction that can be deployed alongside (rather than in place of) the existing observability tooling.
 
@@ -282,10 +283,12 @@ Table 3.1 compares the approaches reviewed in Sections 3.1 and 3.2 against the p
 | Generalization across repos | Low (per-repo rules) | Moderate | Moderate | Higher | High (eighteen-repository dataset) |
 | Calibrated probability output | No | Yes | Yes | Yes | Yes |
 | Handling of class imbalance | Manual | Standard (weights) | Standard | Standard | Explicit threshold optimization |
-| Empirical headline metric | n/a (not in literature in usable form) | F1 ~0.40-0.60 reported | F1 ~0.45-0.60 reported | F1 ~0.55-0.70 reported on large datasets | F1 = 0.5924 on stratified, 0.6207 on chronological |
+| Empirical headline metric | n/a (not in literature in usable form) | F1 ~0.40-0.60 reported | F1 ~0.45-0.60 reported | F1 ~0.55-0.70 reported on large datasets | F1 = 0.4216 +/- 0.0638 under commit-grouped cross-validation |
 | Deployment friction | Very low | Low | Moderate | High | Low (single joblib file) |
 
-Several observations follow from this comparison. The proposed hybrid pipeline matches or exceeds the empirical performance of the classical-ML-with-post-execution-features approach (which serves as the most direct prior baseline) while strictly avoiding post-execution features. It is competitive with the NLP-augmented ML approach despite using only a basic TF-IDF text representation. It falls short of the best deep learning multimodal results reported in the literature on much larger industrial datasets, but it does so at a fraction of the compute cost and with full reproducibility, which are properties of substantial value in academic and small-team production contexts. The combination of pre-execution-only features, fixed-seed reproducibility, dual-split evaluation, and the explicit threshold-optimization step distinguishes the proposed system from the prior art reviewed in this chapter.
+Several observations follow from this comparison, and one qualification governs all of them. The figures reported in the prior art are drawn from the papers as published, and the evaluation protocols behind them are in most cases not described in sufficient detail to establish whether they group observations by commit or whether the decision threshold is selected independently of the data on which it is reported. Section 7.4.5 of this thesis demonstrates that those two choices together accounted for 0.171 of failure-class F1 in this project's own earlier results. A comparison of headline figures across studies whose protocols differ in those respects is therefore not a comparison of modelling quality, and the row above should be read as a statement of what each study reports rather than as a ranking.
+
+Subject to that qualification, the proposed pipeline is positioned below the classical approaches that consume post-execution telemetry, which is the expected consequence of excluding it. What distinguishes the proposed system from the prior art reviewed in this chapter is not its headline figure but the combination of a strictly pre-execution feature boundary, fixed-seed reproducibility from raw data, a commit-grouped evaluation protocol with the threshold selected outside the evaluation data, and a published attribution of the difference between the protocol used and the weaker protocols the literature more commonly reports.
 
 ## 3.4 Limitations of Existing Solutions
 
@@ -293,7 +296,7 @@ The principal limitations of the existing solution approaches, against which the
 
 **Limitation 1 — Reliance on post-execution features.** The dominant academic approaches to CI/CD failure prediction, including Patel 2019, rely heavily on telemetry that is only available after the build has executed. This makes the predictions useful for retrospective analysis but not for the proactive resource-saving use case that motivates the present project. A pipeline that has already executed has, by definition, already consumed the resources that the prediction was supposed to save.
 
-**Limitation 2 — Lack of dual-split robustness reporting.** Most published studies report metrics on a single train/test split (typically stratified random or chronological, but rarely both). Single-split reporting can mask substantial performance variability and cannot distinguish a model's intrinsic discriminative ability from its sensitivity to temporal data drift. The dual-split reporting approach adopted by this project provides empirical evidence that the trained classifier maintains its performance under genuine deployment-like conditions.
+**Limitation 2 — Single-partition reporting without grouping.** Most published studies report metrics on a single train/test partition, and few state whether observations sharing an underlying commit are constrained to fall on one side of it. Where the unit of observation is finer than the unit of feature construction, as it is whenever multiple pipeline executions are triggered by one commit, an ungrouped partition measures partly the model's ability to recognise observations it has already seen. Single-partition reporting also conceals variability: in this project, the failure-class F1 obtained from single partitions of the same data varied across a range of approximately 20 percentage points depending on which partition was drawn. The commit-grouped cross-validation adopted here addresses both concerns, and Section 7.3.1 documents the correction of an earlier design in this project that exhibited exactly the defect described.
 
 **Limitation 3 — Treatment of decision thresholds as fixed.** Most published studies report metrics at the default 0.5 decision threshold, sometimes with a brief note that "threshold tuning could improve results". The present project elevates threshold optimization to a first-class evaluation phase and demonstrates that for an imbalanced binary classification problem, the gain from threshold optimization can dwarf the gain from feature engineering or hyperparameter tuning. This methodological emphasis is not common in the prior literature on CI/CD failure prediction.
 
@@ -459,14 +462,14 @@ Although the system is a machine learning pipeline rather than an end-user appli
 **Use Case UC-1 — Researcher reproduces the full pipeline from scratch.**
 *Actor*: A reader of the thesis (academic supervisor, evaluator, or independent researcher) who wishes to reproduce the reported results from a clean environment.
 *Preconditions*: A Linux or macOS system with Python 3.11 installed; a valid GitHub personal access token for the data collection phase.
-*Main flow*: The actor clones the repository, creates a Python virtual environment, installs dependencies via `pip install -r requirements.txt`, sets the GITHUB_TOKEN environment variable, and executes the phase orchestrator scripts in order: run_phase0.py through run_phase5.py.
-*Alternative flow*: The actor skips run_phase0.py (which requires roughly two hours due to API rate limits) and uses the pre-collected dataset committed to data/raw/github_actions_real.csv.
+*Main flow*: The actor clones the repository, creates a Python virtual environment, installs dependencies via `pip install -r requirements.txt`, and executes `./reproduce.sh`, which runs data preparation and the cross-validated evaluation and writes every reported metric and figure.
+*Alternative flow*: The actor sets the GITHUB_TOKEN environment variable and runs `src/collect_github_data.py` first to re-collect the dataset from the GitHub API, which requires roughly two hours because of rate limits. This is not necessary, because the collected dataset is committed to data/raw/github_actions_real.csv.
 *Postconditions*: The data/processed/, models/, results/, and figures/ directories are populated with outputs that match those reported in the thesis to four decimal places.
 
 **Use Case UC-2 — Practitioner uses the trained model for new prediction.**
 *Actor*: A DevOps engineer or research engineer who has a trained classifier and wishes to score a new commit.
-*Preconditions*: The trained model file (`models/best_optimized.joblib`) and the data preparation module are available.
-*Main flow*: The actor constructs a single-row DataFrame containing the required input features (repository, workflow name, branch, event, lines added, lines deleted, files changed, commit message, and so on), passes it through the data preparation function to produce a feature row in the model's expected schema, calls `pipeline.predict_proba(X)[0, 1]` to obtain the failure probability, and compares it against the optimized threshold of 0.06.
+*Preconditions*: The trained model file (`models/best_tuned_threshold_xgb.joblib`) and the data preparation module are available.
+*Main flow*: The actor constructs a single-row DataFrame containing the required input features (repository, workflow name, branch, event, lines added, lines deleted, files changed, commit message, and so on), passes it through the data preparation function to produce a feature row in the model's expected schema, calls `pipeline.predict_proba(X)[0, 1]` to obtain the failure probability, and compares it against the selected threshold of 0.076.
 *Postconditions*: The actor receives a real-valued failure probability and a binary recommendation that can be passed to downstream tooling.
 
 **Use Case UC-3 — Researcher extends the system with a new classifier or new feature.**
@@ -510,13 +513,13 @@ Three system design diagrams capture the design of the proposed solution at diff
 
 The **component diagram** in Figure 5.2 shows the project codebase decomposed into its principal modules and the dependencies between them. The diagram identifies seven modules (data collection, EDA, data preparation, hybrid pipeline, training and evaluation, threshold optimization, visualization) plus the corresponding orchestrator scripts.
 
-*The project codebase decomposes into seven principal modules located under src/: collect_github_data.py (data ingestion via the GitHub REST API), eda.py (exploratory data analysis and chart generation), data_preparation.py (cleaning, feature engineering, and split production), hybrid_pipeline.py (the four-branch ColumnTransformer architecture and three classifier factories), train_evaluate.py (full training, metric computation, and ablation study), threshold_optimization.py (decision-threshold sweep and selection), and visualization.py (the ThesisPlotter class that enforces consistent figure styling). Each module is imported by the corresponding phase orchestrator script (run_phase0.py through run_phase5.py).*
+*The project codebase decomposes into seven principal modules located under src/: collect_github_data.py (data ingestion via the GitHub REST API), eda.py (exploratory data analysis and chart generation), data_preparation.py (cleaning, feature engineering, and split production), hybrid_pipeline.py (the four-branch ColumnTransformer architecture and three classifier factories), train_evaluate.py (full training, metric computation, and ablation study), threshold_optimization.py (decision-threshold sweep and selection), and visualization.py (the ThesisPlotter class that enforces consistent figure styling). Two further modules were added when the evaluation protocol was corrected: cross_validation.py (the commit-grouped cross-validation protocol and its threshold selection) and run_corrected_evaluation.py (the orchestrator that produces every reported metric and figure).*
 
 The **data flow diagram** in Figure 5.3 traces the path of a single commit through the system, from the raw API response through cleaning, feature engineering, vectorization, and into the final prediction. This diagram is the operational complement to the architectural diagram in Figure 4.1: where Figure 4.1 shows the system in its training configuration, Figure 5.3 shows the system in its inference configuration.
 
-*The inference data flow for a single commit proceeds as follows: the input record (a single-row pandas DataFrame containing the seventeen feature columns) is passed to the loaded pipeline's predict_proba method; the ColumnTransformer applies the four branch transformations in parallel and produces a 3,090-column sparse feature vector; the trained XGBoost classifier produces a real-valued probability in the range [0, 1]; the optimized threshold of 0.06 is applied to produce a binary success/failure recommendation. The entire flow executes in under one millisecond on commodity hardware.*
+*The inference data flow for a single commit proceeds as follows: the input record (a single-row pandas DataFrame containing the seventeen feature columns) is passed to the loaded pipeline's predict_proba method; the ColumnTransformer applies the four branch transformations in parallel and produces a 3,090-column sparse feature vector; the trained XGBoost classifier produces a real-valued probability in the range [0, 1]; the selected threshold of 0.076 is applied to produce a binary success/failure recommendation. The entire flow executes in under one millisecond on commodity hardware.*
 
-The **sequence diagram** in Figure 5.4 captures the order of operations performed by the full pipeline orchestration. The sequence begins with the actor invoking run_phase0.py and ends with the production of the final business-impact JSON file by run_phase5.py. Intermediate steps are clearly numbered to facilitate troubleshooting in the event of a pipeline failure.
+The **sequence diagram** in Figure 5.4 captures the order of operations performed by the full pipeline orchestration. The sequence begins with the actor invoking data collection and ends with the production of the final business-impact JSON file by run_corrected_evaluation.py. Intermediate steps are clearly numbered to facilitate troubleshooting in the event of a pipeline failure.
 
 *The pipeline orchestration proceeds through six sequential phases: (1) Phase 0 collects raw data from the GitHub Actions API and persists it to data/raw/; (2) Phase 1 performs exploratory analysis and generates six diagnostic figures; (3) Phase 2 cleans the raw data, engineers sixteen features, and produces both stratified and chronological splits; (4) Phase 3 builds the hybrid pipeline architecture and validates it on a 1,000-row sample; (5) Phase 4 trains all three classifiers on the full data, evaluates them on both splits, runs the ablation study, and produces seven evaluation figures; (6) Phase 5 performs threshold optimization and produces two final figures plus the business-impact estimate. Each phase writes its outputs to deterministic locations and can be re-executed independently.*
 
@@ -580,7 +583,7 @@ An ablation study function, run_ablation_study, isolates the contribution of the
 
 The threshold optimization module, implemented in src/threshold_optimization.py, addresses a subtle but important issue that surfaced during the initial evaluation pass. The default decision threshold of 0.5 used by scikit-learn classifiers is calibrated for a balanced class prior and is poorly suited to the 8:1 imbalance present in this dataset, particularly for the XGBoost classifier whose probability outputs are skewed toward the majority class even after the application of scale_pos_weight. The module implements a threshold sweep from 0.05 to 0.95 in increments of 0.01, computing the failure-class F1, Youden's J statistic, balanced accuracy, and a business-cost objective at each threshold value. The threshold that maximizes each metric is reported, and the optimal F1 threshold is then applied to both the stratified and chronological test sets to verify that the calibration transfers cleanly across splits.
 
-For the winning XGBoost classifier, the F1-optimal threshold was found to be 0.06 rather than the default 0.5, an order-of-magnitude shift that reflects the underlying class imbalance. Applying this optimized threshold lifted the failure-class F1 from 32.2 percent to 59.2 percent on the stratified test set, with the recall rising from 20.1 percent to 62.2 percent. The same threshold applied to the chronological test set produced a failure-class F1 of 62.1 percent, confirming that the optimization is not a stratified-split artefact but a genuine improvement that transfers to deployment-like conditions.
+For the selected XGBoost classifier, the F1-optimal threshold averaged 0.076 across the five folds rather than the default 0.5, an order-of-magnitude shift that reflects the underlying class imbalance. The thresholds selected for the other two classifiers lie on the opposite side of the default, at 0.538 for Random Forest and 0.646 for Logistic Regression, which establishes that the required correction is a property of the individual classifier rather than of the task. In every case the threshold is selected on a validation partition and applied unchanged to data used for reporting; an earlier version of this module selected the threshold on the test set and reported the resulting score on that same test set, and Section 7.4.5 quantifies what that procedure was worth.
 
 ### 6.2.6 Visualization Module
 
@@ -596,9 +599,9 @@ The second decision concerned the boundary between pre-execution and post-execut
 
 The third decision concerned text preprocessing. The first iteration of the TF-IDF pipeline used only the default scikit-learn stopword list and produced a discriminative vocabulary that was dominated by author names ("anna", "kamat", "yagiz", "trivikr") and project-specific identifiers ("ractors", "callcache", "ifrt"). This is a form of identity leakage in which the model learns to recognize which contributor or project a commit belongs to, rather than learning about the content of the commit itself. The aggressive regex cleaning and the algorithmically constructed 693-token stoplist described in Section 6.2.2 were introduced specifically to address this issue, and they reduced the project-identity leakage substantially although they did not eliminate it entirely. The residual leakage is honestly reported and discussed in the testing and evaluation chapter.
 
-The fourth decision concerned the evaluation strategy. The initial plan called for a single chronological train/test split, on the grounds that this best simulates a production deployment in which a model trained on historical data is applied to future commits. However, the chronological split exhibited a substantial class drift, with the test failure rate of 6.65 percent being almost half the training failure rate of 12.05 percent. This drift makes raw accuracy on the chronological test set difficult to interpret, since a degenerate "always predict success" classifier would already achieve 93.4 percent accuracy. The project therefore adopted a dual-split strategy in which the stratified random split serves as the primary evaluation and the chronological split serves as a secondary robustness check; this is the standard contemporary practice in applied machine learning research on imbalanced temporally structured data.
+The fourth decision concerned the evaluation strategy, and it was revised twice. The initial plan called for a single chronological train/test division, on the grounds that this best simulates a production deployment in which a model trained on historical data is applied to future commits. That division was implemented by sorting on the commit authoring date rather than on the workflow execution date, which produced a test partition spanning approximately eleven hours in which 95.8 percent of the runs had in fact executed before the last run in the training partition. The apparent class drift that this produced, a test failure rate of 6.65 percent against 12.05 percent in training, was an artefact of which repositories happened to be active in that window and was not drift at all. The project then adopted a stratified random division as its primary evaluation, which introduced a second and more serious defect, since a random division of rows scatters multiple executions of the same commit across both sides. The protocol finally adopted, and the one reported throughout Chapter 7, is commit-grouped five-fold cross-validation as the primary evaluation with a per-repository chronological partition as a secondary check. Section 7.3.1 sets out the reasoning in full.
 
-The fifth decision concerned the handling of XGBoost's classification threshold. The initial evaluation pass treated the default 0.5 threshold as fixed, which led to an apparent conclusion that XGBoost was a poor classifier despite achieving the highest ROC-AUC and PR-AUC of all candidates. A focused investigation revealed that the model's probability outputs were well-calibrated for ranking but were systematically biased toward the majority class for hard decisions. A dedicated threshold optimization phase was added to the pipeline, and it produced the single largest performance improvement in the project: a 27-percentage-point gain in failure-class F1 from a one-line code change. This experience reinforces a methodological lesson that the testing and evaluation chapter discusses in detail, namely that probability calibration and decision-rule selection are first-class concerns for imbalanced binary classification, not afterthoughts.
+The fifth decision concerned the handling of XGBoost's classification threshold. The initial evaluation pass treated the default 0.5 threshold as fixed, which led to an apparent conclusion that XGBoost was a poor classifier despite achieving the highest ROC-AUC and PR-AUC of all candidates. A focused investigation revealed that the model's probability outputs were well calibrated for ranking but were systematically biased toward the majority class for hard decisions, and a dedicated threshold optimization phase was added to the pipeline. That phase initially selected the threshold by maximising the failure-class F1 over the test set and then reported the resulting score on the same test set, which produced an apparent gain of 27 percentage points. A quantity chosen to maximise a value cannot also serve as an unbiased estimate of that value, and Section 7.4.5 shows that 0.126 of the reported F1 was attributable to this procedure alone. The phase now selects the threshold on a validation partition. The methodological lesson survives the correction and is arguably strengthened by it: decision-rule selection is a first-class concern under class imbalance, and precisely because it is powerful it must be performed on data that is not subsequently used to report the result.
 
 ## 6.4 Security and Data Protection
 
@@ -610,7 +613,7 @@ All trained models are stored locally and are not transmitted to any external se
 
 ## 6.5 Deployment and Execution Instructions
 
-The project is fully reproducible from a clean checkout in under one hour, excluding the GitHub data collection step, which takes approximately two hours due to API rate limits. The recommended environment is Python 3.11 on Linux or macOS, with a virtual environment created in the project root via `python -m venv .venv` and dependencies installed via `pip install -r requirements.txt`. Once the environment is configured, the full pipeline can be reproduced by running the six phase orchestrator scripts in order: run_phase0.py for data collection (which requires the GITHUB_TOKEN environment variable to be set), run_phase1.py for exploratory data analysis, run_phase2.py and run_phase2_5.py for data preparation and quality refinement, run_phase3.py for pipeline architecture validation, run_phase4.py for full training and evaluation, and run_phase5.py for threshold optimization. Each phase writes its outputs to deterministic locations under data/, models/, results/, and figures/, and each can be re-run independently without invalidating the outputs of unrelated phases. A fixed random seed of 42 is applied throughout the codebase, so two runs of the same phase on the same input data produce bit-identical outputs.
+The project is fully reproducible from a clean checkout in approximately three minutes, excluding the optional GitHub data collection step, which takes approximately two hours due to API rate limits. The recommended environment is Python 3.11 on Linux or macOS, with a virtual environment created in the project root via `python -m venv .venv` and dependencies installed via `pip install -r requirements.txt`. Once the environment is configured, every reported result is reproduced by a single command, `./reproduce.sh`, which takes approximately three minutes. It runs data preparation and split construction (run_phase2_5.py), then the cross-validated evaluation, business analysis and figure generation (run_corrected_evaluation.py). Optional steps that are not required to reproduce any reported number are documented in Appendix B: data collection from the GitHub API, exploratory data analysis, pipeline architecture validation, and the training run that persists the deployable model artefacts. Each writes its outputs to deterministic locations under data/, models/, results/, and figures/. A fixed random seed of 42 is applied throughout the codebase, so two runs on the same input data produce identical metrics.
 
 ---
 
@@ -632,20 +635,21 @@ The fifth component is the business-impact evaluation. Statistical metrics such 
 
 ## 7.2 Test Cases and Validation Procedures
 
-Because this project is fundamentally a machine learning experiment rather than a conventional software product, the notion of a discrete "test case" with an expected and an actual result does not map cleanly onto the evaluation. Each prediction made by the model is, in effect, a test case: there are 1,955 such test cases in the stratified test set and 1,955 in the chronological test set, and each one compares a model-predicted label against a ground-truth label observed in real production CI/CD pipelines. The aggregate statistics over these test cases are what the metrics in Sections 7.4 capture.
+Because this project is fundamentally a machine learning experiment rather than a conventional software product, the notion of a discrete "test case" with an expected and an actual result does not map cleanly onto the evaluation. Each prediction made by the model is, in effect, a test case. Under the commit-grouped cross-validation protocol every one of the 9,772 workflow runs is predicted exactly once by a model that was not trained on any run of its commit, giving 9,772 such test cases, with a further 1,636 in the chronological test partition. Each compares a model-predicted label against a ground-truth label observed in real production CI/CD pipelines. The aggregate statistics over these test cases are what the metrics in Sections 7.4 capture.
 
 For the purposes of this chapter, however, it is useful to articulate a small number of validation procedures that confirm the correctness of the evaluation infrastructure itself. These procedures were executed as part of the project and their successful completion is a precondition for trusting any of the downstream metrics.
 
 | Test Case ID | Scenario | Expected Result | Actual Result | Status |
 |---|---|---|---|---|
-| TC-001 | Data leakage check: assert that the test set contains no rows with timestamps earlier than the latest train-set timestamp (chronological split) | Test min(commit_date) >= train max(commit_date) | Test min = 2025-12-08; train max = 2025-12-08 | Pass |
+| TC-001 | Temporal leakage check: assert that, for every repository, the earliest workflow execution in the chronological test partition occurs no earlier than the latest execution in the corresponding training partition | For all 18 repositories, min(test.created_at) >= max(train.created_at) | Holds for all 18 of 18 repositories; verified programmatically and recorded in results/split_integrity.json | Pass |
 | TC-002 | Pre-execution feature compliance: assert that no post-execution column (run_duration_sec, run_attempt, status) appears in the final feature set | Zero post-execution columns present | All three columns dropped before training; assertion succeeded | Pass |
-| TC-003 | Class-ratio preservation (stratified split): assert train and test failure rates differ by less than 0.5 percentage points | Difference < 0.5 pp | Train failure = 10.98%; test failure = 10.95%; difference = 0.03 pp | Pass |
-| TC-004 | Pipeline serialization round-trip: assert that a trained pipeline can be saved to disk and loaded back without loss of predictive output | Predictions identical before and after serialization | All 1,955 test predictions identical for all three models | Pass |
-| TC-005 | Threshold transferability: assert that the F1-optimal threshold found on the stratified test set produces a failure-class F1 within 5 percentage points when applied to the chronological test set | abs(stratified_F1 - chronological_F1) < 5 pp | XGBoost: 59.24% vs 62.07%, difference = 2.83 pp | Pass |
+| TC-003 | Class-ratio preservation under grouping: assert that the training, validation and test partitions of the commit-grouped split differ in failure rate by less than 0.5 percentage points | Pairwise difference < 0.5 pp | Train 10.969%, validation 10.990%, test 10.958%, against a population rate of 10.97%; maximum pairwise difference 0.032 pp | Pass |
+| TC-004 | Pipeline serialization round-trip: assert that a trained pipeline can be saved to disk and loaded back without loss of predictive output | Predictions identical before and after serialization | All test predictions identical for all three models | Pass |
+| TC-005 | Threshold transferability: assert that a threshold selected on a validation partition performs within 5 percentage points of the threshold that maximises F1 on the evaluation data itself | abs(F1 at selected threshold - F1 at evaluation-optimal threshold) < 5 pp | Logistic Regression 2.09 pp, XGBoost 0.91 pp, Random Forest 0.59 pp; recorded in results/threshold_selection_gap.json | Pass |
 | TC-006 | Repository-stratified sanity check: assert that no single repository accounts for more than 50% of the predicted failures on the test set | No repository > 50% share | Top repository (prisma/prisma) accounts for 31% of predicted failures | Pass |
 | TC-007 | Bot-author isolation: assert that the is_bot_author feature contributes non-trivially to the model (importance > 0.001) and is not silently zeroed-out | Feature importance > 0.001 | XGBoost importance = 0.018; rank 9 of 16 structured features | Pass |
-| TC-008 | Reproducibility check: assert that re-running the full pipeline from scratch with seed=42 produces bit-identical model artefacts and metrics | Outputs identical across two runs | All metrics identical to four decimal places; model files byte-identical | Pass |
+| TC-008 | Reproducibility check: assert that re-running the full pipeline from scratch with seed=42 produces identical metrics | Outputs identical across two runs | All metrics identical to four decimal places | Pass |
+| TC-009 | Commit-group disjointness: assert that no commit hash appears in more than one partition of either the commit-grouped or the chronological split | Zero shared commits between any pair of partitions | Zero for all three pairs in both splits. The retained row-level stratified split, kept solely to quantify the defect it exhibits, shares 913 commits between training and test | Pass |
 
 All eight validation procedures completed successfully, which establishes that the metrics reported in the remainder of this chapter are computed from a sound evaluation infrastructure.
 
@@ -669,9 +673,26 @@ A central methodological decision in this project is the choice of evaluation me
 
 In addition to the scalar metrics, the **confusion matrix** is reported for each model. The confusion matrix is a 2x2 table that exposes the raw counts of true positives, true negatives, false positives, and false negatives, and is the foundation from which all of the scalar metrics are derived.
 
+### 7.3.1 Evaluation Protocol, and the Correction of an Earlier Design
+
+The evaluation protocol reported in this chapter differs from the one used in an earlier version of this work. The earlier design was found to contain two defects that inflated the reported performance, and both are described here in full, because the corrected figures cannot be interpreted without them.
+
+The first defect concerns the unit of observation. Each row of the dataset is a workflow run, but every feature the model consumes is a property of a commit rather than of a run. The dataset contains 9,772 runs drawn from only 2,835 distinct commits, an average of 3.45 runs per commit and a maximum of 179. A split that allocates rows at random therefore places near-duplicate observations of the same commit on both sides of the partition, differing only in the workflow name, the branch, or the triggering event. Measured on the earlier stratified split, 1,726 of the 1,955 test rows, or 88.3 percent, shared a commit with the training set. The model was consequently rewarded for recognising commits it had already been shown rather than for generalising to unseen ones.
+
+This is an instance of the leakage that Kapoor and Narayanan [21] document across 294 papers in seventeen scientific fields, and specifically of the category in which the training and evaluation partitions are not independent. Roberts et al. [22] give the general treatment: where a dependence structure exists in the data, random partitioning underestimates predictive error, and the partition must be blocked on whatever carries the dependence. Here the dependence is the commit.
+
+The corrected protocol groups on the commit hash. Every partition described in this chapter is produced by a splitter that assigns all runs of a given commit to exactly one side of the division, and the absence of any shared commit between partitions is verified programmatically and recorded in the file results/split_integrity.json. Stratification is retained alongside grouping, because grouping alone allows the class balance to drift between partitions: an unstratified grouped split of this dataset produced training, validation and test failure rates of 9.71, 14.72 and 11.64 percent respectively, against a population rate of 10.97 percent, and a decision threshold selected under one class prior does not transfer to a partition with a different one.
+
+The second defect concerns the decision threshold. In the earlier design the threshold was chosen by maximising the failure-class F1 score over the test set, and the resulting F1 score was then reported as the performance of the model on that same test set. A quantity selected to maximise a value cannot also serve as an unbiased estimate of it. In the corrected protocol the threshold is selected on a validation partition carved from the training data under the same grouping constraint, and is then applied unchanged to the test partition. The residual optimism that the earlier procedure would still have purchased is quantified in Section 7.4.5.
+
+A third change follows from the first two rather than from a defect. Because repository identity is the strongest single predictor available to the model, as Section 7.4.3 establishes, and because no grouped splitter balances the composition of repositories across partitions, the result obtained from any single held-out partition depends materially on which repositories happen to fall into it. The partition drawn by the stratified grouped splitter over-represents both prisma/prisma, whose failure rate is 38.3 percent, and elastic/elasticsearch, whose failure rate is zero, by approximately 43 percent relative to their share of the corpus. Single-partition estimates of the failure-class F1 score varied across a range of roughly 20 percentage points depending on the partition drawn. The primary results in this chapter are therefore obtained by five-fold commit-grouped cross-validation rather than from a single partition. Each of the 9,772 runs receives exactly one prediction, produced by a model that was trained without any run of that run's commit; threshold-independent metrics are computed once over the pooled predictions, and threshold-dependent metrics are reported as the mean and standard deviation across the five folds.
+
+The consequence of these corrections is a substantially lower headline figure, and Section 7.4.5 attributes the reduction to each of its causes individually. The author judges the disclosure to be of greater value than the figure it replaces: an evaluation protocol that cannot be defended does not become defensible by producing a larger number.
+
+
 ## 7.4 Results
 
-The results of the full evaluation are presented in three parts: the main classifier comparison on the stratified test set in Section 7.4.1, the chronological-split robustness check in Section 7.4.2, the ablation study in Section 7.4.3, and the threshold optimization results in Section 7.4.4. The business-impact analysis follows in Section 7.4.5.
+The results of the full evaluation are presented in six parts: the main classifier comparison under commit-grouped cross-validation in Section 7.4.1, the chronological robustness check in Section 7.4.2, the ablation study in Section 7.4.3, the threshold optimization results in Section 7.4.4, the attribution of the previously reported result in Section 7.4.5, and the business-impact analysis in Section 7.4.6.
 
 ![Figure 7.1: Workflow run conclusion distribution showing the 89:11 class imbalance](figures/fig_01_conclusion_distribution.png)
 
@@ -681,111 +702,158 @@ The results of the full evaluation are presented in three parts: the main classi
 
 *Figure 7.2: Cross-tabulation of repository and conclusion, sorted by failure rate (descending). The 38-fold variation across repositories (from 0% for elastic/elasticsearch to 38.3% for prisma/prisma) confirms that repository identity is a strong predictive signal that the model must learn.*
 
-### 7.4.1 Main Classifier Comparison (Stratified Test, Default Threshold)
+### 7.4.1 Main Classifier Comparison
 
-Table 7.1 reports the performance of the three candidate classifiers on the stratified test set at the default decision threshold of 0.5. All three models are trained on the same 7,817 training examples and evaluated on the same 1,955 test examples.
+Table 7.1 reports the three candidate classifiers under commit-grouped five-fold cross-validation, with each model's decision threshold selected on a validation partition and applied unchanged to the held-out fold. The accuracy, precision, recall and F1 figures are computed over the pooled out-of-fold predictions, so every one of the 9,772 workflow runs contributes exactly one prediction from a model that was not trained on any run of its commit.
 
-**Table 7.1 — Classifier comparison on the stratified test set (default threshold = 0.5).**
+**Table 7.1 — Classifier comparison under commit-grouped five-fold cross-validation.**
 
-| Model | Accuracy | Balanced Accuracy | Precision (fail) | Recall (fail) | F1 (fail) | ROC-AUC | PR-AUC |
-|---|---|---|---|---|---|---|---|
-| Logistic Regression | 80.20% | 78.84% | 32.80% | 77.10% | 46.03% | 87.47% | 49.92% |
-| Random Forest | 83.17% | 77.23% | 36.08% | 69.63% | 47.53% | 86.10% | 47.29% |
-| XGBoost | 90.74% | 59.76% | 81.13% | 20.09% | 32.21% | 88.40% | 58.73% |
+| Model | Threshold | Accuracy | Balanced Accuracy | Precision (fail) | Recall (fail) | F1 (fail) | ROC-AUC | PR-AUC |
+|---|---|---|---|---|---|---|---|---|
+| Logistic Regression | 0.646 | 83.39% | 71.53% | 34.34% | 56.34% | 42.67% | 82.76% | 40.92% |
+| Random Forest | 0.538 | 86.70% | 68.93% | 40.64% | 46.18% | 43.23% | 80.08% | 39.09% |
+| XGBoost | 0.076 | 89.71% | 66.86% | 54.46% | 37.59% | 44.48% | 82.40% | 48.03% |
 
-The results in Table 7.1 reveal a tension that is characteristic of imbalanced binary classification. Random Forest achieves the highest F1 score at the default threshold (47.53 percent), making it the apparent winner by that single metric. However, XGBoost achieves the highest ROC-AUC (88.40 percent) and PR-AUC (58.73 percent), both of which are threshold-independent and therefore measure the model's intrinsic ability to rank failures above successes. The discrepancy is explained by XGBoost's behavior at the default threshold: it predicts failure for only 20 percent of the actual failures, sacrificing recall to maximize precision. XGBoost is in fact the best ranking model of the three, but its default decision rule is poorly calibrated for the 8:1 class imbalance. This observation motivates the threshold optimization experiment reported in Section 7.4.4.
+A pooled figure conceals the variation between folds, which in this case is the more important quantity. Table 7.2 reports the failure-class F1 score of each classifier as a mean and standard deviation across the five folds.
 
-Logistic Regression presents a different profile: it achieves the highest failure recall (77.10 percent) at the cost of the lowest precision (32.80 percent), meaning that it casts a wide net and flags many builds that turn out to succeed. From an operational perspective, the Logistic Regression behavior corresponds to a "high-vigilance, high-false-alarm" deployment mode, while the default XGBoost behavior corresponds to a "low-vigilance, high-precision" deployment mode. Neither default behavior is unambiguously preferable; the choice depends on the relative cost of false alarms versus missed failures in the deployment environment.
+**Table 7.2 — Failure-class F1 across the five commit-grouped folds.**
 
-![Figure 7.3: Confusion matrices for all three classifiers on the stratified test set](figures/fig_12_confusion_matrices_grid.png)
+| Model | Mean F1 | Standard deviation | Minimum fold | Maximum fold |
+|---|---|---|---|---|
+| Logistic Regression | 0.4311 | 0.0633 | 0.3788 | 0.5380 |
+| Random Forest | 0.4240 | 0.0812 | 0.3213 | 0.5233 |
+| XGBoost | 0.4216 | 0.0638 | 0.3208 | 0.4976 |
 
-*Figure 7.3: Confusion matrices for Logistic Regression, Random Forest, and XGBoost on the stratified test set at the default decision threshold of 0.5. Note the stark asymmetry in XGBoost's matrix: 43 true positives versus 171 false negatives indicates a severely conservative decision rule. This pattern motivates the threshold optimization experiment in Section 7.4.4.*
+The three classifiers are separated by less than one hundredth of a point of mean F1, while the standard deviation across folds exceeds six hundredths for every model. The differences between the classifiers are therefore not resolvable at this sample size, and no claim that one of the three is superior on the F1 criterion can be sustained. This is itself a finding: an earlier version of this work identified a single winning classifier on the basis of a single held-out partition, and the apparent margin was smaller than the variation between partitions.
 
-![Figure 7.4: ROC curves comparing classifier ranking ability](figures/fig_13_roc_curves_per_target.png)
+Where the classifiers do separate is in the shape of their operating behaviour rather than in its quality. Logistic Regression attains the highest failure recall at 56.34 percent and the lowest precision at 34.34 percent, corresponding to a high-vigilance deployment posture that flags many builds which subsequently succeed. XGBoost inverts this profile, attaining 54.46 percent precision at 37.59 percent recall. XGBoost also attains the highest PR-AUC at 48.03 percent. Since PR-AUC is both threshold-independent and, unlike ROC-AUC, sensitive to the prevalence of the minority class [23], it is the appropriate criterion for selecting among models whose F1 scores are indistinguishable. XGBoost is selected on that basis.
 
-*Figure 7.4: Receiver Operating Characteristic curves for the three classifiers on the stratified test set. ROC-AUC values are 0.875 (LR), 0.861 (RF), and 0.884 (XGB). The threshold-independent nature of ROC-AUC reveals that XGBoost is the strongest ranking model despite its poor default-threshold F1.*
+![Figure 7.3: Confusion matrices from pooled out-of-fold predictions](figures/fig_12_confusion_matrices_grid.png)
 
-![Figure 7.5: Comparative metrics bar chart across classifiers](figures/fig_14_metrics_comparison_bars.png)
+*Figure 7.3: Confusion matrices for the three classifiers, computed on pooled out-of-fold predictions and thresholded at each model's mean validation-selected threshold. The operating trade-off is visible directly in the off-diagonal counts: Logistic Regression recovers 604 of the 1,072 failures at the cost of 1,155 false alarms, whereas XGBoost recovers 403 at the cost of 337.*
 
-*Figure 7.5: Comparative performance across the principal evaluation metrics for the three classifiers on the stratified test set at default threshold. The chart visualizes the tension discussed in the prose: Random Forest leads on F1, Logistic Regression leads on recall, and XGBoost leads on precision and AUC metrics.*
+![Figure 7.4: ROC curves from pooled out-of-fold predictions](figures/fig_13_roc_curves_per_target.png)
+
+*Figure 7.4: Receiver operating characteristic curves computed on pooled out-of-fold predictions. The areas under the curves are 0.828 for Logistic Regression, 0.801 for Random Forest and 0.824 for XGBoost.*
+
+![Figure 7.5: Model comparison with cross-validation spread](figures/fig_14_metrics_comparison_bars.png)
+
+*Figure 7.5: Failure-class F1 for the three classifiers, showing the mean across the five commit-grouped folds and an interval of one standard deviation. The intervals overlap for all three classifiers, which is the basis for the conclusion that the models are not separated on this criterion.*
+
+![Figure 7.10: Precision-recall curves from pooled out-of-fold predictions](figures/fig_22_precision_recall_curves.png)
+
+*Figure 7.10: Precision-recall curves on pooled out-of-fold predictions, with the prevalence of the failure class marked as the baseline a random classifier attains. Average precision is 0.409 for Logistic Regression, 0.391 for Random Forest and 0.480 for XGBoost.*
 
 ### 7.4.2 Chronological Robustness Check
 
-Table 7.2 reports the same three models evaluated under the chronological split. Because the chronological test set has a substantially lower failure rate (6.65 percent versus 10.95 percent), the raw accuracy figures are systematically higher than those in Table 7.1, but the failure-class metrics remain the appropriate basis for interpretation.
+The secondary evaluation asks whether a model trained on a repository's past predicts that repository's future. A single global division of the corpus by execution time cannot answer this question on this dataset. The collector capped each repository at 600 runs, so the period each repository covers varies from 0.4 days for ruby/ruby to 182 days for expressjs/express, and 88.7 percent of all runs fall within May 2026. Any global division at the eightieth percentile of execution time therefore yields a test partition spanning approximately nine hours and containing only eleven of the eighteen repositories, which measures the composition of that particular window rather than the passage of time.
 
-**Table 7.2 — Classifier comparison on the chronological test set (default threshold = 0.5).**
+The chronological partition used here is instead constructed per repository. Each repository is divided at its own quantiles of execution time, whole commits are assigned to one side of each division, and commits whose runs straddle a division are discarded. The resulting partition satisfies, for every one of the eighteen repositories, the condition that the earliest test execution occurs no earlier than the latest training execution; it contains all eighteen repositories and spans 57 days. The training partition contains 6,014 runs at a failure rate of 11.21 percent and the test partition 1,636 runs at 9.41 percent.
 
-| Model | Accuracy | Balanced Accuracy | Precision (fail) | Recall (fail) | F1 (fail) | ROC-AUC | PR-AUC |
-|---|---|---|---|---|---|---|---|
-| Logistic Regression | 87.83% | 81.33% | 32.00% | 73.85% | 44.65% | 92.20% | 55.48% |
-| Random Forest | 92.17% | 77.23% | 43.58% | 60.00% | 50.49% | 89.63% | 53.58% |
-| XGBoost | 94.78% | 61.84% | 91.18% | 23.85% | 37.80% | 93.60% | 65.86% |
+**Table 7.3 — Classifier comparison on the per-repository chronological test partition.**
 
-The failure-class metrics in Table 7.2 are largely consistent with those in Table 7.1, with differences of less than five percentage points for each model and metric. This consistency confirms that the trained classifiers are not overfit to a specific time window and that the model's discriminative behavior transfers to commits drawn from a later period than the training data. The notable improvement in ROC-AUC and PR-AUC on the chronological split (XGBoost rises from 88.40 percent to 93.60 percent ROC-AUC and from 58.73 percent to 65.86 percent PR-AUC) reflects the lower failure rate in the chronological test set rather than an actual improvement in model behavior, but the fact that none of the failure-class metrics degrades materially is the substantive finding that the panel can rely on.
+| Model | Threshold | Accuracy | Balanced Accuracy | Precision (fail) | Recall (fail) | F1 (fail) | ROC-AUC | PR-AUC |
+|---|---|---|---|---|---|---|---|---|
+| Logistic Regression | 0.690 | 87.16% | 67.02% | 34.95% | 42.21% | 38.24% | 81.62% | 36.49% |
+| Random Forest | 0.510 | 86.25% | 68.55% | 33.49% | 46.75% | 39.02% | 82.18% | 38.17% |
+| XGBoost | 0.050 | 89.30% | 66.17% | 42.34% | 37.66% | 39.86% | 80.27% | 41.81% |
+
+Each model in Table 7.3 is trained on the chronological training partition rather than reused from the cross-validated evaluation, because a model fitted under the grouped partition would already have been exposed to commits that the chronological partition holds out.
+
+The failure-class F1 scores fall between three and five percentage points below the cross-validated figures in Table 7.1. A degradation of this magnitude is the expected consequence of predicting forward in time rather than across a random partition, and it is small enough to support the conclusion that the model's discriminative behaviour is not confined to the period on which it was trained. It is not, however, evidence of stability over long horizons: the median repository contributes a test window of well under one day, and the ability of these models to predict months rather than hours ahead is not established by this dataset.
+
+![Figure 7.6: Class balance across the chronological partitions](figures/fig_07_train_test_class_balance.png)
+
+*Figure 7.6: Class distribution across the partitions of the per-repository chronological split. The residual difference in failure rate between the partitions is small. An earlier version of this figure showed a substantially larger gap and attributed it to temporal drift in repository stability; that interpretation was incorrect, as the gap reflected which repositories happened to be active within an eleven-hour window.*
 
 ### 7.4.3 Ablation Study: Contribution of Each Feature Modality
 
-The ablation study isolates the contribution of the textual modality to the hybrid model's predictive performance. Table 7.3 reports XGBoost evaluated on the stratified test set under three feature configurations: text-only (TF-IDF on cleaned commit messages, with no structured features), structured-only (the five numerical features plus four categorical features plus six binary features, with no text), and hybrid (all four branches combined).
+The ablation study holds the classifier and its hyperparameters constant and varies only the feature set, under the same commit-grouped cross-validation protocol. Four configurations are compared. The categorical-only configuration, which receives nothing beyond the repository, the workflow name, the branch and the triggering event, was specified in the original project plan but was not implemented in the earlier version of this work; it is the configuration that discriminates between the two available explanations of the model's behaviour, and it is reported here for the first time.
 
-**Table 7.3 — Ablation study: XGBoost on the stratified test set at default threshold = 0.5.**
+**Table 7.4 — Feature-set ablation under commit-grouped five-fold cross-validation (XGBoost throughout).**
 
-| Configuration | Accuracy | Balanced Accuracy | Precision (fail) | Recall (fail) | F1 (fail) | ROC-AUC | PR-AUC |
-|---|---|---|---|---|---|---|---|
-| Text only (TF-IDF) | 89.05% | 50.61% | 50.00% | 1.40% | 2.73% | 75.04% | 30.71% |
-| Structured only | 90.79% | 62.25% | 72.37% | 25.70% | 37.93% | 87.74% | 58.79% |
-| Hybrid (full) | 90.74% | 59.76% | 81.13% | 20.09% | 32.21% | 88.40% | 58.73% |
+| Configuration | F1 (fail), mean | F1 standard deviation | Precision (fail) | Recall (fail) | ROC-AUC | PR-AUC |
+|---|---|---|---|---|---|---|
+| Text only | 0.1962 | 0.0661 | 0.3131 | 0.1559 | 0.6654 | 0.2080 |
+| Hybrid (all four branches) | 0.4216 | 0.0638 | 0.5204 | 0.3686 | 0.8240 | 0.4803 |
+| Structured only | 0.4225 | 0.0655 | 0.5380 | 0.3611 | 0.8197 | 0.4825 |
+| Categorical only | 0.4808 | 0.0767 | 0.5911 | 0.4319 | 0.8649 | 0.5467 |
 
-The ablation results are surprising and require frank discussion. The text-only configuration is essentially a degenerate classifier: it predicts failure for only 1.40 percent of true failures, and its 89.05 percent accuracy is achieved almost entirely by predicting "success" for every example. This indicates that the TF-IDF representation of cleaned commit messages, when used in isolation, does not contain enough signal to overcome the 8:1 class prior. The text branch achieves a non-trivial ROC-AUC of 75.04 percent, which confirms that it does encode some information about failure propensity, but this information is not strong enough to drive a usable classification decision on its own.
+The categorical-only configuration attains the highest score on every metric in Table 7.4. A model that is told only which repository a commit belongs to, which workflow will run, on which branch, and what triggered it, and which is told nothing whatever about the size of the change or the content of its message, outperforms the full hybrid model by 5.9 percentage points of failure-class F1 and by 6.6 percentage points of PR-AUC.
 
-The structured-only configuration outperforms the hybrid configuration on failure-class F1 (37.93 percent versus 32.21 percent) and balanced accuracy (62.25 percent versus 59.76 percent) at the default threshold. This is the opposite of the hypothesis with which the project was originally framed, in which the combination of structured and textual features was expected to outperform either modality alone. On this real-world dataset, the addition of the TF-IDF text branch to the structured features does not provide a measurable lift at the default threshold, and in fact slightly degrades the failure-class F1 score, because the text features add noise to the XGBoost decision boundary without providing a compensating signal.
+This is the central empirical finding of the project, and it refutes the hypothesis with which the project was framed more comprehensively than the earlier ablation indicated. The hybrid hypothesis held that combining structured and textual features would outperform either modality alone. The evidence is that the textual branch contributes nothing that survives measurement, that the numerical and binary branches together contribute nothing beyond the categorical branch, and that adding either to the categorical features degrades performance by introducing variance without compensating signal.
 
-The hybrid configuration retains a marginal advantage on threshold-independent metrics (88.40 percent ROC-AUC versus 87.74 percent, and essentially identical PR-AUC), which indicates that the text branch contributes weakly to the model's ranking ability even when it harms its default decision behavior. The discussion chapter (Chapter 8) interprets this finding in detail, including its implications for the original hybrid hypothesis and the practical lessons that the project draws from it.
+The mechanism is visible in the data. The failure rate varies 38-fold across the eighteen repositories, from zero for elastic/elasticsearch, which contributes 600 runs and not one failure, to 38.3 percent for prisma/prisma. A one-hot encoding of repository identity therefore encodes a strong prior over the outcome before any property of the individual commit is consulted. The honest reading of the result is that the system is substantially a project-level risk estimator rather than a commit-level one: it predicts that a build in a historically unreliable repository is likely to fail, which is useful, but it is a weaker claim than predicting that a particular commit is likely to break the build.
 
+This finding also bounds the practical value of the approach. A model built on categorical identity alone cannot distinguish between two commits to the same repository on the same branch through the same workflow, and it offers no guidance to a developer asking whether the change just written is risky. Section 8.3 discusses the implications for deployment, and Section 9.3 identifies the feature classes that would be required to make commit-level discrimination viable.
 
+![Figure 7.7: Feature-set ablation](figures/fig_15_ablation_study.png)
 
-![Figure 7.6: Ablation study showing contribution of each feature modality](figures/fig_15_ablation_study.png)
-
-*Figure 7.6: Ablation study comparing XGBoost performance under three feature configurations (Text-only, Structured-only, Hybrid full) across seven evaluation metrics. The structured-only configuration outperforms the full hybrid on Failure F1 (0.38 vs 0.32) and Failure Recall (0.26 vs 0.20) at the default threshold of 0.5, contradicting the unconditional hybrid hypothesis on this dataset.*
-
-![Figure 7.7: Top 30 most important features in the hybrid XGBoost model](figures/fig_17_feature_importance_global.png)
-
-*Figure 7.7: Top 30 features ranked by XGBoost gain-based importance in the trained hybrid model, color-coded by modality (purple = TF-IDF text, green = categorical, blue = numerical, orange = binary). The dominance of TF-IDF text tokens in the top ranks indicates that the gradient-boosting algorithm extracts substantial signal from the textual modality despite the weak standalone performance reported in the ablation study above.*
+*Figure 7.7: Failure-class F1 for four feature configurations under commit-grouped five-fold cross-validation, with the classifier and its hyperparameters held identical across configurations. The categorical-only configuration, highlighted, attains the highest score of any configuration tested.*
 
 ### 7.4.4 Threshold Optimization
 
-The default 0.5 threshold used to generate Tables 7.1 through 7.3 is calibrated for balanced classes. To establish how each model would behave under a threshold tuned for the actual class distribution, a sweep was conducted over the range 0.05 to 0.95 in steps of 0.01, with the threshold-dependent metrics (precision, recall, F1, balanced accuracy) recomputed at each point. Table 7.4 reports the F1-optimal threshold for each model on the stratified test set, together with the metrics achieved at that optimal point.
+The default threshold of 0.5 is calibrated for balanced classes and is not appropriate under an 89:11 prior. For each fold, a sweep over the range 0.05 to 0.95 in steps of 0.01 was conducted on the validation partition, and the F1-optimal threshold from that sweep was applied to the held-out fold without further adjustment.
 
-**Table 7.4 — F1-optimal thresholds and corresponding metrics on the stratified test set.**
+The selected thresholds differ by an order of magnitude between classifiers: 0.076 for XGBoost, 0.538 for Random Forest and 0.646 for Logistic Regression. XGBoost, notwithstanding the application of the scale_pos_weight correction, produces failure probabilities biased toward the majority class, so an aggressive decision rule is required to recover its ranking ability. Logistic Regression is biased in the opposite direction. The practical implication is that a deployment of these models requires a per-model calibration step and that no single decision rule serves all three.
 
-| Model | Optimal Threshold | Accuracy | Balanced Accuracy | Precision (fail) | Recall (fail) | F1 (fail) | F1 Improvement vs Default |
-|---|---|---|---|---|---|---|---|
-| Logistic Regression | 0.79 | 90.18% | 72.15% | 55.85% | 49.07% | 52.24% | +6.21 pp |
-| Random Forest | 0.57 | 87.72% | 74.66% | 45.26% | 57.94% | 50.82% | +3.29 pp |
-| XGBoost | 0.06 | 90.64% | 78.15% | 56.60% | 62.15% | 59.24% | +27.03 pp |
+The magnitude of the benefit is considerably smaller than the earlier version of this work reported. That version recorded an improvement of 27.03 percentage points in failure-class F1 for XGBoost from threshold selection alone. That figure was obtained by selecting the threshold on the test set and then reporting the resulting score on the same test set, and it is therefore not an estimate of the benefit that threshold selection would deliver in deployment. Section 7.4.5 decomposes it.
 
-
+The residual optimism attributable to threshold selection under the corrected protocol can be measured directly by comparing the score at the validation-selected threshold with the score at the threshold that maximises F1 on the evaluation data itself. That difference is 0.0209 for Logistic Regression, 0.0091 for XGBoost and 0.0059 for Random Forest. The validation-selected thresholds are therefore close to optimal, which indicates that the selection procedure is sound and that the earlier inflation arose from where the threshold was chosen rather than from how.
 
 ![Figure 7.8: Threshold optimization curve](figures/fig_20_threshold_optimization.png)
 
-*Figure 7.8: Failure-class F1 score as a function of decision threshold for all three classifiers, evaluated on the stratified test set. Red dots mark the F1-optimal threshold for each model. XGBoost's optimum at 0.06 lies dramatically below the default 0.5 (gray dashed line), revealing severe probability mis-calibration under class imbalance. Logistic Regression's optimum at 0.79 lies above the default, indicating opposite-direction mis-calibration.*
+*Figure 7.8: Failure-class F1 as a function of the decision threshold, computed on pooled out-of-fold predictions. Circles mark the threshold selected on the validation partitions, which is the threshold a deployment would use; stars mark the threshold that maximises F1 on the evaluation data, which is what the earlier methodology reported. The proximity of each circle to its star is the evidence that the selection procedure is sound.*
 
-The threshold optimization produces the most dramatic single result of the project. XGBoost, which appeared to be the weakest model by failure-class F1 at the default threshold (32.21 percent, lowest of the three), becomes the strongest model by a comfortable margin under its F1-optimal threshold of 0.06 (59.24 percent F1, almost seven percentage points ahead of Logistic Regression and over eight ahead of Random Forest). The 27-percentage-point improvement in F1 from a single hyperparameter change is approximately ten times larger than the improvement that hyperparameter tuning of the underlying classifier or feature engineering of the inputs typically produces, which reinforces the methodological point that probability calibration and decision-rule selection are first-class concerns under heavy class imbalance, not afterthoughts to be deferred to deployment.
+![Figure 7.9: Metrics before and after threshold selection](figures/fig_21_metrics_before_after_threshold.png)
 
-The order-of-magnitude difference between XGBoost's optimal threshold of 0.06 and Logistic Regression's optimal threshold of 0.79 is informative in its own right. It reveals that the three models produce probability outputs that are calibrated very differently for this task. XGBoost, despite the application of scale_pos_weight, produces failure probabilities that are systematically biased toward the majority class, so an aggressive decision rule (threshold 0.06) is needed to extract its ranking ability. Logistic Regression, by contrast, produces failure probabilities that are biased in the opposite direction, so a conservative decision rule (threshold 0.79) is needed to maintain its precision. This finding implies that any future deployment of these models would need a per-model calibration step, not a one-size-fits-all decision rule.
+*Figure 7.9: Failure-class precision, recall and F1 at the default threshold of 0.50 against the validation-selected threshold, on pooled out-of-fold predictions. The direction of the change differs by classifier, XGBoost gaining recall and Logistic Regression gaining precision.*
 
-To verify that the F1-optimal thresholds transfer cleanly to a different evaluation regime, the same thresholds derived from the stratified test set were applied to the chronological test set. The resulting failure-class F1 scores are 54.30 percent for Logistic Regression (versus 52.24 percent stratified, a positive drift of 2.06 percentage points), 48.11 percent for Random Forest (versus 50.82 percent stratified, a negative drift of 2.71 percentage points), and 62.07 percent for XGBoost (versus 59.24 percent stratified, a positive drift of 2.83 percentage points). All three models maintain performance within plus or minus three percentage points across the two splits, confirming that the threshold calibration is a property of the model itself rather than an artefact of the specific test set on which it was derived.
+### 7.4.5 Attribution of the Previously Reported Result
 
+The earlier version of this work reported a failure-class F1 of 0.5924. The corrected protocol reports 0.4216 for the same classifier. Because each correction described in Section 7.3.1 can be applied independently, the difference can be attributed to its causes rather than merely acknowledged. Table 7.5 reports a sequence in which the classifier, its hyperparameters and the random seed are held constant and exactly one aspect of the evaluation protocol changes at each step.
 
+**Table 7.5 — Attribution of the previously reported failure-class F1 (XGBoost throughout).**
 
-![Figure 7.9: Model metrics before and after threshold optimization](figures/fig_21_metrics_before_after_threshold.png)
+| Step | Protocol | F1 (fail) | Change | Cause isolated |
+|---|---|---|---|---|
+| A | Row-level stratified split, threshold selected on the test set | 0.5924 | — | as previously reported |
+| B | Commit-grouped split, threshold still selected on the test set | 0.5326 | −0.0598 | duplicate-commit leakage |
+| C | Commit-grouped split, threshold selected on a validation partition | 0.4065 | −0.1261 | threshold selection on the test set |
+| D | Commit-grouped five-fold cross-validation | 0.4216 | +0.0151 | composition of a single partition |
 
-*Figure 7.9: Per-model comparison of five evaluation metrics (Accuracy, Balanced Accuracy, Failure Precision, Failure Recall, Failure F1) under the default 0.5 threshold versus the F1-optimal threshold. XGBoost (right panel) exhibits the most dramatic transformation: failure recall lifts from 0.20 to 0.62 and F1 from 0.32 to 0.59 with no retraining required, demonstrating that threshold calibration is a first-class concern for imbalanced binary classification.*
+Two observations follow. The first is that selecting the decision threshold on the evaluation data cost 0.1261 of F1, more than twice the 0.0598 attributable to duplicate-commit leakage. The leakage was the more conspicuous defect and the one an examiner would look for first, but the threshold procedure was the more damaging. The second is that replacing a single partition with cross-validation returned 0.0151, which indicates that the particular partition used at step C was marginally unfavourable and reinforces the argument of Section 7.3.1 that no single partition of this dataset should be trusted to two decimal places.
 
-### 7.4.5 Business Impact
+![Figure 7.11: Attribution of the previously reported result](figures/fig_18_metric_attribution.png)
 
-To translate the statistical performance into a quantitative deployment value, the winning configuration (XGBoost at threshold 0.06) was evaluated under a plausible operational scenario. The scenario assumes a mid-sized engineering organization that runs one thousand CI/CD pipeline executions per day, of which approximately eleven percent fail in line with the observed distribution. Each failure consumes an estimated eight minutes of compute resources at a marginal cost of $0.008 per minute, and consumes an estimated fifteen minutes of developer time at a fully-loaded rate of $75 per hour. A false alarm (a build incorrectly flagged as a failure) is estimated to cost approximately $2.50 in operator triage time. Under the optimized XGBoost configuration, the model catches approximately 62 percent of the 110 daily failures, producing an estimated daily savings of approximately $1,049, a monthly savings of approximately $31,470, and an annual savings of approximately $382,802 net of false-alarm costs.
+*Figure 7.11: Decomposition of the previously reported failure-class F1 of 0.5924 into its methodological components. Each column changes exactly one aspect of the evaluation protocol relative to the column to its left.*
 
-These numbers should be interpreted as order-of-magnitude indicators rather than precise forecasts: the per-pipeline cost assumptions are derived from typical cloud-CI pricing rather than from a specific operational measurement, and the developer-time cost assumptions vary substantially across organizations. Nonetheless, the analysis demonstrates that the predictive system has the potential to deliver a positive return on investment in any organization that operates CI/CD pipelines at the assumed scale, and that even with a conservative discount factor of fifty percent on the savings estimate, the annual value would remain in the six-figure range.
+### 7.4.6 Business Impact
+
+The operational value of the predictor is estimated under the scenario specified in the project plan. A mid-sized engineering organisation is assumed to run one thousand pipeline executions per day, of which 10.97 percent fail, in line with the rate observed in this dataset. Each failure that the model anticipates avoids an estimated eight minutes of compute at $0.008 per minute, which is $0.064, and an estimated fifteen minutes of developer context switching at $75 per hour, which is $18.75. Each false alarm is charged at $2.50, representing two minutes of operator triage at the same hourly rate.
+
+Under the selected XGBoost configuration, which attains 36.86 percent recall at 52.04 percent precision, the model anticipates 40.4 of the 109.7 daily failures and raises 37.3 false alarms. The gross daily benefit is $760.75 and the daily cost of false alarms is $93.16, giving a net daily saving of $667.59, a net monthly saving of $20,027.67 and a net annual saving of $243,669.95.
+
+This figure supersedes the estimate of $382,802 reported in the earlier version of this work, which was produced by an implementation that assumed a failure rate of 30 percent against the 11 percent observed, and that omitted the cost of false alarms entirely. The omission had a structural consequence beyond the magnitude of the estimate: with no cost attached to a false alarm, the estimated saving was a function of recall alone, so a model that traded precision for recall necessarily appeared to be worth more. This is why the earlier work reported that its threshold-tuned configuration saved less than its untuned one, a result that inverted the expectation and was not investigated at the time.
+
+The estimate remains sensitive to an assumption that this project did not measure. The benefit of anticipating a failure, at $18.814, is 7.5 times the assumed cost of a false alarm, so the cost model structurally rewards recall, and the ranking of configurations by estimated saving is a consequence of that ratio rather than an independent finding. Table 7.6 therefore reports, for each configuration, the false-alarm cost at which its net saving reaches zero.
+
+**Table 7.6 — Estimated annual saving and break-even false-alarm cost.**
+
+| Configuration | Precision (fail) | Recall (fail) | Estimated annual net saving | Break-even false-alarm cost |
+|---|---|---|---|---|
+| Logistic Regression | 35.32% | 56.91% | $324,393 | $10.27 |
+| Random Forest | 40.33% | 46.09% | $278,945 | $12.72 |
+| XGBoost | 52.04% | 36.86% | $243,670 | $20.41 |
+| Categorical only | 59.11% | 43.19% | $295,452 | $27.20 |
+
+The configuration with the highest estimated saving at the specified cost is also the one least tolerant of that cost having been underestimated. Logistic Regression ceases to pay for itself once a false alarm costs more than $10.27, which is approximately eight minutes of developer attention and is not an implausible figure in an organisation where a flagged build interrupts work. XGBoost tolerates $20.41 and the categorical-only configuration $27.20. On the evidence available, the break-even cost is a more defensible basis for selecting an operating point than the point estimate of the saving, and it is reported here in preference to it.
+
+![Figure 7.12: Sensitivity of the estimated saving](figures/fig_19_business_impact_sensitivity.png)
+
+*Figure 7.12: Estimated annual net saving as a function of the assumed cost of a single false alarm. The vertical line marks the $2.50 cost specified in the scenario. The point at which each curve crosses zero is that configuration's break-even cost.*
+
+These figures are order-of-magnitude indicators rather than forecasts. The compute and labour costs are drawn from typical published rates rather than from measurement in a specific organisation, and the scenario assumes that an anticipated failure can in fact be acted upon, which presupposes an operational response that this project did not design or evaluate.
 
 ## 7.5 Validation Against Objectives
 
@@ -793,11 +861,11 @@ This section evaluates whether the project objectives, defined in Section 1.3 of
 
 **Objective 1 — Build a hybrid machine learning pipeline that combines numerical and textual commit-level features for pre-execution failure prediction.** Achieved. The hybrid pipeline implemented in src/hybrid_pipeline.py integrates four feature modalities (five numerical, four categorical, six binary, and one textual feature) through a single ColumnTransformer abstraction, and is trained and evaluated end-to-end as a single composable scikit-learn pipeline. The architecture is documented in Figure 4.1 and is fully reproducible from the project codebase.
 
-**Objective 2 — Compare three machine learning algorithms (Logistic Regression, Random Forest, XGBoost) on the binary failure prediction task under identical conditions.** Achieved. All three algorithms are trained on identical inputs, hyperparameter-tuned to the same level of effort, and evaluated using the same metric suite. The comparative results are reported in Tables 7.1 and 7.4. XGBoost emerges as the winning classifier under the F1-optimized decision rule, achieving 59.24 percent failure-class F1 on the stratified test set.
+**Objective 2 — Compare three machine learning algorithms (Logistic Regression, Random Forest, XGBoost) on the binary failure prediction task under identical conditions.** Achieved, with a qualification that is itself a result. All three algorithms are trained on identical inputs, hyperparameter-tuned to the same level of effort, and evaluated using the same metric suite under the same commit-grouped cross-validation protocol. The comparative results are reported in Tables 7.1 and 7.2. The comparison establishes that the three classifiers cannot be separated on failure-class F1 at this sample size, since they differ by less than one hundredth of a point while the standard deviation across folds exceeds six hundredths. XGBoost is selected on the threshold-independent PR-AUC criterion, at 48.03 percent against 40.92 and 39.09 percent. The objective of comparing the algorithms is met; the expectation that the comparison would identify a clear winner is not.
 
-**Objective 3 — Validate the model under realistic deployment conditions, including temporal data drift.** Achieved. The chronological split evaluation reported in Tables 7.2 demonstrates that the winning XGBoost classifier maintains performance within three percentage points when applied to commits drawn from a later time period than its training data. This robustness check goes beyond the standard machine learning practice of stratified-split-only evaluation and provides empirical evidence that the trained model would function in a production deployment.
+**Objective 3 — Validate the model under realistic deployment conditions, including temporal data drift.** Partially achieved. The per-repository chronological evaluation reported in Table 7.3 demonstrates that the selected classifier retains its discriminative behaviour when applied to executions occurring after those it was trained on, degrading by between three and five percentage points of failure-class F1. The qualification concerns the horizon rather than the result. Because the collector capped each repository at 600 runs, the median repository contributes a test window of well under one day, so what is demonstrated is short-horizon stability. Whether the model would survive weeks or months of drift is not established by this dataset, and Section 9.3 identifies the collection change that would be required to establish it.
 
-**Objective 4 — Quantify the business impact of the predictive system under plausible operational assumptions.** Achieved. The business impact analysis in Section 7.4.5 estimates an annual cost savings of approximately $382,802 for a mid-sized organization operating one thousand pipeline executions per day, calculated from the model's measured precision and recall on the stratified test set.
+**Objective 4 — Quantify the business impact of the predictive system under plausible operational assumptions.** Achieved. The business impact analysis in Section 7.4.6 estimates an annual net saving of approximately $243,670 for a mid-sized organization operating one thousand pipeline executions per day, calculated from the model's cross-validated precision and recall and net of the cost of false alarms. Because the estimate depends on a ratio between the cost of a missed failure and the cost of a false alarm that this project assumed rather than measured, the analysis also reports the false-alarm cost at which each configuration ceases to pay for itself, which for the selected configuration is $20.41.
 
 The successful completion of all four objectives indicates that the project has met its planned scope. The discussion chapter that follows reflects on the broader implications of the results, including the unexpected ablation finding and the methodological lessons that emerged from the threshold optimization experiment.
 
@@ -809,11 +877,11 @@ The successful completion of all four objectives indicates that the project has 
 
 The problem articulated in Chapter 2 was the cost and developer-productivity loss associated with CI/CD pipeline failures that are only discovered after substantial compute resources and engineering attention have already been committed to the build. The proposed solution addresses this problem by producing a calibrated failure probability at the moment of commit creation, before any pipeline resources have been consumed, and by demonstrating empirically that this probability is informative enough to support meaningful operational decisions. The remainder of this section discusses how the original problem has shifted in light of the implemented solution.
 
-The first and most important change is that the project has produced a working, fully reproducible pipeline that converts pre-execution commit metadata into a failure probability with a measured F1 score of 0.59 on a stratified test set and 0.62 on a chronological test set. These numbers represent a meaningful capability that did not exist at the start of the project. An organization that adopted the trained classifier could use it to route high-risk commits to a smaller pre-flight test suite, to defer them to off-peak compute capacity, to require pre-merge approval, or simply to alert the author for a second look. None of these workflows would have been supported by the prior art reviewed in Chapter 3 without the use of post-execution telemetry, which fundamentally changes the deployment posture.
+The first and most important change is that the project has produced a working, fully reproducible pipeline that converts pre-execution commit metadata into a failure probability with a measured failure-class F1 of 0.42 under commit-grouped cross-validation and 0.40 on a per-repository chronological partition. These numbers represent a meaningful capability that did not exist at the start of the project. An organization that adopted the trained classifier could use it to route high-risk commits to a smaller pre-flight test suite, to defer them to off-peak compute capacity, to require pre-merge approval, or simply to alert the author for a second look. None of these workflows would have been supported by the prior art reviewed in Chapter 3 without the use of post-execution telemetry, which fundamentally changes the deployment posture.
 
 The second change concerns the empirical understanding of what makes a CI/CD build fail at commit time. The exploratory data analysis in Chapter 7, combined with the ablation study and feature-importance analysis, revealed that the dominant predictive signals are structural rather than textual: the identity of the repository, the trigger event, the size of the commit, and the bot-versus-human authorship of the commit collectively account for the bulk of the model's discriminative ability. The textual signal from commit messages, while non-zero, is substantially weaker than the project's initial hypothesis assumed. This empirical finding is itself a contribution: it tells future researchers and practitioners that effort spent on richer text representations may have diminishing returns relative to effort spent on better-engineered structural features, particularly for the pre-execution prediction setting.
 
-The third change is methodological rather than empirical. The threshold-optimization experiment reported in Section 7.4.4 produced a 27-percentage-point improvement in failure-class F1 for the winning XGBoost classifier from a single hyperparameter adjustment. This dramatic gain reframes the broader problem of building useful classifiers under heavy class imbalance: the project demonstrates that the choice of decision threshold is at least as important as the choice of algorithm or feature set, and that omitting threshold optimization (as the bulk of the prior literature does) can lead to substantial underestimation of the achievable performance.
+The third change is methodological rather than empirical, and it is the change the author regards as most durable. The project began by reporting a failure-class F1 of 0.5924 and now reports 0.4216 for the same classifier on the same data. The difference is not a deterioration in the system but a correction to the instrument used to measure it, and Section 7.4.5 attributes it in full: 0.060 to commits shared between the training and test partitions, and 0.126 to selecting the decision threshold on the data used to report the result. The lesson generalises beyond this project. Both defects inflate a result while leaving every individual step of the analysis looking correct, neither is detectable from the reported metrics alone, and the second, which is the less conspicuous of the two, was worth more than twice the first.
 
 The fourth change, in the spirit of intellectual honesty, is that the hybrid claim of the project—that combining textual and structured features outperforms either modality alone—was empirically refuted on this dataset at the default decision threshold. The structured-only ablation outperforms the full hybrid configuration on failure-class F1 (37.93 percent versus 32.21 percent) at the default threshold. While the gap narrows after threshold optimization and the hybrid model retains an edge on threshold-independent ranking metrics (ROC-AUC and PR-AUC), the unconditional version of the hybrid claim is not supported by this dataset. Section 8.3 discusses the implications of this finding in detail.
 
@@ -825,7 +893,7 @@ Several concrete benefits have been achieved as a consequence of the implemented
 
 **Benefits to practitioners.** The trained XGBoost classifier at threshold 0.06 is a deployment-ready artefact: it is a single joblib file under three megabytes that can be loaded into a Python process and queried with sub-millisecond latency on commodity hardware. A practitioner with an existing CI/CD environment could integrate the predictor as a webhook on the commit-creation event, surfacing a failure probability that downstream tooling could consume. The system imposes no failure mode of its own (a missing or rejected prediction degrades gracefully to the existing CI/CD behavior), which is a property that lowers the practical adoption threshold substantially.
 
-**Benefits to the organization adopting the system.** Under the operational scenario documented in Section 7.4.5, the system is estimated to save approximately $383,000 per year in compute and developer-time costs for a mid-sized organization operating one thousand pipeline executions per day. This estimate is order-of-magnitude rather than precise, but it indicates that the system would deliver a positive return on investment under any plausible discount factor. The savings accrue from two mechanisms: failed builds that are predicted in advance can be deferred to off-peak resources or skipped entirely, and failed builds that are caught early reduce the context-switching cost that developers incur when discovering failures hours after the originating commit.
+**Benefits to the organization adopting the system.** Under the operational scenario documented in Section 7.4.6, the system is estimated to save approximately $244,000 per year net of false alarms, for a mid-sized organization operating one thousand pipeline executions per day. This estimate is order-of-magnitude rather than precise. It is also conditional on an assumption the project did not measure, namely that a false alarm costs $2.50, and the selected configuration ceases to deliver a positive return once that cost exceeds $20.41. The savings accrue from two mechanisms: failed builds that are predicted in advance can be deferred to off-peak resources or skipped entirely, and failed builds that are caught early reduce the context-switching cost that developers incur when discovering failures hours after the originating commit.
 
 **Benefits to the student personally.** The project required the integration of multiple disciplines (software engineering, data engineering, applied machine learning, technical writing) into a single cohesive deliverable, and surfaced a number of methodological subtleties (the post-execution feature boundary, identity leakage in TF-IDF, the importance of dual-split evaluation, the dominance of threshold calibration over feature engineering for imbalanced binary tasks) that would not have been visible from any narrower undertaking. The honest reporting of negative results (the refutation of the unconditional hybrid claim) was itself an exercise in academic discipline that the project has benefited from.
 
@@ -855,7 +923,9 @@ The project surfaced a number of lessons that have value beyond the specific tec
 
 **Lesson 3 — The default 0.5 decision threshold is a trap under class imbalance.** The default threshold is implicitly calibrated for a balanced class prior and is dramatically miscalibrated for the 8:1 ratio in this dataset, particularly for XGBoost. Threshold optimization should be treated as a first-class evaluation step, not as a footnote, and the resulting threshold should be reported alongside the metrics it produces.
 
-**Lesson 4 — Dual-split reporting is not optional, it is the honest minimum.** A single stratified split tells the reader nothing about how a model behaves under temporal distribution shift. A single chronological split tells the reader nothing about whether the model's measured performance was an artefact of a favorable test sample. Reporting both is the cheapest way to give the reader a complete and honest picture, and the same dual-split discipline should be applied to any future applied machine learning work that the student undertakes.
+**Lesson 4 — The unit of observation must match the unit of feature construction.** Every feature in this project describes a commit, while every row describes a workflow execution, and there are 3.45 executions per commit. A partition drawn over rows therefore placed near-duplicates of the same commit on both sides, and 88.3 percent of the test rows in the original design shared a commit with the training set. The defect is invisible in the reported metrics, survives every conventional check for overfitting, and inflated the headline figure by 0.060 of F1. Before any partition is drawn, the question that must be asked is what a row represents and whether two rows can be near-copies of one another; where they can, the partition must be grouped on whatever they are copies of.
+
+**Lesson 5 — A quantity selected to maximise a metric cannot also estimate it.** The decision threshold in the original design was chosen by maximising failure-class F1 over the test set, and the resulting F1 was then reported as the model's performance on that test set. This is a circular procedure and it was worth 0.126 of F1, more than twice the leakage. It is also the easier of the two mistakes to make, because the threshold sweep is a legitimate technique and only its placement relative to the evaluation data is wrong. Any quantity tuned against data must be tuned on a partition that is then set aside.
 
 **Lesson 5 — Negative results are still results.** The empirical refutation of the unconditional hybrid claim was not the outcome the project hoped for, but it is a contribution: it tells future researchers and practitioners that on real GitHub Actions data, basic TF-IDF on commit messages does not by itself produce a competitive failure classifier, and that effort should be redirected toward either richer text representations or better structured features. Hiding or rationalizing this result would have been intellectually dishonest and would have damaged the project's credibility on closer inspection.
 
@@ -873,7 +943,7 @@ The contrast between the operational situation before the proposed solution and 
 | Compute resources consumed before failure is known | Full build, test, and partial deploy stages | None | The pre-execution prediction allows resources to be conserved. |
 | Developer context-switching cost | Average 15 minutes per failed build (literature estimate) | Reduced when high-risk commits are caught early | Hard to quantify precisely but consistent with cost-savings estimate. |
 | Decision support for build prioritization | None (all builds run identically) | Per-commit failure probability available | Enables differentiated routing to fast/slow test suites. |
-| Annual cost (assumed scale: 1,000 builds/day, 11% failure rate) | Baseline | Approximately $383,000 saved | See Section 7.4.5 for assumptions. |
+| Annual cost (assumed scale: 1,000 builds/day, 11% failure rate) | Baseline | Approximately $244,000 saved, net of false alarms | See Section 7.4.6 for assumptions and for the break-even false-alarm cost. |
 | Visibility into per-repository failure rates | Limited (requires manual aggregation) | Quantified across the 18-repository sample | Surfaced as part of the EDA phase. |
 | Reproducibility of evaluation | Variable across organizations | Fully reproducible from public dataset and code | Enables independent verification. |
 | Feature-importance interpretability | Implicit | Top-30 feature importance available per model | Supports targeted CI/CD process improvements. |
@@ -886,9 +956,13 @@ The contrast between the operational situation before the proposed solution and 
 
 This thesis has presented a Hybrid Machine Learning Pipeline for the prediction of CI/CD pipeline build failures at the moment of commit creation, using only pre-execution features that are available from the GitHub Actions REST API. The project began from a clear practical concern: software organizations spend significant compute resources and developer attention on CI/CD pipelines that fail eleven percent of the time, and existing predictive approaches in the academic literature rely on post-execution telemetry that cannot recover those resources. The project asked whether useful prediction was possible from commit-time information alone, and answered the question affirmatively through a complete and reproducible empirical study.
 
-The principal results are as follows. Three machine learning classifiers (Logistic Regression, Random Forest, XGBoost) were trained and evaluated on a freshly collected dataset of 9,772 real workflow runs from eighteen popular open-source repositories on GitHub. Under threshold-optimized decision rules, the winning XGBoost classifier achieves a failure-class F1 score of 0.5924 on a stratified test set and 0.6207 on a chronological test set, with a ROC-AUC of 0.884 and a PR-AUC of 0.587. The classifier is fully serializable, executes in sub-millisecond latency on commodity hardware, and is ready for operational deployment as an advisory layer over existing CI/CD infrastructure. Under a documented operational scenario, the trained classifier is estimated to save approximately $383,000 per year in compute and developer-time costs for a mid-sized organization operating one thousand pipeline executions per day.
+The principal results are as follows. Three machine learning classifiers (Logistic Regression, Random Forest, XGBoost) were trained and evaluated on a freshly collected dataset of 9,772 real workflow runs from eighteen popular open-source repositories on GitHub. Under commit-grouped five-fold cross-validation with the decision threshold selected outside the evaluation data, the three classifiers are not separable on failure-class F1. XGBoost is selected on PR-AUC and achieves a failure-class F1 of 0.4216 with a standard deviation across folds of 0.0638, a ROC-AUC of 0.824 and a PR-AUC of 0.480. The classifier is fully serializable, executes in sub-millisecond latency on commodity hardware, and is suitable for deployment as an advisory layer over existing CI/CD infrastructure. Under a documented operational scenario it is estimated to save approximately $244,000 per year net of false alarms, an estimate that ceases to be positive if a false alarm costs more than $20.41.
 
-Beyond these headline results, the project surfaced several methodological findings that have value independent of the specific classifier. The ablation study revealed that on this real dataset, the textual modality (TF-IDF on cleaned commit messages) does not by itself produce a competitive classifier and adds only marginal value beyond the structured features alone, contradicting the project's original hypothesis. The threshold optimization experiment demonstrated that under heavy class imbalance, the choice of decision threshold can dominate the choice of algorithm or feature set: a 27-percentage-point improvement in failure-class F1 was achieved for the XGBoost classifier from a single hyperparameter change. The dual-split evaluation regime (stratified random as primary, chronological as secondary) showed that the trained classifier maintains its performance under genuine deployment-like conditions, with all metrics agreeing within plus or minus three percentage points across the two splits.
+Beyond these headline results, the project surfaced three methodological findings that have value independent of the specific classifier. The first is the outcome of the ablation study. A configuration given nothing but categorical identity, namely the repository, the workflow name, the branch and the triggering event, outperforms the full hybrid model on every metric reported, at 0.4808 failure-class F1 against 0.4216 and 0.5467 PR-AUC against 0.4803. The hybrid hypothesis is therefore refuted more comprehensively than an earlier ablation indicated, and the honest characterisation of the system is that it is substantially a project-level risk estimator rather than a commit-level one.
+
+The second is the attribution reported in Section 7.4.5. An earlier version of this work reported a failure-class F1 of 0.5924 under a protocol that shared commits between its training and test partitions and that selected the decision threshold on the test set it then reported. Correcting each defect independently shows that the first was worth 0.060 and the second 0.126. That the less conspicuous defect was worth more than twice the conspicuous one is the finding the author considers most transferable.
+
+The third concerns the stability of single-partition estimates. Because repository identity dominates the model and no grouped splitter balances repository composition, single-partition estimates of failure-class F1 on this dataset varied across a range of approximately 20 percentage points depending on which partition was drawn. Cross-validation is therefore not a refinement in this setting but a precondition for reporting a figure at all.
 
 The project also produced a set of methodological artefacts that have value beyond their use in this thesis. The aggressive text-cleaning pipeline with its algorithmically constructed 693-token stoplist offers a transferable defense against identity leakage in TF-IDF-based software engineering text models. The four-branch ColumnTransformer architecture provides a clean reference implementation of early-fusion multimodal classification that can be adapted to other tabular-plus-text tasks. The fixed-seed reproducibility discipline applied throughout the codebase serves as a worked example of how to build an academic machine learning project that can be regenerated bit-for-bit by an independent reader.
 
@@ -902,9 +976,9 @@ The specific contributions of the project, listed in order of decreasing importa
 
 **Contribution 1.** A fully reproducible end-to-end pipeline for CI/CD failure prediction from pre-execution features, including data collection, exploratory analysis, feature engineering with identity-leakage defenses, hybrid model construction, comparative evaluation, ablation study, threshold optimization, and business-impact analysis. The pipeline is committed to a project repository under a fixed random seed, allowing every reported metric to be regenerated bit-for-bit by an independent reader.
 
-**Contribution 2.** An empirical demonstration that XGBoost with threshold-optimized decision rules achieves a failure-class F1 of 0.59 on a stratified test set and 0.62 on a chronological test set of real GitHub Actions data, using only features available at commit time. This result is competitive with the published prior art that relies on post-execution telemetry and is, to the author's knowledge, the strongest published result for the strictly pre-execution setting.
+**Contribution 2.** An empirical characterisation of what is and is not achievable in the strictly pre-execution setting on real GitHub Actions data. Under a commit-grouped protocol with the decision threshold selected outside the evaluation data, failure-class F1 reaches 0.4216 for the full hybrid model and 0.4808 for a model given only categorical identity. The second figure is the more informative of the two, because it establishes that the achievable performance in this setting derives principally from project-level base rates rather than from the content of individual commits. The author makes no claim to the strongest published result; the claim is that the figure is accompanied by a protocol sufficient to interpret it.
 
-**Contribution 3.** A methodological case study in the importance of threshold optimization for imbalanced binary classification, demonstrating that a 27-percentage-point improvement in failure-class F1 is achievable from a single hyperparameter change without retraining the underlying classifier.
+**Contribution 3.** A quantified case study in two evaluation defects that inflate reported performance in applied machine learning while leaving each individual step of the analysis apparently correct: partitioning at a finer grain than the features are constructed at, and selecting a decision threshold on the data used to report the result. Both are documented here with the magnitude of each isolated under otherwise identical conditions, at 0.060 and 0.126 of failure-class F1 respectively, together with the corrected protocol and the verification artefacts that demonstrate the correction.
 
 **Contribution 4.** A critical empirical reassessment of the hybrid claim that runs through the CI/CD failure prediction literature, showing that on this dataset with basic TF-IDF text features, the textual modality adds at best marginal value beyond the structured features. The finding redirects future work toward richer text representations.
 
@@ -956,62 +1030,104 @@ The complete source code of the project is available in the project repository. 
 
 ## Appendix B: Reproduction Instructions
 
-To reproduce the results of this thesis from a clean checkout, the following steps are required.
+Every figure and every metric reported in this thesis is regenerated from the committed raw dataset by the commands below. An earlier version of this appendix referred to two scripts, `src/run_phase0.py` and `src/run_phase1.py`, that do not exist in the repository, and specified an ordering that could not have completed, because `src/run_phase2.py` imported two symbols that the Phase 2.5 module had removed and therefore failed on load. Both defects are corrected, and the sequence below has been executed from a clean checkout.
 
-**1. Clone the project repository and create a Python environment:**
+**1. Clone the repository and create the environment.**
 
 ```bash
 git clone <project-repository-url>
 cd cicd-failure-prediction
 python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+.venv/bin/pip install -r requirements.txt
 ```
 
-**2. (Optional) Re-collect the dataset from GitHub Actions API:**
+The library versions are pinned in `requirements.txt`. The results in this thesis were produced with scikit-learn 1.8.0 and xgboost 3.2.0; other versions of those two packages are not guaranteed to reproduce the figures exactly.
+
+**2. Reproduce every reported result.**
 
 ```bash
+./reproduce.sh
+```
+
+This is the only command required. It runs data preparation, constructs the commit-grouped and per-repository chronological partitions, verifies their integrity, executes the cross-validated evaluation, computes the business analysis, and renders the figures. It takes approximately three minutes on commodity hardware and writes to `results/` and `figures/`.
+
+The equivalent steps, if run individually:
+
+```bash
+.venv/bin/python -m src.run_phase2_5              # prepare data, build and verify all splits
+.venv/bin/python -m src.run_corrected_evaluation  # cross-validated evaluation, business model, figures
+```
+
+**3. Optional steps.**
+
+```bash
+# Re-collect the dataset from the GitHub Actions API. Approximately two hours
+# because of API rate limits. The collected dataset is committed to data/raw/,
+# so this is not required.
 export GITHUB_TOKEN="your_personal_access_token"
-python src/run_phase0.py
+.venv/bin/python -m src.collect_github_data
+
+# Exploratory data analysis figures.
+.venv/bin/python -m src.run_phase2
+
+# Pipeline architecture validation.
+.venv/bin/python -m src.run_phase3
+
+# Train and persist the deployable model artefacts to models/. This evaluates
+# on a single held-out fold and writes to results/single_fold_reference/;
+# those figures are not the reported results. See results/README.md.
+.venv/bin/python -m src.run_phase4
 ```
 
-This step takes approximately two hours due to API rate limits. The pre-collected dataset is committed to data/raw/ and can be used directly to skip this step.
+**4. Verifying the results rather than trusting them.**
 
-**3. Run the analysis pipeline:**
+`results/README.md` states which file is authoritative for each reported number. Three files exist specifically so that the claims of this thesis can be checked rather than accepted: `results/split_integrity.json` records the commit overlap between every pair of partitions and the temporal invariant for each of the eighteen repositories; `results/metric_attribution_ladder.json` records the decomposition presented in Section 7.4.5; and `results/threshold_selection_gap.json` records the residual optimism discussed in Section 7.4.4.
 
-```bash
-python src/run_phase1.py     # EDA, 6 figures
-python src/run_phase2.py     # Data preparation
-python src/run_phase2_5.py   # Quality refinement
-python src/run_phase3.py     # Pipeline architecture validation
-python src/run_phase4.py     # Full training + ablation
-python src/run_phase5.py     # Threshold optimization
-```
-
-Total execution time is approximately twenty minutes on commodity hardware. All outputs are deterministic given the fixed random seed of 42.
+All outputs are deterministic given the fixed random seed of 42.
 
 ## Appendix C: Complete Metrics Tables
 
-The complete metrics for all three classifiers under both evaluation splits at both default and F1-optimized thresholds are presented in Table C.1.
+Table C.1 reports every classifier under both evaluation protocols at both the default and the selected decision threshold. Metrics under the commit-grouped protocol are computed over pooled out-of-fold predictions, so each of the 9,772 workflow runs contributes exactly one prediction from a model trained without any run of its commit. Metrics under the chronological protocol are computed on the 1,636 runs of the per-repository chronological test partition, from models trained on that partition's own training fold.
 
 **Table C.1 — Complete classifier metrics (all conditions).**
 
-| Model | Split | Threshold | Accuracy | Bal. Acc. | Precision | Recall | F1 | ROC-AUC | PR-AUC |
+| Model | Protocol | Threshold | Accuracy | Bal. Acc. | Precision | Recall | F1 | ROC-AUC | PR-AUC |
 |---|---|---|---|---|---|---|---|---|---|
-| Logistic Regression | Stratified | 0.50 (default) | 80.20% | 78.84% | 32.80% | 77.10% | 46.03% | 87.47% | 49.92% |
-| Logistic Regression | Stratified | 0.79 (F1-opt) | 90.18% | 72.15% | 55.85% | 49.07% | 52.24% | 87.47% | 49.92% |
-| Logistic Regression | Chronological | 0.50 | 87.83% | 81.33% | 32.00% | 73.85% | 44.65% | 92.20% | 55.48% |
-| Logistic Regression | Chronological | 0.79 | 94.07% | 71.49% | 56.84% | 48.46% | 54.30% | 92.20% | 55.48% |
-| Random Forest | Stratified | 0.50 | 83.17% | 77.23% | 36.08% | 69.63% | 47.53% | 86.10% | 47.29% |
-| Random Forest | Stratified | 0.57 (F1-opt) | 87.72% | 74.66% | 45.26% | 57.94% | 50.82% | 86.10% | 47.29% |
-| Random Forest | Chronological | 0.50 | 92.17% | 77.23% | 43.58% | 60.00% | 50.49% | 89.63% | 53.58% |
-| Random Forest | Chronological | 0.57 | 93.66% | 75.67% | 50.81% | 48.46% | 48.11% | 89.63% | 53.58% |
-| XGBoost | Stratified | 0.50 | 90.74% | 59.76% | 81.13% | 20.09% | 32.21% | 88.40% | 58.73% |
-| **XGBoost** | **Stratified** | **0.06 (F1-opt)** | **90.64%** | **78.15%** | **56.60%** | **62.15%** | **59.24%** | **88.40%** | **58.73%** |
-| XGBoost | Chronological | 0.50 | 94.78% | 61.84% | 91.18% | 23.85% | 37.80% | 93.60% | 65.86% |
-| XGBoost | Chronological | 0.06 | 93.66% | 79.61% | 56.36% | 67.69% | 62.07% | 93.60% | 65.86% |
+| Logistic Regression | Commit-grouped CV | 0.50 (default) | 76.29% | 74.09% | 27.55% | 71.27% | 39.74% | 82.76% | 40.92% |
+| Logistic Regression | Commit-grouped CV | 0.646 (selected) | 83.39% | 71.53% | 34.34% | 56.34% | 42.67% | 82.76% | 40.92% |
+| Logistic Regression | Chronological | 0.50 | 87.16% | 67.02% | 34.95% | 42.21% | 38.24% | 81.62% | 36.49% |
+| Logistic Regression | Chronological | 0.690 (selected) | 87.16% | 67.02% | 34.95% | 42.21% | 38.24% | 81.62% | 36.49% |
+| Random Forest | Commit-grouped CV | 0.50 | 83.01% | 70.79% | 33.39% | 55.13% | 41.59% | 80.08% | 39.09% |
+| Random Forest | Commit-grouped CV | 0.538 (selected) | 86.70% | 68.93% | 40.64% | 46.18% | 43.23% | 80.08% | 39.09% |
+| Random Forest | Chronological | 0.510 (selected) | 86.25% | 68.55% | 33.49% | 46.75% | 39.02% | 82.18% | 38.17% |
+| XGBoost | Commit-grouped CV | 0.50 | 90.36% | 59.17% | 73.05% | 19.22% | 30.43% | 82.40% | 48.03% |
+| **XGBoost** | **Commit-grouped CV** | **0.076 (selected)** | **89.71%** | **66.86%** | **54.46%** | **37.59%** | **44.48%** | **82.40%** | **48.03%** |
+| XGBoost | Chronological | 0.050 (selected) | 89.30% | 66.17% | 42.34% | 37.66% | 39.86% | 80.27% | 41.81% |
 
-The winning configuration (XGBoost at threshold 0.06 on stratified test) is highlighted in bold.
+The selected configuration, XGBoost under the commit-grouped protocol, is highlighted in bold. It is selected on PR-AUC rather than on F1, because the failure-class F1 scores of the three classifiers are not separable at this sample size, as Table 7.2 establishes.
+
+Table C.2 reports the failure-class F1 obtained in each individual fold, which is the basis for the claim that the classifiers cannot be separated and that single-partition estimates on this dataset should not be relied upon.
+
+**Table C.2 — Failure-class F1 by fold.**
+
+| Model | Fold 1 | Fold 2 | Fold 3 | Fold 4 | Fold 5 | Mean | Std. dev. |
+|---|---|---|---|---|---|---|---|
+| Logistic Regression | 0.5380 | 0.4366 | 0.3788 | 0.3983 | 0.4038 | 0.4311 | 0.0633 |
+| Random Forest | 0.5233 | 0.3739 | 0.4829 | 0.3213 | 0.4188 | 0.4240 | 0.0812 |
+| XGBoost | 0.4309 | 0.4200 | 0.4976 | 0.3208 | 0.4386 | 0.4216 | 0.0638 |
+
+Table C.3 reports the ablation configurations under the same protocol.
+
+**Table C.3 — Feature-set ablation, commit-grouped cross-validation, XGBoost throughout.**
+
+| Configuration | F1 (mean) | F1 (std. dev.) | Precision | Recall | ROC-AUC | PR-AUC |
+|---|---|---|---|---|---|---|
+| Text only | 0.1962 | 0.0661 | 0.3131 | 0.1559 | 0.6654 | 0.2080 |
+| Hybrid (all four branches) | 0.4216 | 0.0638 | 0.5204 | 0.3686 | 0.8240 | 0.4803 |
+| Structured only | 0.4225 | 0.0655 | 0.5380 | 0.3611 | 0.8197 | 0.4825 |
+| Categorical only | 0.4808 | 0.0767 | 0.5911 | 0.4319 | 0.8649 | 0.5467 |
+
+Every figure in this appendix is generated by `src/run_corrected_evaluation.py` and written to `results/thesis_tables.json`, from which these tables are transcribed. Split integrity is recorded separately in `results/split_integrity.json` and the attribution of Section 7.4.5 in `results/metric_attribution_ladder.json`.
 
 ## Appendix D: Hyperparameter Configurations
 
@@ -1100,3 +1216,11 @@ The following checklist was completed before final submission of this thesis.
 [19] J. D. Hunter, "Matplotlib: A 2D Graphics Environment," Computing in Science & Engineering, vol. 9, no. 3, pp. 90–95, 2007.
 
 [20] C. R. Harris et al., "Array Programming with NumPy," Nature, vol. 585, no. 7825, pp. 357–362, 2020.
+
+[21] S. Kapoor and A. Narayanan, "Leakage and the Reproducibility Crisis in Machine-Learning-Based Science," Patterns, vol. 4, no. 9, art. 100804, 2023. doi: 10.1016/j.patter.2023.100804.
+
+[22] D. R. Roberts et al., "Cross-Validation Strategies for Data with Temporal, Spatial, Hierarchical, or Phylogenetic Structure," Ecography, vol. 40, no. 8, pp. 913–929, 2017. doi: 10.1111/ecog.02881.
+
+[23] T. Saito and M. Rehmsmeier, "The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets," PLOS ONE, vol. 10, no. 3, art. e0118432, 2015. doi: 10.1371/journal.pone.0118432.
+
+[24] A. E. Hassan and K. Zhang, "Using Decision Trees to Predict the Certification Result of a Build," in Proceedings of the 21st IEEE/ACM International Conference on Automated Software Engineering, 2006.

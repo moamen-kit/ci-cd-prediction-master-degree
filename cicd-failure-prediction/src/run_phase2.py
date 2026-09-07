@@ -109,7 +109,7 @@ def plot_train_test_class_balance(
     ax.set_ylabel("Percentage of rows")
     ax.set_ylim(0, max(train_pct.max(), test_pct.max()) * 1.18)
     ax.set_title(
-        "Chronological 80/20 Split — Class Distribution by Partition"
+        "Per-Repository Chronological Split — Class Distribution by Partition"
     )
     ax.legend(loc="upper right", frameon=False)
     ax.text(
@@ -128,14 +128,18 @@ def plot_train_test_class_balance(
         fig,
         "fig_07_train_test_class_balance.png",
         caption=(
-            "Class distribution of the binary ``conclusion`` target in the "
-            "chronological 80/20 split. The test partition (most recent 20% "
-            "of commits) exhibits a noticeably lower failure rate than the "
-            "training partition, signalling temporal drift in repository "
-            "stability rather than preserved balance. Downstream metrics "
-            "should be interpreted with this drift in mind — accuracy will "
-            "be inflated on the test set relative to a class-balanced "
-            "evaluation."
+            "Class distribution of the binary ``conclusion`` target across the "
+            "partitions of the per-repository chronological split, in which "
+            "each repository is divided at its own quantile of ``created_at`` "
+            "and whole commits are assigned to one side of the division. The "
+            "residual difference in failure rate between the partitions is "
+            "small. An earlier version of this figure showed a much larger "
+            "gap and attributed it to temporal drift in repository stability; "
+            "that reading was incorrect. The earlier split was cut globally "
+            "on ``commit_date`` and produced a test partition spanning "
+            "approximately eleven hours, so the gap reflected which "
+            "repositories happened to be active in that window rather than "
+            "any change over time."
         ),
         title="Figure 7 — Train/test class balance",
     )

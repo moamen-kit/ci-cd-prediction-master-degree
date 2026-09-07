@@ -269,6 +269,28 @@ def build_structured_only_preprocessor() -> ColumnTransformer:
     )
 
 
+def build_categorical_only_preprocessor() -> ColumnTransformer:
+    """One-hot categorical branch alone: repository, workflow, branch, event.
+
+    This is the configuration that tests the thesis's central claim. If a model
+    given nothing but categorical identity is competitive with the full hybrid,
+    then the system is largely recognising which repositories and workflows are
+    failure-prone rather than reading anything from the content of a commit.
+    """
+    return ColumnTransformer(
+        transformers=[
+            (
+                "categorical",
+                OneHotEncoder(handle_unknown="ignore", sparse_output=True),
+                CATEGORICAL_FEATURES,
+            ),
+        ],
+        sparse_threshold=0.3,
+        n_jobs=-1,
+        verbose_feature_names_out=True,
+    )
+
+
 def build_xgboost_with_preprocessor(
     preprocessor: ColumnTransformer,
 ) -> LabelEncoderForBinary:
@@ -338,6 +360,7 @@ __all__ = [
     "build_logistic_regression_pipeline",
     "build_preprocessor",
     "build_random_forest_pipeline",
+    "build_categorical_only_preprocessor",
     "build_structured_only_preprocessor",
     "build_text_only_preprocessor",
     "build_xgboost_pipeline",

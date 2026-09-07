@@ -1,0 +1,107 @@
+{
+  "Logistic Regression": {
+    "predict_time_sec": 0.058,
+    "predict_proba_time_sec": 0.057,
+    "n_test_samples": 1953,
+    "metrics": {
+      "accuracy": 0.7393753200204813,
+      "balanced_accuracy": 0.7675965884357214,
+      "macro_f1": 0.6182806372299612,
+      "weighted_f1": 0.7861619020077277,
+      "macro_precision": 0.6186035543550497,
+      "macro_recall": 0.7675965884357214,
+      "failure_precision": 0.26917057902973396,
+      "failure_recall": 0.8037383177570093,
+      "failure_f1": 0.40328253223915594,
+      "positive_label": "failure",
+      "classes_ordered": [
+        "failure",
+        "success"
+      ],
+      "confusion_matrix": [
+        [
+          172,
+          42
+        ],
+        [
+          467,
+          1272
+        ]
+      ],
+      "roc_auc": 0.8726507875941163,
+      "pr_auc": 0.5122546382392249
+    },
+    "fit_time_sec": 1.825,
+    "model_path": "/home/user/ci-cd-prediction-master-degree/cicd-failure-prediction/models/logistic_regression_full.joblib"
+  },
+  "Random Forest": {
+    "predict_time_sec": 0.113,
+    "predict_proba_time_sec": 0.124,
+    "n_test_samples": 1953,
+    "metrics": {
+      "accuracy": 0.8504864311315924,
+      "balanced_accuracy": 0.7931080812369339,
+      "macro_f1": 0.7125045372050817,
+      "weighted_f1": 0.8680273666492271,
+      "macro_precision": 0.6803370024898241,
+      "macro_recall": 0.7931080812369339,
+      "failure_precision": 0.39896373056994816,
+      "failure_recall": 0.719626168224299,
+      "failure_f1": 0.5133333333333333,
+      "positive_label": "failure",
+      "classes_ordered": [
+        "failure",
+        "success"
+      ],
+      "confusion_matrix": [
+        [
+          154,
+          60
+        ],
+        [
+          232,
+          1507
+        ]
+      ],
+      "roc_auc": 0.8761709114164871,
+      "pr_auc": 0.49056980206243456
+    },
+    "fit_time_sec": 0.78,
+    "model_path": "/home/user/ci-cd-prediction-master-degree/cicd-failure-prediction/models/random_forest_full.joblib"
+  },
+  "XGBoost": {
+    "predict_time_sec": 0.085,
+    "predict_proba_time_sec": 0.063,
+    "n_test_samples": 1953,
+    "metrics": {
+      "accuracy": 0.9114183307731695,
+      "balanced_accuracy": 0.6142347358294863,
+      "macro_f1": 0.6593406593406593,
+      "weighted_f1": 0.8881611646588605,
+      "macro_precision": 0.8804341989869884,
+      "macro_recall": 0.6142347358294863,
+      "failure_precision": 0.847457627118644,
+      "failure_recall": 0.2336448598130841,
+      "failure_f1": 0.3663003663003663,
+      "positive_label": "failure",
+      "classes_ordered": [
+        "failure",
+        "success"
+      ],
+      "confusion_matrix": [
+        [
+          50,
+          164
+        ],
+        [
+          9,
+          1730
+        ]
+      ],
+      "roc_auc": 0.8726548182702489,
+      "pr_auc": 0.5455975743050173
+    },
+    "fit_time_sec": 1.821,
+    "model_path": "/home/user/ci-cd-prediction-master-degree/cicd-failure-prediction/models/xgboost_full.joblib"
+  }
+}

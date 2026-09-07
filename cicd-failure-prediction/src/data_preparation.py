@@ -24,11 +24,11 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Tuple
+from typing import Any, Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 
 from .utils import (
     PROCESSED_DATA_DIR,
@@ -79,6 +79,39 @@ BINARY_FEATURES: list[str] = [
 TEXT_FEATURE: str = "commit_message_clean"
 TARGET: str = "conclusion"
 
+# Splitting keys. Neither is a feature.
+#
+# ``GROUP_KEY`` — rows are workflow runs but features are commit-level
+# (3.45 runs per commit), so a row-level split scatters near-duplicates of the
+# same commit across train and test. Every split groups on this column.
+#
+# ``TIME_KEY`` — ``created_at`` is when the workflow run executed, which is the
+# moment a deployed predictor would be invoked. ``commit_date`` is when the
+# commit was authored, which can precede the run by years for re-runs and
+# merge-base commits, and is therefore the wrong axis for a temporal holdout.
+GROUP_KEY: str = "commit_sha"
+TIME_KEY: str = "created_at"
+
+
+# Columns produced by :func:`engineer_features`. Phase 2's figures import this
+# to know what to plot. It was lost when the Phase 2.5 module replaced the
+# Phase 2 one, which left src/run_phase2.py raising ImportError on load — the
+# module has not been runnable since, despite Appendix B claiming the phases
+# reproduce in order.
+ENGINEERED_FEATURE_COLUMNS: list[str] = [
+    "commit_message_length",
+    "was_truncated",
+    "log_lines_added",
+    "log_lines_deleted",
+    "log_files_changed",
+    "avg_lines_per_file",
+    "is_large_commit",
+    "is_many_files",
+    "is_off_hours_commit",
+    "is_weekend_commit",
+    "is_bot_author",
+]
+
 
 ALL_FEATURE_COLUMNS: list[str] = (
     NUMERICAL_FEATURES + CATEGORICAL_FEATURES + BINARY_FEATURES + [TEXT_FEATURE]
@@ -99,7 +132,11 @@ LEAKAGE_OR_REDUNDANT: list[str] = [
     "log_total_changes",
     # IDs / non-features
     "run_id",
-    "commit_sha",
+    # NOTE: ``commit_sha`` is deliberately NOT dropped here. It is retained
+    # through preparation as the grouping key for every split (see
+    # :data:`GROUP_KEY`) because each modelled feature is commit-level while
+    # each row is a workflow run. It is excluded from
+    # ``ALL_FEATURE_COLUMNS``, so it never reaches the ColumnTransformer.
     # Already encoded by other features
     "commit_hour",
     "commit_day_of_week",
@@ -380,13 +417,58 @@ def prepare_dataset(
 # --------------------------------------------------------------------------- #
 
 
+def _to_epoch_ns(series: pd.Series) -> np.ndarray:
+    """Return ``series`` as UTC nanoseconds since the epoch, for ordering."""
+    parsed = pd.to_datetime(series, errors="coerce", utc=True)
+    return parsed.dt.tz_convert("UTC").dt.tz_localize(None).astype("int64").to_numpy()
+
+
+def _assign_whole_commits_to_windows(
+    frame: pd.DataFrame,
+    boundaries: list[int],
+    group_key: str = GROUP_KEY,
+    time_key: str = TIME_KEY,
+) -> pd.Series:
+    """Assign each *commit* to exactly one time window, or discard it.
+
+    ``boundaries`` are ascending epoch-nanosecond cut points, so ``n``
+    boundaries define ``n + 1`` windows numbered ``0 .. n``. A commit lands in
+    window ``i`` only when **all** of its runs fall inside window ``i``. A
+    commit whose runs straddle a boundary is assigned ``-1`` and dropped by the
+    caller: keeping it would either place the same commit on both sides of the
+    cut (group leakage) or place a run on the wrong side of the cut (temporal
+    leakage), and there is no third option.
+
+    Returns a row-aligned Series of window ids.
+    """
+    times = _to_epoch_ns(frame[time_key])
+    spans = (
+        pd.DataFrame({group_key: frame[group_key].to_numpy(), "t": times})
+        .groupby(group_key)["t"]
+        .agg(["min", "max"])
+    )
+    edges = np.asarray(sorted(boundaries), dtype="int64")
+    first = np.searchsorted(edges, spans["min"].to_numpy(), side="right")
+    last = np.searchsorted(edges, spans["max"].to_numpy(), side="right")
+    window = np.where(first == last, first, -1)
+    return frame[group_key].map(pd.Series(window, index=spans.index)).astype(int)
+
+
 def stratified_split(
     df: pd.DataFrame,
     test_size: float = 0.2,
     random_state: int = 42,
     processed_dir: Path = PROCESSED_DATA_DIR,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Stratified random split — PRIMARY evaluation strategy."""
+    """Stratified split on rows — **retained only as a leakage demonstration**.
+
+    This was the original primary evaluation strategy. It splits rows, but
+    every modelled feature is commit-level, so 88.3 per cent of its test rows
+    share a commit with the training set. The reported metrics it produces are
+    inflated by roughly six points of F1. It is kept so the thesis can quantify
+    that inflation against :func:`grouped_split`; it must not be used to report
+    headline performance.
+    """
     train_df, test_df = train_test_split(
         df,
         test_size=test_size,
@@ -405,25 +487,240 @@ def stratified_split(
     return train_df, test_df
 
 
-def chronological_split(
+def grouped_split(
     df: pd.DataFrame,
     test_size: float = 0.2,
+    val_size: float = 0.2,
+    random_state: int = 42,
     processed_dir: Path = PROCESSED_DATA_DIR,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Chronological split — SECONDARY evaluation (deployment realism)."""
-    sort_col = "commit_date" if "commit_date" in df.columns else "created_at"
-    df_sorted = df.sort_values(sort_col, na_position="first").reset_index(drop=True)
-    split_idx = int(len(df_sorted) * (1.0 - test_size))
-    train_df = df_sorted.iloc[:split_idx].reset_index(drop=True)
-    test_df = df_sorted.iloc[split_idx:].reset_index(drop=True)
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Commit-grouped stratified split — **PRIMARY evaluation strategy**.
+
+    Splits on ``commit_sha`` so that every run of a given commit lands on one
+    side of the cut, which is what the modelling grain requires: features are
+    commit-level while rows are workflow runs.
+
+    :class:`StratifiedGroupKFold` is used in preference to
+    :class:`GroupShuffleSplit` because the latter does not stratify. Grouping
+    alone lets the class balance drift between folds (measured: 9.71 per cent
+    failure in train against 14.72 per cent in validation), which would
+    confound threshold selection — a threshold chosen on a validation fold with
+    a different prior does not transfer to the test fold, and the resulting
+    error would be indistinguishable from a genuine calibration effect. Taking
+    the first fold of a five-fold stratified grouped partition yields the
+    intended 20 per cent test share with the class balance preserved.
+
+    ``val_size`` is carved from the training portion under the same scheme, and
+    exists so the decision threshold can be selected without consulting the
+    test set.
+
+    Returns ``(train, validation, test)``.
+    """
+    if not np.isclose(test_size, 0.2) or not np.isclose(val_size, 0.2):
+        raise ValueError(
+            "grouped_split is fixed to a 0.2 / 0.2 five-fold scheme; "
+            f"got test_size={test_size}, val_size={val_size}."
+        )
+
+    groups = df[GROUP_KEY].astype(str)
+
+    outer = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=random_state)
+    train_pool_idx, test_idx = next(outer.split(df, df[TARGET], groups))
+    train_pool = df.iloc[train_pool_idx]
+
+    inner = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=random_state)
+    train_idx, val_idx = next(
+        inner.split(
+            train_pool, train_pool[TARGET], train_pool[GROUP_KEY].astype(str)
+        )
+    )
+
+    train_df = train_pool.iloc[train_idx].reset_index(drop=True)
+    val_df = train_pool.iloc[val_idx].reset_index(drop=True)
+    test_df = df.iloc[test_idx].reset_index(drop=True)
+
+    ensure_dir(processed_dir)
+    train_df.to_csv(processed_dir / "train_grouped.csv", index=False)
+    val_df.to_csv(processed_dir / "val_grouped.csv", index=False)
+    test_df.to_csv(processed_dir / "test_grouped.csv", index=False)
+    _LOGGER.info(
+        "Grouped split saved — train=%d val=%d test=%d (unique commits %d/%d/%d)",
+        len(train_df), len(val_df), len(test_df),
+        train_df[GROUP_KEY].nunique(), val_df[GROUP_KEY].nunique(),
+        test_df[GROUP_KEY].nunique(),
+    )
+    return train_df, val_df, test_df
+
+
+def chronological_split(
+    df: pd.DataFrame,
+    test_quantile: float = 0.80,
+    val_quantile: float = 0.64,
+    processed_dir: Path = PROCESSED_DATA_DIR,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Per-repository chronological split — SECONDARY evaluation.
+
+    Each repository is cut at its **own** quantiles of :data:`TIME_KEY`, and
+    whole commits are assigned to the resulting windows. Cutting per repository
+    rather than globally is necessary because the collector capped every
+    repository at 600 runs, so a busy repository contributes 600 runs drawn
+    from half a day while a quiet one spreads 600 runs over six months. A
+    single global cut therefore places 88.7 per cent of the corpus after the
+    boundary and yields a test window of roughly nine hours covering eleven of
+    the eighteen repositories, which measures the composition of that
+    particular window rather than the passage of time.
+
+    The per-repository cut instead holds, for every repository, that the model
+    is trained on that repository's past and evaluated on its future. Commits
+    straddling a boundary are discarded.
+
+    Returns ``(train, validation, test)``.
+    """
+    if TIME_KEY not in df.columns:
+        raise KeyError(
+            f"{TIME_KEY!r} is required for the chronological split; "
+            "it must survive prepare_dataset()."
+        )
+
+    parts: dict[int, list[pd.DataFrame]] = {0: [], 1: [], 2: []}
+    dropped_rows = 0
+
+    for repository, sub in df.groupby("repository", sort=True):
+        times = _to_epoch_ns(sub[TIME_KEY])
+        boundaries = [
+            int(np.quantile(times, val_quantile)),
+            int(np.quantile(times, test_quantile)),
+        ]
+        window = _assign_whole_commits_to_windows(sub, boundaries)
+        for bucket in (0, 1, 2):
+            selected = sub[window == bucket]
+            if len(selected):
+                parts[bucket].append(selected)
+        dropped = int((window == -1).sum())
+        dropped_rows += dropped
+        if dropped:
+            _LOGGER.info(
+                "%s: dropped %d rows on straddling commits", repository, dropped
+            )
+
+    train_df = pd.concat(parts[0]).reset_index(drop=True)
+    val_df = pd.concat(parts[1]).reset_index(drop=True)
+    test_df = pd.concat(parts[2]).reset_index(drop=True)
 
     ensure_dir(processed_dir)
     train_df.to_csv(processed_dir / "train_chronological.csv", index=False)
+    val_df.to_csv(processed_dir / "val_chronological.csv", index=False)
     test_df.to_csv(processed_dir / "test_chronological.csv", index=False)
     _LOGGER.info(
-        "Chronological split saved — train=%d test=%d", len(train_df), len(test_df)
+        "Chronological split saved — train=%d val=%d test=%d "
+        "(%d rows dropped on straddling commits)",
+        len(train_df), len(val_df), len(test_df), dropped_rows,
     )
-    return train_df, test_df
+    return train_df, val_df, test_df
+
+
+def split_dataset(
+    df: pd.DataFrame,
+    test_size: float = 0.2,
+    random_state: int = 42,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """Compatibility shim for the Phase 2 figures: ``(x_train, x_test, y_train, y_test)``.
+
+    Phase 2 was superseded by Phase 2.5, and this function was removed with the
+    old module, which left ``src/run_phase2.py`` unable to import. That module
+    still owns three EDA figures, so the shim restores it rather than deleting
+    figures the thesis references. It delegates to :func:`grouped_split` so the
+    Phase 2 figures describe the same partition the results are computed on;
+    the validation fold is folded back into training here, because the Phase 2
+    figures predate the validation split and do not use it.
+    """
+    train_df, val_df, test_df = grouped_split(
+        df, test_size=test_size, random_state=random_state
+    )
+    train_df = pd.concat([train_df, val_df], ignore_index=True)
+    return (
+        train_df.drop(columns=[TARGET]),
+        test_df.drop(columns=[TARGET]),
+        train_df[TARGET],
+        test_df[TARGET],
+    )
+
+
+def split_integrity_report(
+    train_df: pd.DataFrame,
+    val_df: pd.DataFrame | None,
+    test_df: pd.DataFrame,
+    name: str,
+    per_repository: bool = False,
+) -> dict[str, Any]:
+    """Machine-checkable evidence that a split is what it claims to be.
+
+    Records commit overlap between every pair of folds, the temporal ordering
+    of the folds, and the class balance of each. ``per_repository`` selects
+    which temporal invariant is asserted: the per-repository chronological
+    split cannot satisfy a single global ordering, because one repository's
+    future may precede another's past.
+    """
+    folds = {"train": train_df, "test": test_df}
+    if val_df is not None:
+        folds["val"] = val_df
+
+    commits = {k: set(v[GROUP_KEY].astype(str)) for k, v in folds.items()}
+    overlaps = {
+        f"{a}_vs_{b}": len(commits[a] & commits[b])
+        for a, b in (("train", "test"), ("train", "val"), ("val", "test"))
+        if a in commits and b in commits
+    }
+
+    report: dict[str, Any] = {
+        "split": name,
+        "rows": {k: int(len(v)) for k, v in folds.items()},
+        "unique_commits": {k: int(len(v)) for k, v in commits.items()},
+        "commit_overlap": overlaps,
+        "commit_overlap_clean": all(v == 0 for v in overlaps.values()),
+        "failure_rate_pct": {
+            k: round(float((v[TARGET] == "failure").mean() * 100.0), 3)
+            for k, v in folds.items()
+        },
+    }
+
+    windows = {}
+    for k, v in folds.items():
+        t = pd.to_datetime(v[TIME_KEY], errors="coerce", utc=True)
+        windows[k] = {
+            "min": str(t.min()),
+            "max": str(t.max()),
+            "span_days": round(float((t.max() - t.min()).total_seconds() / 86400.0), 3),
+        }
+    report["time_window"] = windows
+
+    if per_repository:
+        holds = True
+        per_repo: dict[str, Any] = {}
+        for repository in sorted(set(train_df["repository"]) & set(test_df["repository"])):
+            tr = pd.to_datetime(
+                train_df.loc[train_df["repository"] == repository, TIME_KEY],
+                errors="coerce", utc=True,
+            )
+            te = pd.to_datetime(
+                test_df.loc[test_df["repository"] == repository, TIME_KEY],
+                errors="coerce", utc=True,
+            )
+            ok = bool(te.min() >= tr.max())
+            holds = holds and ok
+            per_repo[repository] = {
+                "train_max": str(tr.max()),
+                "test_min": str(te.min()),
+                "test_after_train": ok,
+            }
+        report["temporal_invariant"] = "per_repository: min(test) >= max(train)"
+        report["temporal_invariant_holds"] = holds
+        report["per_repository"] = per_repo
+    else:
+        report["temporal_invariant"] = "none (random split)"
+        report["temporal_invariant_holds"] = None
+
+    return report
 
 
 # --------------------------------------------------------------------------- #
@@ -438,6 +735,9 @@ def class_distribution(series: pd.Series) -> dict[str, float]:
 
 __all__ = [
     "ALL_FEATURE_COLUMNS",
+    "ENGINEERED_FEATURE_COLUMNS",
+    "GROUP_KEY",
+    "TIME_KEY",
     "BINARY_FEATURES",
     "CATEGORICAL_FEATURES",
     "LEAKAGE_OR_REDUNDANT",
@@ -449,6 +749,9 @@ __all__ = [
     "build_stoplist",
     "chronological_split",
     "class_distribution",
+    "grouped_split",
+    "split_dataset",
+    "split_integrity_report",
     "clean_commit_message_for_nlp",
     "engineer_features",
     "prepare_dataset",

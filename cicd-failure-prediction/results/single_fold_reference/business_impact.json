@@ -1,0 +1,25 @@
+{
+  "configuration": "Random Forest at default threshold 0.5, single grouped fold",
+  "failure_recall": 0.7196,
+  "failure_precision": 0.399,
+  "daily_failures": 109.7,
+  "daily_caught_by_model": 78.9,
+  "daily_false_alarms": 118.9,
+  "daily_compute_saved_usd": 5.05,
+  "daily_developer_time_saved_usd": 1480.18,
+  "daily_gross_saved_usd": 1485.23,
+  "daily_false_alarm_cost_usd": 297.32,
+  "daily_net_saved_usd": 1187.92,
+  "monthly_net_saved_usd": 35637.47,
+  "annual_net_saved_usd": 433589.22,
+  "assumptions": {
+    "pipelines_per_day": 1000,
+    "failure_rate": 0.1097,
+    "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+    "compute_cost_per_failed_build_usd": 0.064,
+    "context_switch_cost_per_failure_usd": 18.75,
+    "false_alarm_cost_usd": 2.5,
+    "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+  },
+  "average_inference_latency_ms": 0.058
+}

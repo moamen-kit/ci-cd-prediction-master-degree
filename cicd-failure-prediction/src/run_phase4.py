@@ -61,9 +61,15 @@ _LOGGER = get_logger(__name__)
 
 
 MODEL_ORDER = ("Logistic Regression", "Random Forest", "XGBoost")
-ABLATION_ORDER = ("text_only", "structured_only", "hybrid_full")
+ABLATION_ORDER = (
+    "text_only",
+    "categorical_only",
+    "structured_only",
+    "hybrid_full",
+)
 ABLATION_LABELS = {
     "text_only": "Text only\n(TF-IDF)",
+    "categorical_only": "Categorical only\n(repo + workflow\n+ branch + event)",
     "structured_only": "Structured only\n(num + cat + bin)",
     "hybrid_full": "Hybrid (full)",
 }
@@ -655,14 +661,23 @@ def _load_split(
     return x_train, y_train, x_test, y_test
 
 
+# Phase 4 evaluates on one held-out fold. That is not the protocol the thesis
+# reports, because single-fold estimates on this dataset vary by roughly 20
+# points of F1 depending on the fold drawn (see src/cross_validation.py). Its
+# outputs are written to a subdirectory so they cannot be mistaken for the
+# reported results, which src/run_corrected_evaluation.py produces.
+SINGLE_FOLD_DIR = RESULTS_DIR / "single_fold_reference"
+
+
 def main() -> None:
+    ensure_dir(SINGLE_FOLD_DIR)
     ensure_dir(MODELS_DIR)
     ensure_dir(RESULTS_DIR)
     ensure_dir(FIGURES_DIR)
 
-    print("[Phase 4] Loading stratified split (PRIMARY) ...")
+    print("[Phase 4] Loading commit-grouped split (PRIMARY) ...")
     x_train, y_train, x_test, y_test = _load_split(
-        "train_stratified.csv", "test_stratified.csv"
+        "train_grouped.csv", "test_grouped.csv"
     )
     print(f"          x_train = {x_train.shape}   x_test = {x_test.shape}")
 
@@ -676,7 +691,7 @@ def main() -> None:
     )
 
     # Snapshot main metrics immediately so a later crash doesn't waste training.
-    (RESULTS_DIR / "phase4_main_metrics.json").write_text(
+    (SINGLE_FOLD_DIR / "main_metrics.json").write_text(
         json.dumps(serializable_results(model_results), indent=2, default=str),
         encoding="utf-8",
     )
@@ -690,21 +705,33 @@ def main() -> None:
         save_dir=MODELS_DIR,
         hybrid_xgb=model_results["XGBoost"]["_pipeline"],
     )
-    (RESULTS_DIR / "ablation_study.json").write_text(
+    (SINGLE_FOLD_DIR / "ablation_study.json").write_text(
         json.dumps(serializable_results(ablation_results), indent=2, default=str),
         encoding="utf-8",
     )
 
-    print("\n[Phase 4] Secondary evaluation on chronological test set ...")
-    chrono_test_df = pd.read_csv(PROCESSED_DATA_DIR / "test_chronological.csv")
-    chrono_x, chrono_y = prepare_features_targets(chrono_test_df)
-    chronological_eval: dict[str, Any] = {}
-    for name, info in model_results.items():
-        _LOGGER.info("Evaluating %s on chronological test ...", name)
-        chronological_eval[name] = evaluate_pipeline(
-            info["_pipeline"], chrono_x, chrono_y
-        )
-    (RESULTS_DIR / "phase4_chronological_eval.json").write_text(
+    # The chronological evaluation retrains from the chronological TRAIN fold.
+    # Reusing the grouped-split models here would leak: a commit held out of
+    # the chronological test set is not held out of the grouped training set,
+    # so the two partitions are not compatible and the transfer number would be
+    # measured on commits the model had already seen.
+    print("\n[Phase 4] Secondary evaluation — retraining on chronological train ...")
+    chrono_x_train, chrono_y_train, chrono_x, chrono_y = _load_split(
+        "train_chronological.csv", "test_chronological.csv"
+    )
+    print(f"          x_train = {chrono_x_train.shape}   x_test = {chrono_x.shape}")
+    chronological_models = train_all_models(
+        x_train=chrono_x_train,
+        y_train=chrono_y_train,
+        x_test=chrono_x,
+        y_test=chrono_y,
+        save_dir=None,
+    )
+    chronological_eval: dict[str, Any] = {
+        name: {k: v for k, v in info.items() if k != "_pipeline"}
+        for name, info in chronological_models.items()
+    }
+    (SINGLE_FOLD_DIR / "chronological_eval.json").write_text(
         json.dumps(
             serializable_results(chronological_eval), indent=2, default=str
         ),
@@ -719,8 +746,18 @@ def main() -> None:
     )
     print(f"          BEST → {best_name}")
 
-    business = compute_business_metrics(model_results, best_name)
-    (RESULTS_DIR / "business_impact.json").write_text(
+    best_metrics = model_results[best_name]["metrics"]
+    n_test = int(model_results[best_name]["n_test_samples"])
+    business = compute_business_metrics(
+        failure_recall=float(best_metrics["failure_recall"]),
+        failure_precision=float(best_metrics["failure_precision"]),
+        avg_latency_ms=(
+            float(model_results[best_name]["predict_time_sec"]) * 1000.0
+            / max(n_test, 1)
+        ),
+        label=f"{best_name} at default threshold 0.5, single grouped fold",
+    )
+    (SINGLE_FOLD_DIR / "business_impact.json").write_text(
         json.dumps(business, indent=2, default=str), encoding="utf-8"
     )
 
@@ -750,7 +787,7 @@ def main() -> None:
         "ablation": serializable_results(ablation_results),
         "business": business,
     }
-    summary_path = RESULTS_DIR / "phase4_summary.json"
+    summary_path = SINGLE_FOLD_DIR / "phase4_summary.json"
     summary_path.write_text(
         json.dumps(summary, indent=2, default=str), encoding="utf-8"
     )

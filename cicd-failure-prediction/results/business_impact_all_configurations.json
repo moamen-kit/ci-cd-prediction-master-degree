@@ -1,0 +1,98 @@
+{
+  "Logistic Regression": {
+    "configuration": "Logistic Regression (commit-grouped 5-fold CV, threshold 0.646)",
+    "failure_recall": 0.5691,
+    "failure_precision": 0.3532,
+    "daily_failures": 109.7,
+    "daily_caught_by_model": 62.4,
+    "daily_false_alarms": 114.3,
+    "daily_compute_saved_usd": 4.0,
+    "daily_developer_time_saved_usd": 1170.57,
+    "daily_gross_saved_usd": 1174.56,
+    "daily_false_alarm_cost_usd": 285.81,
+    "daily_net_saved_usd": 888.75,
+    "monthly_net_saved_usd": 26662.45,
+    "annual_net_saved_usd": 324393.17,
+    "assumptions": {
+      "pipelines_per_day": 1000,
+      "failure_rate": 0.1097,
+      "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+      "compute_cost_per_failed_build_usd": 0.064,
+      "context_switch_cost_per_failure_usd": 18.75,
+      "false_alarm_cost_usd": 2.5,
+      "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+    }
+  },
+  "Random Forest": {
+    "configuration": "Random Forest (commit-grouped 5-fold CV, threshold 0.538)",
+    "failure_recall": 0.4609,
+    "failure_precision": 0.4033,
+    "daily_failures": 109.7,
+    "daily_caught_by_model": 50.6,
+    "daily_false_alarms": 74.8,
+    "daily_compute_saved_usd": 3.24,
+    "daily_developer_time_saved_usd": 948.01,
+    "daily_gross_saved_usd": 951.25,
+    "daily_false_alarm_cost_usd": 187.02,
+    "daily_net_saved_usd": 764.23,
+    "monthly_net_saved_usd": 22926.98,
+    "annual_net_saved_usd": 278944.88,
+    "assumptions": {
+      "pipelines_per_day": 1000,
+      "failure_rate": 0.1097,
+      "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+      "compute_cost_per_failed_build_usd": 0.064,
+      "context_switch_cost_per_failure_usd": 18.75,
+      "false_alarm_cost_usd": 2.5,
+      "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+    }
+  },
+  "XGBoost": {
+    "configuration": "XGBoost (commit-grouped 5-fold CV, threshold 0.076)",
+    "failure_recall": 0.3686,
+    "failure_precision": 0.5204,
+    "daily_failures": 109.7,
+    "daily_caught_by_model": 40.4,
+    "daily_false_alarms": 37.3,
+    "daily_compute_saved_usd": 2.59,
+    "daily_developer_time_saved_usd": 758.16,
+    "daily_gross_saved_usd": 760.75,
+    "daily_false_alarm_cost_usd": 93.16,
+    "daily_net_saved_usd": 667.59,
+    "monthly_net_saved_usd": 20027.67,
+    "annual_net_saved_usd": 243669.95,
+    "assumptions": {
+      "pipelines_per_day": 1000,
+      "failure_rate": 0.1097,
+      "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+      "compute_cost_per_failed_build_usd": 0.064,
+      "context_switch_cost_per_failure_usd": 18.75,
+      "false_alarm_cost_usd": 2.5,
+      "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+    }
+  },
+  "categorical_only": {
+    "configuration": "categorical_only (commit-grouped 5-fold CV, threshold 0.068)",
+    "failure_recall": 0.4319,
+    "failure_precision": 0.5911,
+    "daily_failures": 109.7,
+    "daily_caught_by_model": 47.4,
+    "daily_false_alarms": 32.8,
+    "daily_compute_saved_usd": 3.03,
+    "daily_developer_time_saved_usd": 888.36,
+    "daily_gross_saved_usd": 891.4,
+    "daily_false_alarm_cost_usd": 81.94,
+    "daily_net_saved_usd": 809.46,
+    "monthly_net_saved_usd": 24283.75,
+    "annual_net_saved_usd": 295452.34,
+    "assumptions": {
+      "pipelines_per_day": 1000,
+      "failure_rate": 0.1097,
+      "failure_rate_source": "observed in this dataset (1,072 / 9,772)",
+      "compute_cost_per_failed_build_usd": 0.064,
+      "context_switch_cost_per_failure_usd": 18.75,
+      "false_alarm_cost_usd": 2.5,
+      "savings_formula": "net_daily = caught x (compute + context_switch) - false_alarms x false_alarm_cost"
+    }
+  }
+}

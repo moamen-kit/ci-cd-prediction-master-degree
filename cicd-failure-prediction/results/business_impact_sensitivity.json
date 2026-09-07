@@ -1,0 +1,44 @@
+{
+  "description": "Annual net saving as a function of the assumed false-alarm cost, holding the benefit per caught failure fixed. The break-even cost is the false-alarm cost at which a configuration's net saving reaches zero; it depends only on precision.",
+  "benefit_per_caught_failure_usd": 18.814,
+  "annual_net_saved_usd_by_false_alarm_cost": {
+    "Logistic Regression": {
+      "fa_cost_0.00": 428715.53,
+      "fa_cost_2.50": 324393.17,
+      "fa_cost_5.00": 220070.81,
+      "fa_cost_10.00": 11426.09,
+      "fa_cost_18.81": -356205.9,
+      "fa_cost_25.00": -614508.07
+    },
+    "Random Forest": {
+      "fa_cost_0.00": 347206.09,
+      "fa_cost_2.50": 278944.88,
+      "fa_cost_5.00": 210683.66,
+      "fa_cost_10.00": 74161.23,
+      "fa_cost_18.81": -166391.3,
+      "fa_cost_25.00": -335406.07
+    },
+    "XGBoost": {
+      "fa_cost_0.00": 277674.48,
+      "fa_cost_2.50": 243669.95,
+      "fa_cost_5.00": 209665.43,
+      "fa_cost_10.00": 141656.38,
+      "fa_cost_18.81": 21824.43,
+      "fa_cost_25.00": -62370.78
+    },
+    "categorical_only": {
+      "fa_cost_0.00": 325359.76,
+      "fa_cost_2.50": 295452.34,
+      "fa_cost_5.00": 265544.93,
+      "fa_cost_10.00": 205730.1,
+      "fa_cost_18.81": 100336.38,
+      "fa_cost_25.00": 26285.62
+    }
+  },
+  "break_even_false_alarm_cost_usd": {
+    "Logistic Regression": 10.27,
+    "Random Forest": 12.72,
+    "XGBoost": 20.41,
+    "categorical_only": 27.2
+  }
+}

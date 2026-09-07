@@ -1,0 +1,26 @@
+{
+  "description": "Residual optimism from selecting a decision threshold on the data it is scored against. Compares F1 at the validation-selected threshold with F1 at the threshold that maximises F1 on the pooled out-of-fold predictions.",
+  "per_model": {
+    "Logistic Regression": {
+      "validation_selected_threshold": 0.646,
+      "f1_at_validation_selected_threshold": 0.4267,
+      "threshold_maximising_f1_on_evaluation_data": 0.75,
+      "f1_at_that_threshold": 0.4476,
+      "residual_selection_gap": 0.0209
+    },
+    "Random Forest": {
+      "validation_selected_threshold": 0.538,
+      "f1_at_validation_selected_threshold": 0.4323,
+      "threshold_maximising_f1_on_evaluation_data": 0.53,
+      "f1_at_that_threshold": 0.4382,
+      "residual_selection_gap": 0.0059
+    },
+    "XGBoost": {
+      "validation_selected_threshold": 0.076,
+      "f1_at_validation_selected_threshold": 0.4448,
+      "threshold_maximising_f1_on_evaluation_data": 0.02,
+      "f1_at_that_threshold": 0.4539,
+      "residual_selection_gap": 0.0091
+    }
+  }
+}

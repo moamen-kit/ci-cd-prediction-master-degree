@@ -1,0 +1,213 @@
+{
+  "grouped": {
+    "split": "grouped",
+    "rows": {
+      "train": 6254,
+      "test": 1953,
+      "val": 1565
+    },
+    "unique_commits": {
+      "train": 1813,
+      "test": 568,
+      "val": 454
+    },
+    "commit_overlap": {
+      "train_vs_test": 0,
+      "train_vs_val": 0,
+      "val_vs_test": 0
+    },
+    "commit_overlap_clean": true,
+    "failure_rate_pct": {
+      "train": 10.969,
+      "test": 10.958,
+      "val": 10.99
+    },
+    "time_window": {
+      "train": {
+        "min": "2025-11-25 03:32:31+00:00",
+        "max": "2026-05-29 06:04:34+00:00",
+        "span_days": 185.106
+      },
+      "test": {
+        "min": "2025-11-26 14:20:00+00:00",
+        "max": "2026-05-29 06:06:38+00:00",
+        "span_days": 183.657
+      },
+      "val": {
+        "min": "2025-11-26 02:30:44+00:00",
+        "max": "2026-05-29 05:53:40+00:00",
+        "span_days": 184.141
+      }
+    },
+    "temporal_invariant": "none (random split)",
+    "temporal_invariant_holds": null
+  },
+  "chronological": {
+    "split": "chronological",
+    "rows": {
+      "train": 6014,
+      "test": 1636,
+      "val": 1197
+    },
+    "unique_commits": {
+      "train": 1799,
+      "test": 573,
+      "val": 412
+    },
+    "commit_overlap": {
+      "train_vs_test": 0,
+      "train_vs_val": 0,
+      "val_vs_test": 0
+    },
+    "commit_overlap_clean": true,
+    "failure_rate_pct": {
+      "train": 11.207,
+      "test": 9.413,
+      "val": 11.362
+    },
+    "time_window": {
+      "train": {
+        "min": "2025-11-25 03:32:31+00:00",
+        "max": "2026-05-29 01:13:13+00:00",
+        "span_days": 184.903
+      },
+      "test": {
+        "min": "2026-04-02 02:35:24+00:00",
+        "max": "2026-05-29 06:06:38+00:00",
+        "span_days": 57.147
+      },
+      "val": {
+        "min": "2026-02-23 09:58:29+00:00",
+        "max": "2026-05-29 05:01:13+00:00",
+        "span_days": 94.794
+      }
+    },
+    "temporal_invariant": "per_repository: min(test) >= max(train)",
+    "temporal_invariant_holds": true,
+    "per_repository": {
+      "elastic/elasticsearch": {
+        "train_max": "2026-05-28 21:10:06+00:00",
+        "test_min": "2026-05-28 23:36:57+00:00",
+        "test_after_train": true
+      },
+      "expressjs/express": {
+        "train_max": "2026-02-23 00:44:52+00:00",
+        "test_min": "2026-04-02 02:35:24+00:00",
+        "test_after_train": true
+      },
+      "facebook/react": {
+        "train_max": "2026-05-27 18:05:36+00:00",
+        "test_min": "2026-05-28 08:57:09+00:00",
+        "test_after_train": true
+      },
+      "huggingface/transformers": {
+        "train_max": "2026-05-28 15:51:05+00:00",
+        "test_min": "2026-05-28 17:35:38+00:00",
+        "test_after_train": true
+      },
+      "kubernetes/kubernetes": {
+        "train_max": "2026-03-19 20:52:37+00:00",
+        "test_min": "2026-04-27 20:30:52+00:00",
+        "test_after_train": true
+      },
+      "microsoft/vscode": {
+        "train_max": "2026-05-28 21:32:11+00:00",
+        "test_min": "2026-05-28 22:33:16+00:00",
+        "test_after_train": true
+      },
+      "nestjs/nest": {
+        "train_max": "2026-05-22 06:46:53+00:00",
+        "test_min": "2026-05-26 07:33:42+00:00",
+        "test_after_train": true
+      },
+      "nodejs/node": {
+        "train_max": "2026-05-28 08:38:45+00:00",
+        "test_min": "2026-05-28 15:43:56+00:00",
+        "test_after_train": true
+      },
+      "pandas-dev/pandas": {
+        "train_max": "2026-05-28 04:26:54+00:00",
+        "test_min": "2026-05-28 21:28:11+00:00",
+        "test_after_train": true
+      },
+      "prisma/prisma": {
+        "train_max": "2026-04-22 12:23:42+00:00",
+        "test_min": "2026-04-29 15:27:21+00:00",
+        "test_after_train": true
+      },
+      "python/cpython": {
+        "train_max": "2026-05-28 14:44:39+00:00",
+        "test_min": "2026-05-28 17:17:31+00:00",
+        "test_after_train": true
+      },
+      "pytorch/pytorch": {
+        "train_max": "2026-05-10 04:45:47+00:00",
+        "test_min": "2026-05-10 06:01:54+00:00",
+        "test_after_train": true
+      },
+      "ruby/ruby": {
+        "train_max": "2026-05-29 01:13:13+00:00",
+        "test_min": "2026-05-29 04:21:40+00:00",
+        "test_after_train": true
+      },
+      "rust-lang/rust": {
+        "train_max": "2026-05-27 15:06:08+00:00",
+        "test_min": "2026-05-28 09:26:12+00:00",
+        "test_after_train": true
+      },
+      "scikit-learn/scikit-learn": {
+        "train_max": "2026-05-28 08:32:14+00:00",
+        "test_min": "2026-05-28 13:24:54+00:00",
+        "test_after_train": true
+      },
+      "sveltejs/svelte": {
+        "train_max": "2026-05-26 19:44:32+00:00",
+        "test_min": "2026-05-27 19:02:22+00:00",
+        "test_after_train": true
+      },
+      "tensorflow/tensorflow": {
+        "train_max": "2026-05-28 20:44:57+00:00",
+        "test_min": "2026-05-28 21:59:37+00:00",
+        "test_after_train": true
+      },
+      "vercel/next.js": {
+        "train_max": "2026-05-29 00:38:03+00:00",
+        "test_min": "2026-05-29 05:06:36+00:00",
+        "test_after_train": true
+      }
+    }
+  },
+  "stratified_leaky": {
+    "split": "stratified_leaky",
+    "rows": {
+      "train": 7817,
+      "test": 1955
+    },
+    "unique_commits": {
+      "train": 2583,
+      "test": 1165
+    },
+    "commit_overlap": {
+      "train_vs_test": 913
+    },
+    "commit_overlap_clean": false,
+    "failure_rate_pct": {
+      "train": 10.976,
+      "test": 10.946
+    },
+    "time_window": {
+      "train": {
+        "min": "2025-11-25 03:32:31+00:00",
+        "max": "2026-05-29 06:06:38+00:00",
+        "span_days": 185.107
+      },
+      "test": {
+        "min": "2025-11-25 21:03:17+00:00",
+        "max": "2026-05-29 06:06:38+00:00",
+        "span_days": 184.377
+      }
+    },
+    "temporal_invariant": "none (random split)",
+    "temporal_invariant_holds": null
+  }
+}
