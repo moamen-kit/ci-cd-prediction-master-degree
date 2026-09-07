@@ -23,6 +23,7 @@
 | 4 | `4_Thesis_Source_Markdown.md` | Markdown source — **the authoritative text** | The `.docx` is derived from this |
 | 5 | `5_Manual_Insertion_Guide.md` | Instructions for adding remaining figures | Optional |
 | 6 | `6_Corrections_Since_Submission.md` | **What changed since June, and why** | Read before the defense |
+| 7 | `7_Reference_1_Verification_Note.md` | Unresolved citation for reference [1] | **Check against your PDF** |
 
 **Also in the repository, outside this folder:**
 
@@ -127,8 +128,9 @@ nothing. Practice it out loud.
 - [ ] Replace `[Insert supervisor full name]` in the thesis
 - [ ] Replace `[Insert Supervisor Name]` on the title slide
 - [ ] Open the deck in PowerPoint and check no text overflows its box
-- [ ] **Verify reference [1] (Patel 2019) against the source PDF** — the cited
-      venue could not be confirmed, and Chapter 3 positions the whole
-      contribution relative to it
+- [ ] **Verify reference [1] (Patel) against the source PDF** — evidence
+      suggests the venue is TIJER vol. 4 no. 11 (Nov 2017), not IJERT vol. 8
+      no. 11 (2019) as cited. Neither could be confirmed from a primary source.
+      See `7_Reference_1_Verification_Note.md` for exactly what to check.
 - [ ] Read `6_Corrections_Since_Submission.md`
 - [ ] Practice the CI/CD explanation (slide 3) three times out loud
