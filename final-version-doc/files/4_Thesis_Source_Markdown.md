@@ -1193,21 +1193,21 @@ The following checklist was completed before final submission of this thesis.
 
 [1] A. Patel, "Research the Use of Machine Learning Models to Predict and Prevent Failures in CI/CD Pipelines and Infrastructure," International Journal of Engineering Research & Technology, vol. 8, no. 11, 2019.
 
-[2] M. Beller, G. Gousios, and A. Zaidman, "TravisTorrent: Synthesizing Travis CI and GitHub for Full-Stack Research on Continuous Integration," in Proceedings of the 14th International Conference on Mining Software Repositories, 2017, pp. 447–450.
+[2] M. Beller, G. Gousios, and A. Zaidman, "TravisTorrent: Synthesizing Travis CI and GitHub for Full-Stack Research on Continuous Integration," in Proceedings of the 14th International Conference on Mining Software Repositories, 2017, pp. 447–450. doi: 10.1109/MSR.2017.24.
 
-[3] T. Chen and C. Guestrin, "XGBoost: A Scalable Tree Boosting System," in Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 2016, pp. 785–794.
+[3] T. Chen and C. Guestrin, "XGBoost: A Scalable Tree Boosting System," in Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 2016, pp. 785–794. doi: 10.1145/2939672.2939785.
 
 [4] F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," Journal of Machine Learning Research, vol. 12, pp. 2825–2830, 2011.
 
-[5] L. Breiman, "Random Forests," Machine Learning, vol. 45, no. 1, pp. 5–32, 2001.
+[5] L. Breiman, "Random Forests," Machine Learning, vol. 45, no. 1, pp. 5–32, 2001. doi: 10.1023/A:1010933404324.
 
-[6] G. Salton and C. Buckley, "Term-Weighting Approaches in Automatic Text Retrieval," Information Processing & Management, vol. 24, no. 5, pp. 513–523, 1988.
+[6] G. Salton and C. Buckley, "Term-Weighting Approaches in Automatic Text Retrieval," Information Processing & Management, vol. 24, no. 5, pp. 513–523, 1988. doi: 10.1016/0306-4573(88)90021-0.
 
 [7] D. M. W. Powers, "Evaluation: From Precision, Recall and F-Measure to ROC, Informedness, Markedness and Correlation," Journal of Machine Learning Technologies, vol. 2, no. 1, pp. 37–63, 2011.
 
-[8] J. Davis and M. Goadrich, "The Relationship Between Precision-Recall and ROC Curves," in Proceedings of the 23rd International Conference on Machine Learning, 2006, pp. 233–240.
+[8] J. Davis and M. Goadrich, "The Relationship Between Precision-Recall and ROC Curves," in Proceedings of the 23rd International Conference on Machine Learning, 2006, pp. 233–240. doi: 10.1145/1143844.1143874.
 
-[9] H. He and E. A. Garcia, "Learning from Imbalanced Data," IEEE Transactions on Knowledge and Data Engineering, vol. 21, no. 9, pp. 1263–1284, 2009.
+[9] H. He and E. A. Garcia, "Learning from Imbalanced Data," IEEE Transactions on Knowledge and Data Engineering, vol. 21, no. 9, pp. 1263–1284, 2009. doi: 10.1109/TKDE.2008.239.
 
 [10] N. Forsgren, J. Humble, and G. Kim, *Accelerate: The Science of Lean Software and DevOps*. IT Revolution Press, 2018.
 
@@ -1215,7 +1215,7 @@ The following checklist was completed before final submission of this thesis.
 
 [12] J. Humble and D. Farley, *Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation*. Addison-Wesley, 2010.
 
-[13] A. E. Hassan and R. C. Holt, "The Top Ten List: Dynamic Fault Prediction," in Proceedings of the 21st IEEE International Conference on Software Maintenance, 2005, pp. 263–272.
+[13] A. E. Hassan and R. C. Holt, "The Top Ten List: Dynamic Fault Prediction," in Proceedings of the 21st IEEE International Conference on Software Maintenance, 2005, pp. 263–272. doi: 10.1109/ICSM.2005.91.
 
 [14] T. Zimmermann, R. Premraj, and A. Zeller, "Predicting Defects for Eclipse," in Proceedings of the 3rd International Workshop on Predictor Models in Software Engineering, 2007, pp. 9–15.
 
@@ -1227,9 +1227,9 @@ The following checklist was completed before final submission of this thesis.
 
 [18] W. McKinney, "Data Structures for Statistical Computing in Python," in Proceedings of the 9th Python in Science Conference, 2010, pp. 56–61.
 
-[19] J. D. Hunter, "Matplotlib: A 2D Graphics Environment," Computing in Science & Engineering, vol. 9, no. 3, pp. 90–95, 2007.
+[19] J. D. Hunter, "Matplotlib: A 2D Graphics Environment," Computing in Science & Engineering, vol. 9, no. 3, pp. 90–95, 2007. doi: 10.1109/MCSE.2007.55.
 
-[20] C. R. Harris et al., "Array Programming with NumPy," Nature, vol. 585, no. 7825, pp. 357–362, 2020.
+[20] C. R. Harris et al., "Array Programming with NumPy," Nature, vol. 585, no. 7825, pp. 357–362, 2020. doi: 10.1038/s41586-020-2649-2.
 
 [21] S. Kapoor and A. Narayanan, "Leakage and the Reproducibility Crisis in Machine-Learning-Based Science," Patterns, vol. 4, no. 9, art. 100804, 2023. doi: 10.1016/j.patter.2023.100804.
 

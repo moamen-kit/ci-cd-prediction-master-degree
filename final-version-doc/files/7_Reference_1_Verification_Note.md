@@ -159,3 +159,61 @@ et al. for the modern comparison. Reference [1] remains in place and remains
 unverified. The options are to correct its venue against the source PDF, or — if
 that PDF cannot be produced — to remove it, since the argument it was carrying is
 now carried by [24] and [27].
+
+---
+
+# DOI coverage in the reference list
+
+IEEE style expects a **DOI** for a published work with complete bibliographic
+data, and a **URL** only for sources that exist online alone. Adding a URL to a
+published paper that already has a volume and page range is not the convention.
+The list therefore carries DOIs, not links, with three deliberate exceptions.
+
+**14 of 27 entries now carry a DOI.** Each was checked against a publisher
+record — ACM Digital Library, IEEE Xplore, SpringerLink, Nature or the
+publisher's own DOI landing page — and not written from recall.
+
+| Entry | DOI |
+|---|---|
+| [2] Beller et al., MSR 2017 | 10.1109/MSR.2017.24 |
+| [3] Chen & Guestrin, KDD 2016 | 10.1145/2939672.2939785 |
+| [5] Breiman, Machine Learning 2001 | 10.1023/A:1010933404324 |
+| [6] Salton & Buckley, IPM 1988 | 10.1016/0306-4573(88)90021-0 |
+| [8] Davis & Goadrich, ICML 2006 | 10.1145/1143844.1143874 |
+| [9] He & Garcia, TKDE 2009 | 10.1109/TKDE.2008.239 |
+| [13] Hassan & Holt, ICSM 2005 | 10.1109/ICSM.2005.91 |
+| [19] Hunter, CiSE 2007 | 10.1109/MCSE.2007.55 |
+| [20] Harris et al., Nature 2020 | 10.1038/s41586-020-2649-2 |
+| [21] Kapoor & Narayanan, Patterns 2023 | 10.1016/j.patter.2023.100804 |
+| [22] Roberts et al., Ecography 2017 | 10.1111/ecog.02881 |
+| [23] Saito & Rehmsmeier, PLOS ONE 2015 | 10.1371/journal.pone.0118432 |
+| [25] Madeyski & Kawalerowicz, MSR 2017 | 10.1109/MSR.2017.46 |
+| [26] Dhawan & Dhawan, Front. Artif. Intell. 2026 | 10.3389/frai.2026.1776546 |
+
+**A useful by-product of the check:** the volume, issue and page ranges already
+in entries [2], [3], [5], [6], [8], [9], [13], [19] and [20] were all confirmed
+correct against the publisher records. The reference list was accurate; it was
+simply missing identifiers.
+
+## The entries that correctly carry a URL rather than a DOI
+
+| Entry | Why |
+|---|---|
+| [11] Fowler, *Continuous Integration* | A web article on martinfowler.com; it has no DOI |
+| [17] GitHub Actions API Reference | Vendor documentation; no DOI |
+| [27] Sharma et al. | Self-archived manuscript with no venue; the ResearchGate location is the only identifier |
+
+## The entries with neither, and why that is correct
+
+| Entry | Reason |
+|---|---|
+| [1] Patel | Venue unverified — see the top of this note. Add the DOI once the venue is confirmed |
+| [4] Pedregosa et al., JMLR | JMLR articles are open access and are conventionally cited without a DOI |
+| [7] Powers | The named journal does not issue DOIs |
+| [10] Forsgren et al.; [12] Humble & Farley | Books. Books carry ISBNs, not DOIs; IEEE style does not require either |
+| [14] Zimmermann et al.; [15] Kim et al.; [16] Eyrolle & Cellier; [18] McKinney | Not verified in the time available. Each probably has a DOI; none was added on the strength of recall |
+| [24] Hassan & Zhang, ASE 2006 | **Attempted and deliberately not added.** A search appeared to confirm a DOI, but on inspection it had simply echoed the candidate string supplied in the query, which is not evidence. The paper is real — IEEE Xplore document 4019574 — but its DOI was not independently established |
+
+Adding the four unverified DOIs is a five-minute job from the publisher pages if
+you want full coverage. A missing DOI costs nothing; a wrong one is a factual
+error in a submitted thesis, which is why none was guessed.
