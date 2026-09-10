@@ -5,9 +5,9 @@
 **Student:** Moamen Mohamed Aly Hussein (ID: 202401681)
 **Defense Date:** Friday, September 11, 2026
 
-> **⚠️ هذه نسخة محدثة.** الأرقام في النسخة القديمة (F1 = 0.59، $383k، +27pp) لم تعد صحيحة.
-> تم تصحيح منهجية التقييم، والأرقام الجديدة أقل ولكنها قابلة للدفاع عنها.
-> **لا تحفظ الإجابات القديمة** — بعضها يناقض ما هو مكتوب الآن في الرسالة.
+> **⚠️ هذه نسخة محدثة.** الأرقام في النسخة القديمة (F1 = 0.59، $383k، +27pp) لم تعد صحيحة.‏
+> تم تصحيح منهجية التقييم، والأرقام الجديدة أقل ولكنها قابلة للدفاع عنها.‏
+> **لا تحفظ الإجابات القديمة** — بعضها يناقض ما هو مكتوب الآن في الرسالة.‏
 
 ---
 
@@ -15,11 +15,11 @@
 
 ## Golden Rules
 
-1. **اشرح CI/CD و GitHub في الأول** — اللجنة الفاتت ما كانتش فاهمة. ده أهم سطر في الملف ده.
-2. **اعرف أرقامك الجديدة** — F1 = 0.4216 ± 0.064 · PR-AUC = 0.480 · categorical_only = 0.4808 · $243,670
+1. **اشرح CI/CD و GitHub في الأول** — اللجنة الفاتت ما كانتش فاهمة. ده أهم سطر في الملف ده.‏
+2. **اعرف أرقامك الجديدة** — F1 = 0.4216 ± 0.064 · PR-AUC = 0.480 · categorical_only = 0.4808 · $243,670‏
 3. **الأرقام نزلت، والسبب ده نقطة قوة مش ضعف** — أنا لقيت الغلط بنفسي وقِسته وصححته
 4. **كن صريح في النواقص** — كل limitation في الملف ده أنا قِسته، مش بس ذكرته
-5. **لو ما تعرفش، قول "I don't know, but I would investigate by..."**
+5. **لو ما تعرفش، قول "I don't know, but I would investigate by..."**‏
 6. **اربط بالتطبيق العملي** — إنت DevOps engineer، وده ميزة حقيقية
 
 ---
@@ -28,7 +28,7 @@
 
 ## Q0-A: يعني إيه CI/CD؟ ويعني إيه GitHub؟
 
-**قول ده في أول العرض من غير ما حد يسأل:**
+**قول ده في أول العرض من غير ما حد يسأل:**‏
 
 > Imagine that every time a student uploads a draft chapter, the university automatically runs a formatting check, a plagiarism check, and a reference check, and emails back "accepted" or "rejected". No human does this — a machine does, every single time.
 >
@@ -44,7 +44,7 @@
 
 ## Q0-C: أرقامك اتغيرت عن المرة اللي فاتت. ليه؟
 
-**ده أهم سؤال ممكن يتسأل. الإجابة دي بتقلب الموقف لصالحك:**
+**ده أهم سؤال ممكن يتسأل. الإجابة دي بتقلب الموقف لصالحك:**‏
 
 > Yes, and I want to explain exactly why, because the change is the result I am most confident in.
 >
@@ -66,7 +66,7 @@
 
 ## Q2: لو الـ Ablation أثبت إن الـ Structured أحسن، ليه سميته Hybrid؟
 
-**⚠️ الإجابة دي اتغيرت تماماً. النتيجة الجديدة أقوى:**
+**⚠️ الإجابة دي اتغيرت تماماً. النتيجة الجديدة أقوى:**‏
 
 > The finding is now stronger than that, and it goes against my own hypothesis. Under the corrected protocol I ran a fourth configuration that the original ablation never tested: categorical-only, where the model is told nothing but the repository, the workflow name, the branch, and the trigger.
 >
@@ -82,7 +82,7 @@
 
 ## Q4: ليه ما عملتش Cross-Validation؟
 
-**⚠️ الإجابة القديمة كانت بتدافع عن عدم عمل CV. دلوقتي إحنا بنعملها:**
+**⚠️ الإجابة القديمة كانت بتدافع عن عدم عمل CV. دلوقتي إحنا بنعملها:**‏
 
 > I do. The primary results are five-fold commit-grouped cross-validation.
 >
@@ -92,7 +92,7 @@
 
 ## Q5: إزاي تأكدت إن ما فيش Data Leakage؟
 
-**ده بقى أقوى سؤال ليك:**
+**ده بقى أقوى سؤال ليك:**‏
 
 > I did not just check for it — I found some, measured it, and corrected it.
 >
@@ -132,7 +132,7 @@
 
 ## Q9: ليه الـ XGBoost اتحسن كده بعد الـ threshold tuning؟
 
-**⚠️ الرقم القديم (+27pp) كان غلط:**
+**⚠️ الرقم القديم (+27pp) كان غلط:**‏
 
 > The improvement is real but much smaller than I first reported. Under honest selection it is +9.3 percentage points, from 0.304 at the default threshold to 0.397 at the selected one.
 >
@@ -162,7 +162,7 @@
 
 ## Q13: مش ممكن الـ Repository feature هي اللي عاملة كل الشغل؟
 
-**⚠️ الإجابة هنا "أيوة، وأنا قِستها":**
+**⚠️ الإجابة هنا "أيوة، وأنا قِستها":**‏
 
 > Substantially yes — and I ran the experiment that establishes it rather than waiting to be asked.
 >
@@ -192,7 +192,7 @@
 
 ## Q17: الـ $243,670 ده رقم حقيقي؟
 
-**⚠️ الرقم القديم كان $383,000 وكان مبني على حسابات غلط:**
+**⚠️ الرقم القديم كان $383,000 وكان مبني على حسابات غلط:**‏
 
 > It is an order-of-magnitude estimate under stated assumptions, and I would not defend it to the dollar.
 >
@@ -256,7 +256,7 @@
 
 ## Q25: مين أكبر منافس، وليه إنت أحسن؟
 
-**⚠️ ما تقولش إنك أحسن. الإجابة دي أقوى:**
+**⚠️ ما تقولش إنك أحسن. الإجابة دي أقوى:**‏
 
 > I would not claim to be better, and I would be suspicious of anyone who did on these numbers.
 >
@@ -280,7 +280,7 @@
 
 ## الأرقام الأساسية
 
-| الرقم | القيمة |
+| الرقم | القيمة |‏
 |---|---|
 | Rows / commits | 9,772 runs · 2,835 commits · 3.45 runs per commit |
 | Repositories | 18 |
@@ -297,10 +297,10 @@
 | Repository failure spread | 0.0% → 38.3% (١١ ضعف بين المشاريع اللي بتفشل) |
 | elasticsearch — docs/checksum share of its runs | 591 / 600 (98%) |
 
-## النقاط الذهبية (Golden Points)
+## النقاط الذهبية (Golden Points)‏
 
 1. اشرح CI/CD و GitHub في الأول — من غير ما حد يسأل
-2. الموديلات التلاتة **مش مختلفين إحصائياً** — ما تقولش "الفايز"
+2. الموديلات التلاتة **مش مختلفين إحصائياً** — ما تقولش "الفايز"‏
 3. `categorical_only` بيكسب الكل — ودي أهم نتيجة عندك
 4. الأرقام نزلت لأن القياس بقى أمين — وأنا اللي لقيت الغلط
 5. الـ threshold error كلّف ضعف الـ leakage — دي النتيجة اللي محدش قاسها قبل كده
@@ -327,15 +327,15 @@
 
 ## قبل الـ Defense
 - افتح الـ deck وشوف مفيش نص خارج البوكسات
-- افتح `Dataset_Guide.xlsx` وجرب تشرح منه — **ما تفتحش الـ CSV الخام قدامهم**
+- افتح `Dataset_Guide.xlsx` وجرب تشرح منه — **ما تفتحش الـ CSV الخام قدامهم**‏
 - اتمرن على Q0-A بصوت عالي ٣ مرات — دي أهم دقيقتين في العرض كله
-- راجع رقم واحد بس لو نسيت كل حاجة: **0.4216**
+- راجع رقم واحد بس لو نسيت كل حاجة: **0.4216**‏
 
 ## أثناء الـ Defense
 - اتكلم بالراحة، وابدأ من الصفر في الشرح
-- لو سألوك رقم مش فاكره: "It is in Chapter 7, I would rather check than misquote it"
+- لو سألوك رقم مش فاكره: "It is in Chapter 7, I would rather check than misquote it"‏
 - لما تذكر limitation، اذكر إنك قِسته
 
 ## لو وقعت في سؤال
 - "That is a good question and I do not have a measured answer. What I would do is..."
-- ما تخترعش رقم. أبداً.
+- ما تخترعش رقم. أبداً.‏
