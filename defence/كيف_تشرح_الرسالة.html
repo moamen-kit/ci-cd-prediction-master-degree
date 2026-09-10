@@ -167,12 +167,12 @@ pre code { background: none; padding: 0; display: block; }
 <p>قول الأرقام دي بصوت واثق، وما تستعجلش عليها:</p>
 <ul>
 <li><strong>٨٩٪</strong> بينجح · <strong>١١٪</strong> بيفشل</li>
-<li><strong>٣.٤٥</strong> فحص لكل تعديل — «التعديل الواحد بيشغّل أكتر من فحص، والنقطة دي هتفرق معايا جداً بعد شوية»</li>
+<li><strong>٣.٤٥</strong> workflow run لكل commit — «الـ commit الواحد بيشغّل أكتر من workflow run، والنقطة دي هتفرق معايا جداً بعد شوية»</li>
 <li>الفشل بيكلّف <strong>compute</strong> + <strong>١٥ دقيقة</strong> من تركيز المبرمج</li>
 </ul>
 <p>الجملة اللي تقفل بيها:</p>
 <blockquote>
-<p>«فالسؤال مش أكاديمي. لو عندي ألف فحص في اليوم، يبقى فيه ١١٠ فشل كل يوم، بيصرفوا
+<p>«فالسؤال مش أكاديمي. لو عندي ألف workflow run في اليوم، يبقى فيه ١١٠ فشل كل يوم، بيصرفوا
 موارد ووقت مش بيرجعوا.»</p>
 </blockquote>
 <hr />
@@ -203,7 +203,7 @@ pre code { background: none; padding: 0; display: block; }
 </tr>
 <tr>
 <td><strong>By Repository</strong></td>
-<td>«نسبة الفشل لكل مشروع — من صفر٪ لـ ٣٨٫٣٪»</td>
+<td>«failure rate لكل مشروع — من صفر٪ لـ ٣٨٫٣٪»</td>
 </tr>
 </tbody>
 </table>
@@ -212,7 +212,7 @@ pre code { background: none; padding: 0; display: block; }
 <li>
 <p><strong>«استبعدت <code>run_duration_sec</code> و <code>run_attempt</code>.»</strong></p>
 <blockquote>
-<p>«الاتنين دول معروفين بس <strong>بعد</strong> ما الفحص يخلص. مدة الفحص هي <strong>نتيجة</strong> الفشل مش
+<p>«الاتنين دول معروفين بس <strong>بعد</strong> ما الـ workflow run يخلص. مدة الـ workflow run هي <strong>نتيجة</strong> الفشل مش
 سببه. لو استخدمتهم كان الرقم بتاعي هيطلع أحلى، والنظام هيبقى مالوش قيمة، لأنه
 مش هيقدر يتوقع غير الماضي.»</p>
 </blockquote>
@@ -232,7 +232,7 @@ pre code { background: none; padding: 0; display: block; }
 </blockquote>
 </li>
 <li>
-<p><strong>«الصفوف فحوصات، بس الخصائص بتوصف التعديلات.»</strong></p>
+<p><strong>«الصفوف workflow runs، بس الـ features بتوصف الـ commits.»</strong></p>
 <blockquote>
 <p>«ودي أهم حقيقة في الداتا كلها، ومنها جاء الغلط اللي صلّحته — هرجع لها في
 سلايد ٢٠.»</p>
@@ -240,13 +240,13 @@ pre code { background: none; padding: 0; display: block; }
 </li>
 </ol>
 <h2>سلايد ١٠ — الفرق بين المشاريع</h2>
-<p>بعد سلايد الداتا فيه سلايد رسمة بتوري نسبة الفشل لكل مشروع. <strong>دي الرسمة اللي
+<p>بعد سلايد الداتا فيه سلايد رسمة بتوري failure rate لكل مشروع. <strong>دي الرسمة اللي
 تشرحها بالراحة</strong>، لأنها هي السبب في أهم نتيجة عندك:</p>
 <blockquote>
-<p>«كل سطر هنا مشروع، والعمود اليمين ده عدد الفحوصات اللي فشلت فيه.</p>
-<p>بصّوا على السطر اللي تحت خالص: <strong>elastic/elasticsearch — ٦٠٠ فحص، وولا فشل
+<p>«كل سطر هنا مشروع، والعمود اليمين ده عدد الـ workflow runs اللي فشلت فيه.</p>
+<p>بصّوا على السطر اللي تحت خالص: <strong>elastic/elasticsearch — ٦٠٠ workflow run، وولا فشل
 واحد.</strong> وبصّوا على السطر اللي فوق: <strong>prisma — ٢٣٠ فشل من ٦٠٠.</strong></p>
-<p>يعني نسبة الفشل ماشية <strong>من صفر٪ لـ ٣٨٫٣٪</strong> — و<strong>١١ ضعف</strong> بين السبعتاشر مشروع
+<p>يعني failure rate ماشية <strong>من صفر٪ لـ ٣٨٫٣٪</strong> — و<strong>١١ ضعف</strong> بين السبعتاشر مشروع
 اللي بيفشلوا أصلاً. ودي الحقيقة اللي بتفسّر النتيجة
 اللي هتشوفوها بعد شوية: إن اسم المشروع لوحده بيتوقّع أحسن من الموديل الكامل.»</p>
 </blockquote>
@@ -274,7 +274,7 @@ pre code { background: none; padding: 0; display: block; }
 <td><strong>٦ بس</strong> (nest عنده ١٣٧، tensorflow ١٠٧)</td>
 </tr>
 <tr>
-<td>النافذة الزمنية للـ ٦٠٠ فحص</td>
+<td>النافذة الزمنية للـ ٦٠٠ workflow run</td>
 <td><strong>١٣٫٨ ساعة</strong></td>
 </tr>
 </tbody>
@@ -283,17 +283,17 @@ pre code { background: none; padding: 0; display: block; }
 <blockquote>
 <p>«سؤال مهم وأنا فحصته. النسبة صفر <strong>مش</strong> لأن Elasticsearch مشروع مثالي — لأنه
 <strong>مبيشغّلش الـ CI الحقيقي بتاعه على GitHub Actions أصلاً</strong>، بيشغّله على Buildkite.</p>
-<p>اللي جمعته منه ٦٠٠ فحص، <strong>٥٩١ منهم — ٩٨٪ — نشر documentation والتأكد من checksum
-بتاع ملف</strong>. مفيش فيهم بناء ولا اختبارات. حاجات زي دي بنيوياً مبتفشلش.</p>
-<p>وده مش بيضعّف النتيجة، بيفسّرها: <code>workflow_name</code> واحد من الأربع خصائص اللي
+<p>اللي جمعته منه ٦٠٠ workflow run، <strong>٥٩١ منهم — ٩٨٪ — نشر documentation والتأكد من checksum
+بتاع ملف</strong>. مفيش فيهم بناء ولا tests. حاجات زي دي بنيوياً مبتفشلش.</p>
+<p>وده مش بيضعّف النتيجة، بيفسّرها: <code>workflow_name</code> واحد من الأربع features اللي
 دّيتها للموديل، فهو بيتعلّم إن <code>docs-deploy</code> مبيفشلش. ودي معلومة حقيقية ومتاحة
-عند التوقع — بس هي أبسط بكتير من إني أتوقع إن تعديل معيّن هيكسر البناء.</p>
-<p>والقراءة الأمينة: الـ ٩٧٧٢ فحص بتاعتي <strong>مش كلهم بنفس الثقل</strong>. فيهم اختبارات
+عند التوقع — بس هي أبسط بكتير من إني أتوقع إن commit معيّن هيكسر الـ build.</p>
+<p>والقراءة الأمينة: الـ ٩٧٧٢ workflow run بتاعتي <strong>مش كلهم بنفس الثقل</strong>. فيهم tests
 حقيقية وفيهم شغل إداري. ودي مكتوبة في الرسالة، حد رقم ٧ في قسم ٨٫٣.»</p>
 </blockquote>
 <p><strong>وفي سلايد ٢٦ (Honest Limitations):</strong> السلايد فيها ٦ حدود مكتوبة، والحد ده
-التاسع مش عليها — قوله بصوتك: «وفيه حد سابع في الرسالة: الفحوصات اللي جمعتها مش
-كلها بنفس الثقل — فيها اختبارات حقيقية وفيها نشر documentation، وElasticsearch
+التاسع مش عليها — قوله بصوتك: «وفيه حد سابع في الرسالة: الـ workflow runs اللي جمعتها مش
+كلها بنفس الثقل — فيها tests حقيقية وفيها نشر documentation، وElasticsearch
 هو الحالة القصوى.» كده تكون قلته إنت، مش هما.</p>
 <p><strong>ملاحظة أداء:</strong> الجملة الأخيرة هي اللي بتقفل السؤال — إنك تقول «مكتوبة في الرسالة»
 بيحوّل النقطة من عيب اكتشفوه لحد إنت مسجّله.</p>
@@ -317,7 +317,7 @@ pre code { background: none; padding: 0; display: block; }
 </tr>
 <tr>
 <td><code>data_preparation.py</code></td>
-<td>«التنظيف، وتصنيع الخصائص، وتنظيف النصوص، و<strong>كل عمليات تقسيم الداتا</strong>.»</td>
+<td>«التنظيف، وتصنيع الـ features، وتنظيف النصوص، و<strong>كل عمليات تقسيم الداتا</strong>.»</td>
 </tr>
 <tr>
 <td><code>hybrid_pipeline.py</code></td>
@@ -337,7 +337,7 @@ pre code { background: none; padding: 0; display: block; }
 </tr>
 </tbody>
 </table>
-<h2>سلايد ١٢ — الـ ١٦ خصيصة: تشرحها إزاي</h2>
+<h2>سلايد ١٢ — الـ ١٦ feature: تشرحها إزاي</h2>
 <p>السلايد أربع أعمدة. <strong>كل عمود نوع مدخل مختلف، وكل نوع محتاج معالجة مختلفة</strong> — ودي
 السبب في وجود الـ ColumnTransformer.</p>
 <table>
@@ -352,7 +352,7 @@ pre code { background: none; padding: 0; display: block; }
 <tr>
 <td><strong>NUMERICAL</strong></td>
 <td>٥</td>
-<td>أرقام متصلة — حجم التعديل وطول الرسالة</td>
+<td>أرقام متصلة — حجم الـ commit وطول الرسالة</td>
 </tr>
 <tr>
 <td><strong>CATEGORICAL</strong></td>
@@ -372,12 +372,12 @@ pre code { background: none; padding: 0; display: block; }
 </tbody>
 </table>
 <p>٥ + ٤ + ٦ + ١ = <strong>١٦</strong>.</p>
-<h3>الخصائص واحدة واحدة — احفظ العمود الأخير</h3>
+<h3>الـ features واحدة واحدة — احفظ العمود الأخير</h3>
 <p><strong>NUMERICAL (٥):</strong></p>
 <table>
 <thead>
 <tr>
-<th>الخصيصة</th>
+<th>الـ feature</th>
 <th>يعني</th>
 </tr>
 </thead>
@@ -404,18 +404,18 @@ pre code { background: none; padding: 0; display: block; }
 </tr>
 </tbody>
 </table>
-<p><strong>ليه <code>log</code>؟</strong> لأن التوزيع ملتوي جداً — معظم التعديلات صغيرة وفيه شواذ بآلاف
+<p><strong>ليه <code>log</code>؟</strong> لأن التوزيع ملتوي جداً — معظم الـ commits صغيرة وفيه شواذ بآلاف
 السطور. الـ log بيضغط الشواذ علشان متسيطرش على الـ StandardScaler. والـ <code>+1</code> في
 <code>log1p</code> علشان <code>log(0)</code> مالهاش قيمة.</p>
 <p><strong>ليه <code>+ 1.0</code> في المقام؟</strong> علشان مقسّمش على صفر لو <code>files_changed</code> صفر.</p>
 <p><strong>CATEGORICAL (٤):</strong> <code>repository</code> · <code>workflow_name</code> · <code>branch</code> · <code>event</code></p>
-<p>دي <strong>أهم أربع خصائص في المشروع كله</strong> — هما اللي في تجربة categorical_only اللي
+<p>دي <strong>أهم أربع features في المشروع كله</strong> — هما اللي في تجربة categorical_only اللي
 كسبت الموديل الكامل.</p>
-<p><strong>BINARY (٦) — والعتبات بالظبط:</strong></p>
+<p><strong>BINARY (٦) — والـ thresholds بالظبط:</strong></p>
 <table>
 <thead>
 <tr>
-<th>الخصيصة</th>
+<th>الـ feature</th>
 <th>التعريف</th>
 <th>=١ في</th>
 </tr>
@@ -423,12 +423,12 @@ pre code { background: none; padding: 0; display: block; }
 <tbody>
 <tr>
 <td><code>is_large_commit</code></td>
-<td><code>total_changes</code> &gt; الوسيط (<strong>٣٥</strong> سطر)</td>
+<td><code>total_changes</code> &gt; median (<strong>٣٥</strong> سطر)</td>
 <td>٤٩٫٤٪</td>
 </tr>
 <tr>
 <td><code>is_many_files</code></td>
-<td><code>files_changed</code> &gt; الوسيط (<strong>٢</strong> ملف)</td>
+<td><code>files_changed</code> &gt; median (<strong>٢</strong> ملف)</td>
 <td>٤٨٫١٪</td>
 </tr>
 <tr>
@@ -473,7 +473,7 @@ pre code { background: none; padding: 0; display: block; }
 </tr>
 <tr>
 <td><strong>Passthrough</strong></td>
-<td>مبتعملش حاجة — الخصائص دي أصلاً صفر أو واحد، مفيش حاجة تتقاس</td>
+<td>مبتعملش حاجة — الـ features دي أصلاً صفر أو واحد، مفيش حاجة تتقاس</td>
 </tr>
 <tr>
 <td><strong>TF-IDF</strong></td>
@@ -483,7 +483,7 @@ pre code { background: none; padding: 0; display: block; }
 </table>
 <h3>الشريط الكحلي تحت — الـ stoplist</h3>
 <blockquote>
-<p>«الـ TF-IDF كان بيتعلّم <strong>مين</strong> كتب التعديل مش <strong>إيه</strong> التعديل. لقيت أسماء
+<p>«الـ TF-IDF كان بيتعلّم <strong>مين</strong> كتب الـ commit مش <strong>إيه</strong> الـ commit. لقيت أسماء
 مؤلفين في أهم الكلمات المميّزة. فبنيت قايمة <strong>٦٩٣ كلمة</strong> من أسماء المؤلفين
 وأسماء المشاريع وتوقيعات البوتات، والـ vectorizer بيتجاهلهم. لأن موديل بيتوقع
 الفشل من اسم المبرمج ده موديل مالوش قيمة.»</p>
@@ -491,8 +491,8 @@ pre code { background: none; padding: 0; display: block; }
 <h3>⚠ لو سألوك «إيه هي كل الـ ١٦؟»</h3>
 <p>ما تحاولش تعدّهم من دماغك. قول:</p>
 <blockquote>
-<p>«خمس أرقام لحجم التعديل، أربع تصنيفات لسياق المشروع، ست مؤشرات صفر/واحد للوقت
-وحجم التعديل ونوع الكاتب، ونص واحد هو رسالة الـ commit. القايمة الكاملة
+<p>«خمس أرقام لحجم الـ commit، أربع تصنيفات لسياق المشروع، ست مؤشرات صفر/واحد للوقت
+وحجم الـ commit ونوع الكاتب، ونص واحد هو رسالة الـ commit. القايمة الكاملة
 بالأسماء في السلايد وفي قسم ٦ في الرسالة.»</p>
 </blockquote>
 <p><strong>كفاية كده.</strong> مش مطلوب تحفظ ١٦ اسم — مطلوب تعرف <strong>الأربع مجموعات وليه كل واحدة
@@ -535,19 +535,19 @@ pre code { background: none; padding: 0; display: block; }
 <p>لو الوقت ضيق، دي اللي تقولها:</p>
 <blockquote>
 <p>«عملت تجربة اسمها categorical-only: إديت الموديل <strong>بس</strong> اسم المشروع، واسم الـ
-workflow، والفرع، والحدث اللي شغّله. ومقولتلوش أي حاجة عن حجم التعديل ولا عن
+workflow، والفرع، والحدث اللي شغّله. ومقولتلوش أي حاجة عن حجم الـ commit ولا عن
 اللي المبرمج كتبه.</p>
 <p>والنتيجة إن التجربة دي <strong>كسبت الموديل الكامل بتاعي في كل مقياس</strong> — 0.4808 مقابل
 0.4216.</p>
 <p>ودي بتكذّب الفرضية اللي بدأت بيها المشروع. والقراءة الأمينة إن النظام بتاعي في
-الأساس <strong>مُقدِّر خطورة على مستوى المشروع</strong>، مش على مستوى التعديل الواحد. هو
-بيتوقع إن الفحص في مشروع تاريخه سيء غالباً هيفشل — وده مفيد، بس هو ادّعاء أضعف
-من إني أتوقع إن تعديل معيّن هو اللي هيكسر البناء.</p>
+الأساس <strong>مُقدِّر خطورة على مستوى المشروع</strong>، مش على مستوى الـ commit الواحد. هو
+بيتوقع إن الـ workflow run في مشروع تاريخه سيء غالباً هيفشل — وده مفيد، بس هو ادّعاء أضعف
+من إني أتوقع إن commit معيّن هو اللي هيكسر الـ build.</p>
 <p>وأنا اللي عملت التجربة دي بنفسي، لأنها أحرج سؤال ممكن ممتحن يسأله.»</p>
 </blockquote>
-<p><strong>السبب:</strong> نسبة الفشل ماشية <strong>من صفر٪ لـ ٣٨٫٣٪</strong> بين المشاريع (<strong>١١ ضعف</strong> بين
+<p><strong>السبب:</strong> failure rate ماشية <strong>من صفر٪ لـ ٣٨٫٣٪</strong> بين المشاريع (<strong>١١ ضعف</strong> بين
 اللي بيفشلوا أصلاً) — من صفر٪ في Elasticsearch
-(٦٠٠ فحص وولا فشل واحد) لـ ٣٨.٣٪ في Prisma.</p>
+(٦٠٠ workflow run وولا فشل واحد) لـ ٣٨.٣٪ في Prisma.</p>
 <hr />
 <h1>القسم 6 — أصعب موقف: إن الأرقام نزلت (سلايد ٢٠ و ٢١)</h1>
 <h2>ده أهم سؤال ممكن يتسأل. والإجابة دي بتقلب الموقف لصالحك</h2>
@@ -557,9 +557,9 @@ workflow، والفرع، والحدث اللي شغّله. ومقولتلوش �
 <p>أنا كنت بقول قبل كده F1 يساوي 0.5924. دلوقتي بقول 0.4216 — <strong>لنفس الموديل على
 نفس الداتا</strong>. الموديل مبقاش أسوأ. <strong>المسطرة اللي بقيس بيها هي اللي بقت أمينة.</strong></p>
 <p>لقيت غلطتين في طريقة التقييم.</p>
-<p><strong>الأولى:</strong> الداتا بتاعتي فيها ٩٧٧٢ فحص، بس من ٢٨٣٥ تعديل بس. يعني نفس التعديل
-بيظهر كذا مرة. والتقسيم القديم بتاعي كان بيوزّع الصفوف عشوائي، فنسخ شبه متطابقة
-من نفس التعديل كانت بتقع في التدريب والاختبار مع بعض. فالموديل كان بياخد درجات
+<p><strong>الأولى:</strong> الداتا بتاعتي فيها ٩٧٧٢ workflow run، بس من ٢٨٣٥ commit بس. يعني نفس الـ commit
+بيظهر كذا مرة. والـ split القديم بتاعي كان بيوزّع الصفوف عشوائي، فنسخ شبه متطابقة
+من نفس الـ commit كانت بتقع في التدريب والاختبار مع بعض. فالموديل كان بياخد درجات
 على إنه "عرف" حاجة كان شافها قبل كده.</p>
 <p><strong>التانية:</strong> أنا كنت بختار الـ threshold بإني أجرّب كل القيم وأشوف أنهي واحدة
 بتطلّع أعلى F1 <strong>على الـ test set</strong>، وبعدين أقول الرقم ده هو نتيجتي على نفس الـ
@@ -592,10 +592,10 @@ Narayanan لقوا نفس نوع الغلطة ده في ٢٩٤ ورقة بحثي
 <blockquote>
 <p>«صح، وأنا بستشهد بيها في الرسالة كمرجع ٢٧. بس الرقمين مش قابلين للمقارنة، لتلات
 أسباب أنا قِستهم من جداول الورقة نفسها:</p>
-<p><strong>واحد:</strong> أقوى خصيصة عندهم — بالـ SHAP — هي <strong>مدة البناء</strong>. ودي مش معروفة غير بعد
-ما البناء يخلص. فرقمهم بيقول إيه اللي ممكن تحققه <strong>لما تسمح لنفسك</strong> بمعلومات ما
+<p><strong>واحد:</strong> أقوى feature عندهم — بالـ SHAP — هي <strong>مدة الـ build</strong>. ودي مش معروفة غير بعد
+ما الـ build يخلص. فرقمهم بيقول إيه اللي ممكن تحققه <strong>لما تسمح لنفسك</strong> بمعلومات ما
 بعد التنفيذ، وأنا رافض ده أصلاً.</p>
-<p><strong>اتنين:</strong> نسبة الفشل عندهم <strong>٢٢٪</strong> — ١١٢,٨٦٠ من ٥١٣,٠٠٠. عندي <strong>١١٪</strong>. وكل ما
+<p><strong>اتنين:</strong> failure rate عندهم <strong>٢٢٪</strong> — ١١٢,٨٦٠ من ٥١٣,٠٠٠. عندي <strong>١١٪</strong>. وكل ما
 الفئة الأقلية تقل، المسألة تصعب، والـ F1 نفسه حسّاس للنسبة دي. فالرقمين مش نفس
 الكمية.</p>
 <p><strong>تلاتة:</strong> المتغيّر بتاعهم <strong>أربع فئات</strong> مش اتنين، وهما نفسهم بيقولوا إن الأداء
@@ -667,7 +667,7 @@ Narayanan لقوا نفس نوع الغلطة ده في ٢٩٤ ورقة بحثي
 <td>٢٫٥</td>
 </tr>
 <tr>
-<td>المعمارية والخصائص</td>
+<td>المعمارية والـ features</td>
 <td>١١–١٢</td>
 <td>٢</td>
 </tr>
