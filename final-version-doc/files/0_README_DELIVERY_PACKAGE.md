@@ -86,40 +86,46 @@ added to support the corrected methodology.
 
 ## 🎤 What's in the Presentation (`2_Defense_Presentation.pptx`)
 
-**26 slides.** Four are new; ten carried figures that were corrected.
+**29 slides.** Seven are new; ten carried figures that were corrected.
 
 | # | Slide | Note |
 |---|-------|------|
 | 1 | Title | Replace supervisor name |
 | 2 | Agenda | |
 | 3 | **What Is CI/CD? And What Is GitHub?** | **NEW — do not skip this** |
-| 4 | **Why This Problem Is Hard** | **NEW** — the 89/11 split |
-| 5 | The Problem | |
-| 6 | Literature Gap | |
-| 7 | Research Objectives | |
-| 8 | The Dataset | |
-| 9 | Hybrid Pipeline Architecture | with diagram |
-| 10 | Feature Engineering | |
-| 11 | Evaluation Regime | rewritten for grouped CV |
-| 12 | Results — Default Threshold | corrected table |
-| 13 | Ablation Study | corrected chart |
-| 14 | **The Discriminating Experiment** | **NEW** — categorical-only wins |
-| 15 | Feature Importance | corrected chart |
-| 16 | Threshold Optimization | corrected: +9.3pp, not +27 |
-| 17 | Before/After Threshold | corrected chart |
-| 18 | **Where The Original Number Went** | **NEW** — the attribution |
-| 19 | Final Results | 0.422 |
-| 20 | Business Impact | $243,670 + break-even |
-| 21 | Objectives Achieved | Objective 3 now *partially* achieved |
-| 22 | Key Contributions | rewritten |
-| 23 | Honest Limitations | two limitations replaced |
-| 24 | Future Work | |
-| 25 | In Summary | rewritten |
-| 26 | Thank You / Q&A | |
+| 4 | **How One Check Actually Runs** | **NEW** — the pipeline drawn, stage by stage |
+| 5 | **Why This Problem Is Hard** | **NEW** — the 89/11 split |
+| 6 | The Problem | |
+| 7 | Literature Gap | |
+| 8 | Research Objectives | |
+| 9 | The Dataset | |
+| 10 | **Failure Is A Property Of The Project** | **NEW** — the 38× per-repository spread |
+| 11 | Hybrid Pipeline Architecture | with diagram |
+| 12 | Feature Engineering | |
+| 13 | Evaluation Regime | rewritten for grouped CV |
+| 14 | Results — Default Threshold | corrected table |
+| 15 | Ablation Study | corrected chart |
+| 16 | **The Discriminating Experiment** | **NEW** — categorical-only wins |
+| 17 | Feature Importance | corrected chart |
+| 18 | Threshold Optimization | corrected: +9.3pp, not +27 |
+| 19 | Before/After Threshold | corrected chart |
+| 20 | **Where The Original Number Went** | **NEW** — the attribution |
+| 21 | **The Same Correction, Drawn** | **NEW** — the attribution waterfall |
+| 22 | Final Results | 0.422 |
+| 23 | Business Impact | $243,670 + break-even |
+| 24 | Objectives Achieved | Objective 3 now *partially* achieved |
+| 25 | Key Contributions | rewritten |
+| 26 | Honest Limitations | two limitations replaced |
+| 27 | Future Work | |
+| 28 | In Summary | rewritten |
+| 29 | Thank You / Q&A | |
 
-**Slide 3 is the most important slide in the deck.** The previous committee did
-not know what CI/CD or GitHub are, and every number afterwards landed on
-nothing. Practice it out loud.
+**Slides 3 and 4 are the most important slides in the deck.** The previous
+committee did not know what CI/CD or GitHub are, and every number afterwards
+landed on nothing. Slide 3 gives the two definitions; slide 4 draws the whole
+mechanism and marks the exact point at which the prediction is made. Practice
+both out loud. The delivery script for them is in
+`defence/كيف_تشرح_الرسالة.md`, section 1.
 
 ---
 
