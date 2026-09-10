@@ -112,7 +112,7 @@ implemented. Add a `build_categorical_only_preprocessor()` alongside the existin
 two at line 272 and include it in the loop.
 
 Likely competitive, given structured-only (F1 0.379) already beats the full
-hybrid (0.322), the 38× failure-rate spread across repositories, and
+hybrid (0.322), the 0.0%-38.3% failure-rate spread across repositories, and
 `elastic/elasticsearch` sitting at 0.0% failures over 600 rows. If it *is*
 competitive, that is the honest explanation for why the hybrid claim failed and
 belongs in the discussion chapter.

@@ -134,7 +134,7 @@ Existing results make it the load-bearing experiment:
 | text_only | 0.027 | 0.307 | 0.750 |
 | categorical_only | *not run* | — | — |
 
-Structured-only beats the full hybrid on F1. Combined with the 38× failure-rate
+Structured-only beats the full hybrid on F1. Combined with the 0.0%-38.3% failure-rate
 spread across repositories and `elastic/elasticsearch` at 0.0% over 600 rows
 (see DATA_PROFILE.md), `categorical_only` is likely to be competitive.
 

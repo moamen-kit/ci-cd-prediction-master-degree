@@ -235,7 +235,8 @@ claiming a winner on F1 would not be supportable."
 > *particular change* will break the build, and I want to be the one who says so
 > rather than have it discovered."
 
-Why: failure rates vary **38-fold** across the 18 projects — from 0.0% for
+Why: the failure rate spans the **whole range from 0.0% to 38.3%** across the
+18 projects — an **elevenfold** spread across the seventeen that fail at all. From 0.0% for
 Elasticsearch (600 runs, zero failures) to 38.3% for Prisma.
 
 ### Result 3 — the methodological contribution
@@ -303,7 +304,8 @@ caveat**, because it is your strongest move:
 **Q: Is the model just learning which repository is flaky?**
 > "Substantially, yes — and I ran the experiment that proves it rather than
 > waiting to be asked. A categorical-only model outperforms my full model. The
-> failure rate varies 38-fold across projects, and Elasticsearch has 600 runs
+> failure rate runs from 0.0% to 38.3% across projects — elevenfold across the
+> seventeen that fail at all — and Elasticsearch has 600 runs
 > and zero failures, so project identity alone is a very strong prior. I report
 > this as a finding rather than a failure, because it tells you what the useful
 > deployment is: project-level and workflow-level triage, not per-commit advice."

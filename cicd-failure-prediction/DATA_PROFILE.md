@@ -79,7 +79,7 @@ Fused matrix after preprocessing: 5 numerical + 66 one-hot + 6 binary + ~1,814�
 | ruby/ruby | 600 | 3.5 |
 | **elastic/elasticsearch** | 600 | **0.0** |
 
-A 38× spread across repositories. `elastic/elasticsearch` contributes 600 rows
+A 0.0%–38.3% range across repositories, an 11x spread across the seventeen that fail at all. `elastic/elasticsearch` contributes 600 rows
 (6.1% of the dataset) with **zero** failures — one-hot `repository` makes it a
 perfect success predictor, which inflates the categorical branch. Note this
 whenever discussing whether repository identity dominates the model.

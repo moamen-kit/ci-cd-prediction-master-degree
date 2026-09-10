@@ -99,7 +99,7 @@ added to support the corrected methodology.
 | 7 | Literature Gap | |
 | 8 | Research Objectives | |
 | 9 | The Dataset | |
-| 10 | **Failure Is A Property Of The Project** | **NEW** — the 38× per-repository spread |
+| 10 | **Failure Is A Property Of The Project** | **NEW** — the 0.0%-38.3% per-repository spread |
 | 11 | Hybrid Pipeline Architecture | with diagram |
 | 12 | Feature Engineering | |
 | 13 | Evaluation Regime | rewritten for grouped CV |
