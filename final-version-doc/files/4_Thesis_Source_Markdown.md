@@ -15,7 +15,7 @@
 | **Student ID** | 202401681 |
 | **Program** | Master of Software Engineering |
 | **Track** | Coursework Track |
-| **Supervisor Name** | [Insert supervisor full name] |
+| **Supervisor Name** | Dr. Maged Mamdouh |
 | **Academic Year** | 2025 / 2026 |
 | **Submission Date** | September 11, 2026 |
 
@@ -71,7 +71,7 @@ The three classifiers are separated by less than one hundredth of a point of mea
 
 # Acknowledgments
 
-I would like to express my sincere gratitude to my supervisor, [Insert supervisor full name], for the guidance, patience, and constructive feedback provided throughout this research project. Their expertise in software engineering and academic mentorship has been invaluable in shaping the methodology and ensuring the rigor of this work.
+I would like to express my sincere gratitude to my supervisor, Dr. Maged Mamdouh, for the guidance, patience, and constructive feedback provided throughout this research project. Their expertise in software engineering and academic mentorship has been invaluable in shaping the methodology and ensuring the rigor of this work.
 
 I am grateful to the **Cairo University Faculty of Graduate Studies for Statistical Research** and to the faculty of the **Software Engineering Program** for providing the academic environment and resources that made this project possible.
 
@@ -1178,7 +1178,7 @@ The complete hyperparameter configurations for the three classifiers are listed 
 The following checklist was completed before final submission of this thesis.
 
 - [x] Cover page completed with university details, student information, and submission date
-- [x] All template instructions and placeholders removed or replaced (except supervisor name pending)
+- [x] All template instructions and placeholders removed or replaced
 - [x] Problem statement clearly aligned with the four stated objectives
 - [x] Existing solution approaches reviewed and compared in tabular form
 - [x] Proposed solution justified with explicit rationale and architectural diagram

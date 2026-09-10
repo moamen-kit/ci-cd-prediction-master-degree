@@ -81,7 +81,7 @@
 - [ ] شيلت كل `[Insert Figure ...]` placeholders اللي لسه باقية
 - [ ] كل صورة في مكانها الصح
 - [ ] كل صورة عندها caption تحتها
-- [ ] استبدلت `[Insert supervisor full name]` باسم المشرف
+- [x] اسم المشرف مكتوب في الرسالة: Dr. Maged Mamdouh
 - [ ] فحصت الـ Table of Contents لتحديثها (Right-click → Update Field)
 - [ ] كل الـ tables واضحة وقابلة للقراءة
 - [ ] قريت الـ Abstract وتأكدت من دقته

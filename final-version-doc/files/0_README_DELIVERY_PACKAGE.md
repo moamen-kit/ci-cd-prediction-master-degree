@@ -17,8 +17,8 @@
 | # | File | Purpose | Action Required |
 |---|------|---------|----------------|
 | 0 | `0_README_DELIVERY_PACKAGE.md` | This index | — |
-| 1 | `1_MSc_Thesis_FINAL.docx` | **The thesis document** — 9 chapters, appendices, embedded figures | Replace `[Insert supervisor full name]`, then submit |
-| 2 | `2_Defense_Presentation.pptx` | **26-slide defense deck** | Replace `[Insert Supervisor Name]` on title slide; open once to check text fits |
+| 1 | `1_MSc_Thesis_FINAL.docx` | **The thesis document** — 9 chapters, appendices, embedded figures | Supervisor named (Dr. Maged Mamdouh); ready to submit |
+| 2 | `2_Defense_Presentation.pptx` | **29-slide defense deck** | Supervisor named on the title slide; open once to check text fits |
 | 3 | `3_QA_Defense_Prep_Guide.md` | **Q&A preparation** — updated, several answers changed | Read & practice |
 | 4 | `4_Thesis_Source_Markdown.md` | Markdown source — **the authoritative text** | The `.docx` is derived from this |
 | 5 | `5_Manual_Insertion_Guide.md` | Instructions for adding remaining figures | Optional |
@@ -90,7 +90,7 @@ added to support the corrected methodology.
 
 | # | Slide | Note |
 |---|-------|------|
-| 1 | Title | Replace supervisor name |
+| 1 | Title | |
 | 2 | Agenda | |
 | 3 | **What Is CI/CD? And What Is GitHub?** | **NEW — do not skip this** |
 | 4 | **How One Check Actually Runs** | **NEW** — the pipeline drawn, stage by stage |
@@ -131,8 +131,7 @@ both out loud. The delivery script for them is in
 
 ## ✅ Before You Submit
 
-- [ ] Replace `[Insert supervisor full name]` in the thesis
-- [ ] Replace `[Insert Supervisor Name]` on the title slide
+- [x] Supervisor named (Dr. Maged Mamdouh) in the thesis and on the title slide
 - [ ] Open the deck in PowerPoint and check no text overflows its box
 - [ ] **Verify reference [1] (Patel) against the source PDF** — evidence
       suggests the venue is TIJER vol. 4 no. 11 (Nov 2017), not IJERT vol. 8
