@@ -235,6 +235,27 @@ claiming a winner on F1 would not be supportable."
 > *particular change* will break the build, and I want to be the one who says so
 > rather than have it discovered."
 
+**Q: "How is elastic/elasticsearch exactly zero over 600 runs?"**
+
+Checked against `data/raw/github_actions_real.csv`. It is a collection
+artifact, not a quality signal:
+
+- **591 of its 600 runs (98%)** are `docs-deploy` (250), `docs-build` (244),
+  `docs-preview-cleanup` (26) and `Validate Gradle Wrapper` (71). None
+  compiles the project or runs a test suite.
+- It exposes **6 distinct workflows** through the Actions API, against 137
+  for nestjs/nest and 107 for tensorflow/tensorflow. Its real test suite
+  runs on **Buildkite**, not GitHub Actions.
+- The 600-run cap gives it a **13.8-hour** collection window
+  (2026-05-28 15:18 → 2026-05-29 05:06).
+
+This does not invalidate the categorical-only result: `workflow_name` is one
+of the four categorical features, so the association between a workflow's
+identity and its outcome is genuine and available pre-execution. It does
+mean part of what the categorical branch learns is that documentation jobs
+do not fail — a weaker finding than predicting a test-suite failure from
+commit properties. Recorded as **Limitation 7, Section 8.3**.
+
 Why: the failure rate spans the **whole range from 0.0% to 38.3%** across the
 18 projects — an **elevenfold** spread across the seventeen that fail at all. From 0.0% for
 Elasticsearch (600 runs, zero failures) to 38.3% for Prisma.

@@ -295,6 +295,7 @@
 | Break-even false-alarm cost | $20.41 (XGB) · $10.27 (LR) |
 | Attribution | −0.060 leakage · −0.126 threshold · +0.015 CV |
 | Repository failure spread | 0.0% → 38.3% (١١ ضعف بين المشاريع اللي بتفشل) |
+| elasticsearch — docs/checksum share of its runs | 591 / 600 (98%) |
 
 ## النقاط الذهبية (Golden Points)
 
