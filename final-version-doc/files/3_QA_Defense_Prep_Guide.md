@@ -166,7 +166,7 @@
 
 > Substantially yes — and I ran the experiment that establishes it rather than waiting to be asked.
 >
-> A categorical-only model, given nothing but repository, workflow, branch and trigger, outperforms my full model on every metric. The mechanism is visible in the data: failure rates vary 38-fold across the eighteen projects, from zero for elastic/elasticsearch, which contributes 600 runs and not one failure, to 38.3 percent for prisma/prisma. A one-hot encoding of repository identity therefore encodes a strong prior before any property of the individual commit is consulted.
+> A categorical-only model, given nothing but repository, workflow, branch and trigger, outperforms my full model on every metric. The mechanism is visible in the data: the failure rate ranges from 0.0 percent for elastic/elasticsearch, which contributes 600 runs and not one failure, to 38.3 percent for prisma/prisma — an elevenfold spread across the seventeen repositories that fail at all, from 3.5 percent for ruby/ruby to 38.3 percent for prisma/prisma. A one-hot encoding of repository identity therefore encodes a strong prior before any property of the individual commit is consulted.
 >
 > I report this as a finding rather than a failure, because it tells you what the useful deployment is: project-level and workflow-level triage, not per-commit advice to a developer. It also bounds the claim honestly — the system cannot distinguish two commits to the same repository on the same branch.
 
@@ -294,7 +294,7 @@
 | **Annual net saving** | **$243,670** |
 | Break-even false-alarm cost | $20.41 (XGB) · $10.27 (LR) |
 | Attribution | −0.060 leakage · −0.126 threshold · +0.015 CV |
-| Repository failure spread | 38× (0.0% إلى 38.3%) |
+| Repository failure spread | 0.0% → 38.3% (١١ ضعف بين المشاريع اللي بتفشل) |
 
 ## النقاط الذهبية (Golden Points)
 
