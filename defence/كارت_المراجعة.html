@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>كارت المراجعة</title>
+<style>
+:root { --ink:#1A1F2E; --blue:#065A82; --teal:#1C7293; --muted:#5A6470;
+        --rule:#D6DEE4; --card:#F7F9FB; --amber:#D4922A; --red:#C8463D; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { direction: rtl; text-align: right;
+       font-family: "Segoe UI", Tahoma, "Noto Naskh Arabic", "Amiri", Arial, sans-serif;
+       font-size: 17px; line-height: 1.95; color: var(--ink);
+       max-width: 46rem; margin: 0 auto; padding: 2.2rem 1.4rem 5rem; background:#fff; }
+h1 { font-size: 1.85rem; color: var(--blue); line-height: 1.5;
+     margin: 2.6rem 0 1rem; padding-bottom: .5rem; border-bottom: 3px solid var(--blue); }
+h1:first-child { margin-top: 0; }
+h2 { font-size: 1.3rem; color: var(--blue); margin: 2.2rem 0 .7rem; line-height: 1.6; }
+h3 { font-size: 1.08rem; color: var(--teal); margin: 1.6rem 0 .5rem; }
+p { margin: .8rem 0; }
+strong { color: #000; font-weight: 700; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+ul, ol { padding-right: 1.6rem; padding-left: 0; margin: .8rem 0; }
+li { margin: .45rem 0; }
+blockquote { margin: 1.1rem 0; padding: .9rem 1.1rem .9rem 1rem; background: var(--card);
+             border-right: 4px solid var(--teal); border-radius: 3px; }
+blockquote p { margin: .45rem 0; }
+table { border-collapse: collapse; width: 100%; margin: 1.2rem 0; font-size: .95rem; }
+th, td { border: 1px solid var(--rule); padding: .55rem .7rem; text-align: right;
+         vertical-align: top; }
+th { background: var(--blue); color: #fff; font-weight: 700; }
+tr:nth-child(even) td { background: var(--card); }
+code { direction: ltr; unicode-bidi: isolate; display: inline-block;
+       font-family: "Consolas", "SFMono-Regular", "Courier New", monospace;
+       font-size: .88em; background: #EEF2F5; padding: .1rem .34rem; border-radius: 3px; }
+pre { direction: ltr; text-align: left; unicode-bidi: isolate; background: var(--card);
+      border: 1px solid var(--rule); border-radius: 4px; padding: .9rem; overflow-x: auto; }
+pre code { background: none; padding: 0; display: block; }
+@media print {
+  body { font-size: 11.5pt; max-width: none; padding: 0; }
+  h1 { page-break-after: avoid; } h2, h3 { page-break-after: avoid; }
+  blockquote, table { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>كارت المراجعة — آخر ١٠ دقايق</h1>
+<hr />
+<h1>١. الأرقام اللي لازم تيجي من غير تفكير</h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>9,772</strong></td>
+<td>workflow runs · من <strong>2,835</strong> commit · <strong>3.45</strong> run لكل commit</td>
+</tr>
+<tr>
+<td><strong>18</strong></td>
+<td>repositories · <strong>89.03 / 10.97</strong> success / failure</td>
+</tr>
+<tr>
+<td><strong>0.4216 ± 0.0638</strong></td>
+<td><strong>الرقم الأساسي</strong> — failure F1، XGBoost</td>
+</tr>
+<tr>
+<td>0.4803 · 0.8240</td>
+<td>PR-AUC · ROC-AUC</td>
+</tr>
+<tr>
+<td><strong>0.4808</strong></td>
+<td>categorical_only — <strong>كسب الموديل الكامل</strong></td>
+</tr>
+<tr>
+<td>0.4225</td>
+<td>structured_only — يعني النص مبيضيفش</td>
+</tr>
+<tr>
+<td>0.1962</td>
+<td>text_only</td>
+</tr>
+<tr>
+<td><strong>0.076</strong></td>
+<td>الـ threshold المختار (متوسط ٥ folds)</td>
+</tr>
+<tr>
+<td>0.399</td>
+<td>التقييم الزمني — ~٢ نقطة أقل، متسق</td>
+</tr>
+<tr>
+<td><strong>$243,670</strong></td>
+<td>التقدير السنوي · نقطة التعادل <strong>$20.41</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1>٢. سلم النسب — احفظه بالترتيب</h1>
+<p><code>0.5924    الرقم القديم
+−0.060    commit leakage
+−0.126    threshold على الـ test   ← أكبر من الأولى بالضعف
++0.015    متوسط على ٥ folds
+─────
+0.4216    الرقم الأمين</code></p>
+<blockquote>
+<p>«كل خطوة اتعملت لوحدها على نفس الداتا ونفس الـ seed. أنا <strong>قِست</strong> التكلفة مش قدّرتها.»</p>
+</blockquote>
+<hr />
+<h1>٣. التلات سكربتات — الجُمَل المفتاحية بس</h1>
+<h2>CI/CD (سلايد ٣ و ٤) — ابدأ بيها من غير ما حد يسأل</h2>
+<blockquote>
+<p>«تخيلوا إن كل مرة طالب يسلّم فصل، الجامعة تشغّل عليه برنامج أوتوماتيك يراجعه ويرد: مقبول ولا مرفوض. مفيش إنسان — مكنة.</p>
+<p><strong>GitHub</strong> الدولاب المشترك · <strong>commit</strong> التعديل المحفوظ · <strong>CI/CD</strong> المكنة اللي بتفحص.</p>
+<p><strong>وبحثي بيسأل: في لحظة حفظ التعديل، قبل المكنة تشتغل، نقدر نتوقع إنها هتفشل؟</strong>»</p>
+</blockquote>
+<p>بعدها: <strong>١١٪ بس بيفشل</strong> — علشان كده الـ accuracy مالهاش لازمة.</p>
+<h2>الأرقام نزلت ليه (سلايد ٢٠ و ٢١)</h2>
+<blockquote>
+<p>«نفس الموديل ونفس الداتا. <strong>الموديل مبقاش أسوأ — المسطرة بقت أمينة.</strong>
+غلطتين: ٩٧٧٢ run من ٢٨٣٥ commit بس، والتقسيم العشوائي كان بيحط نسخ من نفس الـ commit على الجنبين. والتانية إني كنت بختار الـ threshold على الـ test نفسه.
+٠.٠٦٠ و ٠.١٢٦. <strong>والأقل وضوحاً كلّفت الضعف.</strong>
+<strong>وأنا اللي لقيتها وقِستها وصلّحتها ونشرتها في قسم ٧.٤.٥.</strong>»</p>
+</blockquote>
+<h2>categorical_only (سلايد ١٦)</h2>
+<blockquote>
+<p>«إديت الموديل <strong>بس</strong> اسم المشروع والـ workflow والفرع والحدث. كسب الموديل الكامل في كل مقياس — 0.4808 مقابل 0.4216.
+ودي بتكذّب فرضيتي. النظام <strong>project-level risk estimator</strong>، مش commit-level.
+<strong>وأنا اللي عملت التجربة دي، لأنها أحرج سؤال ممكن يتسأل.</strong>»</p>
+</blockquote>
+<hr />
+<h1>٤. الفخاخ — إجابة سطر واحد لكل واحد</h1>
+<table>
+<thead>
+<tr>
+<th>السؤال</th>
+<th>الرد</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«رقمك أقل من ٠.٨٨»</td>
+<td>«أقوى feature عندهم بالـ SHAP هي <strong>build duration</strong> — معروفة بعد التنفيذ. وعدم التوازن عندهم ٢٢٪ مقابل ١١٪ عندي، ومتغيّرهم ٤ فئات»</td>
+</tr>
+<tr>
+<td>«إزاي elasticsearch صفر؟»</td>
+<td>«<strong>٥٩١ من ٦٠٠ (٩٨٪)</strong> شغل docs و checksum. الـ CI الحقيقي بتاعهم على <strong>Buildkite</strong>. مكتوبة كحد ٧ في قسم ٨.٣»</td>
+</tr>
+<tr>
+<td>«ليه XGBoost وهو أسوأ F1 عند 0.5؟»</td>
+<td>«اخترته على <strong>PR-AUC = 0.480</strong>. والتلاتة بيفرقوا أقل من ٠.٠١ والانحراف أكبر من ٠.٠٦ — مفيش فايز على F1»</td>
+</tr>
+<tr>
+<td>«الـ 0.5 اختيارك؟»</td>
+<td>«لأ — الافتراضي المدفون في sklearn، معاير لكلاسين متوازنين»</td>
+</tr>
+<tr>
+<td>«١٨ مشروع قليلين»</td>
+<td>«مكتوبة كحد ٣. والحد الأعمق اللي قِسته إن الـ runs نفسها مش متكافئة»</td>
+</tr>
+<tr>
+<td>«يعني كنت غلطان؟»</td>
+<td>«في القياس، أيوه. Kapoor و Narayanan لقوا نفس الغلط في <strong>٢٩٤ ورقة في ١٧ مجال</strong>»</td>
+</tr>
+<tr>
+<td>سؤال كود مش عارفه</td>
+<td>«مش فاكر بالظبط ومش عايز أقول غلط. الملف معايا وأقدر أوريك السطر»</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1>٥. الكود — تلات نقط بس</h1>
+<table>
+<thead>
+<tr>
+<th>الملف</th>
+<th>السطر</th>
+<th>إيه</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_preparation.py</code></td>
+<td><strong>490</strong></td>
+<td>grouped split · StratifiedGroupKFold مش GroupShuffleSplit لأن التانية مبتعملش stratify (<strong>٩.٧١٪ مقابل ١٤.٧٢٪</strong>)</td>
+</tr>
+<tr>
+<td><code>cross_validation.py</code></td>
+<td><strong>96</strong></td>
+<td>الـ inner split اللي بيختار الـ threshold — <strong>أبداً مش على test</strong></td>
+</tr>
+<tr>
+<td><code>run_corrected_evaluation.py</code></td>
+<td><strong>104</strong></td>
+<td>سلم النسب</td>
+</tr>
+</tbody>
+</table>
+<p><strong>الجملة اللي بتنقذك في أي سؤال كود:</strong></p>
+<blockquote>
+<p>«كل رقم بيتولّد من <code>results/*.json</code> بأمر واحد. مفيش رقم مكتوب بإيدي. <code>./reproduce.sh</code> — ٣ دقايق.»</p>
+</blockquote>
+<hr />
+<h1>٦. اعمل / ما تعملش</h1>
+<p><strong>اعمل</strong>
+- اشرح CI/CD <strong>الأول</strong>، من غير ما حد يطلب
+- اذكر نواقصك <strong>قبل</strong> اللجنة — كلها مقيسة
+- اتكلم بالراحة. اللجنة مش فاهمة المجال</p>
+<p><strong>ما تعملش</strong>
+- <strong>ما تقولش إنك أحسن من الأبحاث السابقة</strong> — رقمك أقل والسبب مشروع
+- <strong>ما تعتذرش عن 0.42</strong> — دي نتيجة مقيسة
+- <strong>ما تفتحش الـ CSV الخام</strong> — افتح <code>Dataset_Guide.xlsx</code>
+- <strong>ما تخترعش رقم</strong></p>
+<hr />
+<h1>٧. الجملة اللي بتكسب الموقف</h1>
+<blockquote>
+<p><strong>«أنا اللي لقيت الغلط بنفسي، وقِست تأثيره بالظبط، وصلّحته، ونشرت التصحيح جوه الرسالة. وده اللي المنهج العلمي المفروض يعمله.»</strong></p>
+</blockquote>
+<hr />
+<h1>لو نسيت كل حاجة</h1>
+<p><strong>0.4216</strong></p>
+<p>بالتوفيق.</p>
+</body>
+</html>
