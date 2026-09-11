@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الكود — مرجع المناقشة</title>
+<style>
+:root { --ink:#1A1F2E; --blue:#065A82; --teal:#1C7293; --muted:#5A6470;
+        --rule:#D6DEE4; --card:#F7F9FB; --amber:#D4922A; --red:#C8463D; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { direction: rtl; text-align: right;
+       font-family: "Segoe UI", Tahoma, "Noto Naskh Arabic", "Amiri", Arial, sans-serif;
+       font-size: 17px; line-height: 1.95; color: var(--ink);
+       max-width: 46rem; margin: 0 auto; padding: 2.2rem 1.4rem 5rem; background:#fff; }
+h1 { font-size: 1.85rem; color: var(--blue); line-height: 1.5;
+     margin: 2.6rem 0 1rem; padding-bottom: .5rem; border-bottom: 3px solid var(--blue); }
+h1:first-child { margin-top: 0; }
+h2 { font-size: 1.3rem; color: var(--blue); margin: 2.2rem 0 .7rem; line-height: 1.6; }
+h3 { font-size: 1.08rem; color: var(--teal); margin: 1.6rem 0 .5rem; }
+p { margin: .8rem 0; }
+strong { color: #000; font-weight: 700; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+ul, ol { padding-right: 1.6rem; padding-left: 0; margin: .8rem 0; }
+li { margin: .45rem 0; }
+blockquote { margin: 1.1rem 0; padding: .9rem 1.1rem .9rem 1rem; background: var(--card);
+             border-right: 4px solid var(--teal); border-radius: 3px; }
+blockquote p { margin: .45rem 0; }
+table { border-collapse: collapse; width: 100%; margin: 1.2rem 0; font-size: .95rem; }
+th, td { border: 1px solid var(--rule); padding: .55rem .7rem; text-align: right;
+         vertical-align: top; }
+th { background: var(--blue); color: #fff; font-weight: 700; }
+tr:nth-child(even) td { background: var(--card); }
+code { direction: ltr; unicode-bidi: isolate; display: inline-block;
+       font-family: "Consolas", "SFMono-Regular", "Courier New", monospace;
+       font-size: .88em; background: #EEF2F5; padding: .1rem .34rem; border-radius: 3px; }
+pre { direction: ltr; text-align: left; unicode-bidi: isolate; background: var(--card);
+      border: 1px solid var(--rule); border-radius: 4px; padding: .9rem; overflow-x: auto; }
+pre code { background: none; padding: 0; display: block; }
+@media print {
+  body { font-size: 11.5pt; max-width: none; padding: 0; }
+  h1 { page-break-after: avoid; } h2, h3 { page-break-after: avoid; }
+  blockquote, table { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>الكود — مرجع المناقشة</h1>
+<p><strong>كل رقم سطر هنا حقيقي.</strong> لو قالولك «وريني»، تفتح الملف وتروح للسطر على طول.</p>
+<p><code>cicd-failure-prediction/src/</code> — ٦ ملفات بس هي اللي تهم.</p>
+<hr />
+<h1>١. الخريطة — الشغل ماشي إزاي</h1>
+<p><code>collect_github_data.py   →  data/raw/github_actions_real.csv    (9,772 rows)
+        ↓
+data_preparation.py      →  data/processed/cicd_prepared.csv
+        ↓  (cleaning · engineered features · text cleaning · stoplist · splits)
+hybrid_pipeline.py       →  ColumnTransformer + 3 classifiers
+        ↓
+cross_validation.py      →  commit-grouped 5-fold + threshold selection
+        ↓
+train_evaluate.py        →  metrics · ablation · business model
+        ↓
+run_corrected_evaluation.py  →  كل رقم وكل figure في فصل ٧</code></p>
+<p><strong>أمر واحد يعيد كل حاجة:</strong> <code>./reproduce.sh</code> (~٣ دقايق)</p>
+<hr />
+<h1>٢. <code>collect_github_data.py</code> — ٥٥٠ سطر</h1>
+<p><strong>مسؤول عن:</strong> الكلام مع GitHub API وإنتاج الـ CSV الخام. <strong>مشتغلش تاني بعد كده.</strong></p>
+<table>
+<thead>
+<tr>
+<th>السطر</th>
+<th>الدالة</th>
+<th>بتعمل إيه</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>124</td>
+<td><code>build_session(token)</code></td>
+<td>requests session بالـ auth headers</td>
+</tr>
+<tr>
+<td>138</td>
+<td><code>_maybe_sleep_for_rate_limit()</code></td>
+<td>بيقرا <code>X-RateLimit-Remaining</code> وينام لو قرّب يخلص</td>
+</tr>
+<tr>
+<td>157</td>
+<td><code>github_get()</code></td>
+<td>GET بـ retries و exponential backoff</td>
+</tr>
+<tr>
+<td>239</td>
+<td><code>iter_workflow_runs()</code></td>
+<td>pagination على <code>/actions/runs</code></td>
+</tr>
+<tr>
+<td>267</td>
+<td><code>fetch_commit()</code></td>
+<td>call تانية لـ <code>/commits/{sha}</code> علشان الـ diff stats</td>
+</tr>
+<tr>
+<td>292</td>
+<td><code>normalise_row()</code></td>
+<td>بيحوّل الـ JSON لصف مسطّح في الـ CSV</td>
+</tr>
+<tr>
+<td>342</td>
+<td><code>load_existing_run_ids()</code></td>
+<td>resume — ميجيبش اللي جابه قبل كده</td>
+</tr>
+</tbody>
+</table>
+<h2>أسئلة متوقعة</h2>
+<p><strong>«ليه call اتنين لكل run؟»</strong></p>
+<blockquote>
+<p>«الـ workflow runs endpoint بيدّيني الـ run والنتيجة بتاعته، بس مبيدّينيش أي حاجة عن الـ commit نفسه. عدد السطور والملفات المتغيّرة موجودين في الـ commits endpoint بس. فمحتاج الاتنين — وده اللي خلّى الجمع ياخد ساعتين لـ ٩٧٧٢ run.»</p>
+</blockquote>
+<p><strong>«إزاي اتعاملت مع الـ rate limit؟»</strong></p>
+<blockquote>
+<p>«الدالة في سطر ١٣٨ بتقرا <code>X-RateLimit-Remaining</code> من كل response، ولو قرّب يخلص بتنام لحد ما الـ window يتجدد. وفيه retries بـ exponential backoff للأخطاء المؤقتة. والدالة في سطر ٣٤٢ بتخلّي العملية resumable — لو وقفت في النص، أعيد تشغيلها وهي بتكمّل.»</p>
+</blockquote>
+<hr />
+<h1>٣. <code>data_preparation.py</code> — ٧٦٨ سطر</h1>
+<p><strong>مسؤول عن:</strong> التنظيف، الـ engineered features، تنظيف النص، الـ stoplist، و<strong>كل عمليات الـ split</strong>.</p>
+<h2>أهم الدوال</h2>
+<table>
+<thead>
+<tr>
+<th>السطر</th>
+<th>الدالة</th>
+<th>بتعمل إيه</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>197</td>
+<td><code>clean_commit_message_for_nlp()</code></td>
+<td>٩ خطوات regex بترتيب محدد</td>
+</tr>
+<tr>
+<td>246</td>
+<td><code>build_stoplist()</code></td>
+<td>بتبني الـ 693-token stoplist</td>
+</tr>
+<tr>
+<td>306</td>
+<td><code>engineer_features()</code></td>
+<td>الـ ١١ engineered feature</td>
+</tr>
+<tr>
+<td>457</td>
+<td><code>stratified_split()</code></td>
+<td><strong>موجودة للعرض بس</strong> — بتوري الـ leakage</td>
+</tr>
+<tr>
+<td><strong>490</strong></td>
+<td><strong><code>grouped_split()</code></strong></td>
+<td><strong>الأساسية</strong> — StratifiedGroupKFold على <code>commit_sha</code></td>
+</tr>
+<tr>
+<td>555</td>
+<td><code>chronological_split()</code></td>
+<td>per-repository، ثانوية</td>
+</tr>
+<tr>
+<td>649</td>
+<td><code>split_integrity_report()</code></td>
+<td>دليل آلي إن الـ split سليم</td>
+</tr>
+</tbody>
+</table>
+<h2>سؤال: «إزاي بتنظّف رسالة الـ commit؟»</h2>
+<blockquote>
+<p>«تسع خطوات بترتيب مقصود، في سطر ١٩٧. الترتيب مهم لأن كل خطوة بتعتمد على اللي قبلها:</p>
+<p>Co-authored-by headers → dependency bumps → URLs → emails → SHA-40 → PR refs (<code>#1234</code>) → version numbers → SHA-8 → أسماء الملفات → lowercase → شيل أي حرف مش أبجدي → توحيد المسافات.</p>
+<p>السبب إن الـ TF-IDF لو شاف <code>#1234</code> أو <code>a3f9c2b</code> مش هيتعلّم معنى — هيتعلّم هوية.»</p>
+</blockquote>
+<h2>سؤال: «الـ stoplist دي جت منين؟»</h2>
+<blockquote>
+<p>«مش مكتوبة بإيدي، اتبنت <strong>آلياً</strong> في سطر ٢٤٦. بتاخد كل قيمة في <code>commit_author</code> وكل اسم repository وتفكّكهم لـ tokens، وتضيف عليهم قايمة يدوية لتوقيعات البوتات (<code>dependabot</code>, <code>renovate</code>, <code>bors</code>) وضوضاء لاحظتها في الـ word cloud في Phase 2. الإجمالي ٦٩٣ token.</p>
+<p>وليه؟ لأني بصّيت على أهم الكلمات المميّزة قبل التنظيف ولقيت أسماء مؤلفين — <code>anna</code>, <code>kamat</code>, <code>yagiz</code>. الموديل كان بيتعلّم <strong>مين</strong> كتب التعديل.»</p>
+</blockquote>
+<h2>سؤال: «ليه StratifiedGroupKFold مش GroupShuffleSplit؟» ⚠</h2>
+<p><strong>ده أخطر سؤال في الملف. الإجابة بالأرقام موجودة في docstring السطر ٤٩٠:</strong></p>
+<blockquote>
+<p>«الاتنين بيعملوا grouping، بس <code>GroupShuffleSplit</code> <strong>مبيعملش stratification</strong>. جرّبتها وقِست: نسبة الفشل طلعت <strong>٩.٧١٪ في الـ train مقابل ١٤.٧٢٪ في الـ validation</strong>.</p>
+<p>والفرق ده مش تجميلي — هو بيفسد اختيار الـ threshold. threshold متحدد على validation fold نسبته ١٤.٧٪ مش هينفع على test fold نسبته ٩.٧٪، والغلطة اللي هتطلع مش هتبان فرق عن أي أثر calibration حقيقي.</p>
+<p>فباخد أول fold من StratifiedGroupKFold بخمس folds — يديني ٢٠٪ test مع الحفاظ على التوازن.»</p>
+</blockquote>
+<p><strong>وفي سطر ٥٢٠:</strong> فيه <code>raise ValueError</code> لو حد مرّر <code>test_size</code> غير 0.2 — علشان الطريقة دي مربوطة بالـ 5-fold scheme.</p>
+<h2>سؤال: «إزاي أتأكد إن الـ split سليم؟»</h2>
+<blockquote>
+<p>«مش بطلب من حد يصدّقني. <code>split_integrity_report()</code> في سطر ٦٤٩ بتطلّع <code>results/split_integrity.json</code>، وفيه: عدد الـ commits المشتركة بين أي partitionين (المفروض صفر)، وتوزيع الكلاسات لكل fold، والـ temporal invariants للـ chronological split. افتح الملف.»</p>
+</blockquote>
+<h2>سؤال: «ليه الـ chronological split per-repository؟»</h2>
+<blockquote>
+<p>«جرّبت cut زمني عام الأول وطلع غلط. الـ 600-run cap بيدّي تغطية زمنية مختلفة تماماً لكل مشروع — من ٠.٤ يوم لـ ١٨٢ يوم. فأي cut عام عند ٨٠٪ بيدّي نافذة ٩ ساعات على ١١ مشروع من ١٨.</p>
+<p>فبقطع <strong>كل مشروع عند الـ quantile بتاعه هو</strong>، والـ commits اللي بتقع على الحدود بتتشال بالكامل. والـ invariant محقّق للـ ١٨ كلهم.»</p>
+</blockquote>
+<hr />
+<h1>٤. <code>hybrid_pipeline.py</code> — ٣٧٠ سطر</h1>
+<p><strong>مسؤول عن:</strong> الـ ColumnTransformer بأربع فروع، والتلات موديلات.</p>
+<h2>سؤال: «اشرحلي الـ architecture» — السطر ٦٧</h2>
+<p><code>python
+ColumnTransformer(transformers=[
+    ("numerical",   StandardScaler(),  NUMERICAL_FEATURES),
+    ("categorical", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL_FEATURES),
+    ("binary",      "passthrough",     BINARY_FEATURES),
+    ("text",        TfidfVectorizer(...), TEXT_FEATURE),
+], sparse_threshold=0.3, n_jobs=-1)</code></p>
+<blockquote>
+<p>«أربع فروع بتشتغل <strong>بالتوازي</strong> وبيتدمجوا في مصفوفة واحدة. الأرقام بيتعمل لها StandardScaler، التصنيفات OneHotEncoder، الـ binary flags بتمر زي ما هي لأنها أصلاً ٠/١، والنص TF-IDF.»</p>
+</blockquote>
+<p><strong>تفاصيل تحفظها:</strong></p>
+<table>
+<thead>
+<tr>
+<th>البارامتر</th>
+<th>القيمة</th>
+<th>ليه</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>max_features</code></td>
+<td>3000</td>
+<td>سقف على حجم الـ vocabulary</td>
+</tr>
+<tr>
+<td><code>ngram_range</code></td>
+<td>(1, 2)</td>
+<td>كلمات فردية وأزواج</td>
+</tr>
+<tr>
+<td><code>min_df</code></td>
+<td>5</td>
+<td>الكلمة لازم تظهر في ٥ رسايل على الأقل</td>
+</tr>
+<tr>
+<td><code>max_df</code></td>
+<td>0.95</td>
+<td>شيل اللي في ٩٥٪ من الرسايل — مالهاش قيمة تمييزية</td>
+</tr>
+<tr>
+<td><code>sublinear_tf</code></td>
+<td>True</td>
+<td><code>1+log(tf)</code> بدل <code>tf</code> — بيقلّل أثر التكرار</td>
+</tr>
+<tr>
+<td><code>handle_unknown</code></td>
+<td><code>"ignore"</code></td>
+<td><strong>مهم</strong> ⬇</td>
+</tr>
+<tr>
+<td><code>sparse_threshold</code></td>
+<td>0.3</td>
+<td>يفضّل مصفوفة sparse — الـ TF-IDF بيطلّع ~٣٠٠٠ عمود</td>
+</tr>
+</tbody>
+</table>
+<p><strong>لو سألوك عن <code>handle_unknown="ignore"</code>:</strong></p>
+<blockquote>
+<p>«لو النظام شاف repository أو workflow مشافوش في التدريب، مش بيقع — بيدّي صفر لكل الأعمدة بتاعته. ده شرط لأي نشر حقيقي، لأن مشاريع وworkflows جديدة بتظهر طول الوقت.»</p>
+</blockquote>
+<h2>سؤال: «إيه <code>LabelEncoderForBinary</code> ده؟» — السطر ١٠٧</h2>
+<blockquote>
+<p>«الـ labels عندي كلمات: <code>success</code> و <code>failure</code>. Logistic Regression و Random Forest بيقبلوا الكلام. <strong>XGBoost بيطلب أرقام.</strong></p>
+<p>فبدل إني أحوّل الـ labels في المشروع كله — وده كان هيخلّيني أتوه وأنسى مين رقمه واحد، وفي مسألة غير متوازنة دي غلطة قاتلة — لفّيت XGBoost في طبقة رقيقة: بتعمل <code>fit</code> لـ LabelEncoder واحد عند التدريب، وبتعمل <code>inverse_transform</code> عند التوقع.</p>
+<p>فالتلات موديلات لهم <strong>نفس الواجهة بالظبط</strong>، وكود التقييم مستحيل يعاملهم بطريقة مختلفة بالغلط.»</p>
+</blockquote>
+<p><strong>وفيه تفصيلة:</strong> الكلاس بيعمل expose لـ <code>named_steps</code> و <code>steps</code> كـ properties (سطر ١٣٩ و ١٤٣) علشان الكود اللي بيستخرج الـ feature importance يقدر يوصل للـ pipeline اللي جوّه.</p>
+<h2>الـ hyperparameters — احفظهم</h2>
+<table>
+<thead>
+<tr>
+<th>الموديل</th>
+<th>السطر</th>
+<th>البارامترات</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Logistic Regression</strong></td>
+<td>152</td>
+<td><code>max_iter=1000</code>, <code>class_weight="balanced"</code>, <code>solver="liblinear"</code></td>
+</tr>
+<tr>
+<td><strong>Random Forest</strong></td>
+<td>170</td>
+<td><code>n_estimators=200</code>, <code>max_depth=25</code>, <code>min_samples_split=10</code>, <code>min_samples_leaf=4</code>, <code>class_weight="balanced"</code></td>
+</tr>
+<tr>
+<td><strong>XGBoost</strong></td>
+<td>191</td>
+<td><code>n_estimators=300</code>, <code>max_depth=8</code>, <code>learning_rate=0.1</code>, <code>subsample=0.85</code>, <code>colsample_bytree=0.85</code>, <code>reg_alpha=0.1</code>, <code>reg_lambda=1.0</code>, <code>scale_pos_weight=...</code>, <code>tree_method="hist"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>كلهم <code>random_state=42</code>.</strong></p>
+<p><strong>لو سألوك «إزاي اتعاملت مع الـ class imbalance في الموديل نفسه؟»</strong></p>
+<blockquote>
+<p>«تلات طرق حسب المكتبة: <code>class_weight="balanced"</code> في LR و RF، و <code>scale_pos_weight</code> في XGBoost. التلاتة بيعملوا نفس الحاجة — بيدّوا وزن أكبر للكلاس الأقلية. <strong>وده مستقل تماماً عن الـ threshold optimization</strong> — ده بيأثر على التدريب، والـ threshold بيأثر على القرار.»</p>
+</blockquote>
+<p><strong>لو سألوك «ليه liblinear؟»</strong></p>
+<blockquote>
+<p>«بيشتغل كويس مع مصفوفات sparse عالية الأبعاد، ومعايا ~٣٠٩٠ عمود معظمهم TF-IDF.»</p>
+</blockquote>
+<h2>الـ ablation preprocessors</h2>
+<table>
+<thead>
+<tr>
+<th>السطر</th>
+<th>الدالة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>237</td>
+<td><code>build_text_only_preprocessor()</code></td>
+</tr>
+<tr>
+<td>255</td>
+<td><code>build_structured_only_preprocessor()</code></td>
+</tr>
+<tr>
+<td><strong>272</strong></td>
+<td><strong><code>build_categorical_only_preprocessor()</code></strong> ← اللي كسب</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1>٥. <code>cross_validation.py</code> — ٢٣٦ سطر</h1>
+<p><strong>مسؤول عن:</strong> بروتوكول التقييم كله. <strong>أهم ملف في المشروع من ناحية المنهج.</strong></p>
+<h2><code>run_grouped_cv()</code> — السطر ٩٦</h2>
+<p>الحلقة بتعمل الآتي لكل fold:</p>
+<p><code>outer = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)
+  على كل fold:
+    train_pool, test = الـ outer split
+    inner = StratifiedGroupKFold(n_splits=5)  ← جوّه الـ train_pool بس
+      fit_df, val_df = الـ inner split
+    pipeline = factory()          ← موديل جديد تماماً كل fold
+    pipeline.fit(fit_df)
+    threshold = اختار على val_df   ← أبداً مش على test
+    test_proba = predict(test_df)
+    oof_proba[test_idx] = test_proba</code></p>
+<h2>⚠ أربع تفاصيل هنا كل واحدة فيهم سؤال</h2>
+<p><strong>١. ليه <code>pipeline_factories</code> مش pipelines جاهزة؟</strong> (السطر ٩٦)</p>
+<blockquote>
+<p>«بمرّر <strong>دوال</strong> بترجّع pipeline جديد، مش instance. لو مرّرت instance واحد، الـ folds الخمسة هيتدرّبوا على نفس الكائن ويتراكموا فوق بعض. الـ factory بتضمن إن كل fold بيدرّب موديل مستقل تماماً.»</p>
+</blockquote>
+<p><strong>٢. الـ inner split</strong> (السطر ~١٢٨)</p>
+<blockquote>
+<p>«جوّه كل fold بعمل split تاني — كمان grouped على الـ commit — علشان أختار الـ threshold. فالـ threshold <strong>متشافش الـ test fold ولا مرة</strong>. ودي كانت الغلطة اللي كلّفتني ٠.١٢٦.»</p>
+</blockquote>
+<p><strong>٣. الـ <code>assert</code></strong> (السطر ١٩٠)
+<code>python
+assert not np.isnan(oof_proba).any(), "every row must receive one out-of-fold prediction"</code></p>
+<blockquote>
+<p>«ده ضمان إن الـ ٩٧٧٢ صف كلهم أخدوا <strong>توقع واحد بالظبط</strong>، من موديل متدرّبش على أي run من الـ commit بتاعهم. لو fold سقط صف، البرنامج بيقع بدل ما يطلّع رقم غلط.»</p>
+</blockquote>
+<p><strong>٤. ليه ranking metrics pooled و decision metrics per-fold؟</strong></p>
+<blockquote>
+<p>«الـ ROC-AUC و PR-AUC بتتحسب <strong>مرة واحدة</strong> على الـ ٩٧٧٢ توقع المجمّعين — لأنهم threshold-independent فمفيش معنى لمتوسطهم. أما F1 و precision و recall فبتتحسب <strong>لكل fold لوحده</strong> وبقول المتوسط ± الانحراف المعياري — لأن كل fold ليه threshold مختلف.</p>
+<p>ودي السبب إن عندي <code>roc_auc</code> و <code>roc_auc_per_fold</code> الاتنين في الـ JSON — الأول pooled والتاني متوسط.»</p>
+</blockquote>
+<h2>وكمان بيسجّل دليل في كل fold</h2>
+<p><code>python
+"commit_overlap_fit_test":  ...   ← المفروض صفر
+"commit_overlap_val_test":  ...   ← المفروض صفر</code></p>
+<blockquote>
+<p>«مش بفترض إن الـ grouping شغال — بقيسه في كل fold وبكتبه في الـ output.»</p>
+</blockquote>
+<hr />
+<h1>٦. <code>train_evaluate.py</code> — ٥١٠ سطر</h1>
+<p><strong>مسؤول عن:</strong> المقاييس، الـ ablation، والنموذج المالي.</p>
+<table>
+<thead>
+<tr>
+<th>السطر</th>
+<th>الدالة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>88</td>
+<td><code>compute_binary_metrics()</code></td>
+</tr>
+<tr>
+<td>162</td>
+<td><code>get_proba_and_classes()</code> — بيتعامل مع التلات pipelines بنفس الطريقة</td>
+</tr>
+<tr>
+<td>221</td>
+<td><code>train_all_models()</code></td>
+</tr>
+<tr>
+<td>274</td>
+<td><code>run_ablation_study()</code></td>
+</tr>
+<tr>
+<td><strong>337</strong></td>
+<td><strong><code>compute_business_metrics()</code></strong></td>
+</tr>
+<tr>
+<td>420</td>
+<td><code>identify_best_model()</code></td>
+</tr>
+</tbody>
+</table>
+<h2>سؤال: «إزاي حسبت الـ $243,670؟» — السطر ٣٣٧</h2>
+<p><strong>النموذج:</strong></p>
+<table>
+<thead>
+<tr>
+<th>البند</th>
+<th>القيمة</th>
+<th>من إيه</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>compute مهدور لكل فشل</td>
+<td><strong>$0.064</strong></td>
+<td>٨ دقايق × $0.008/دقيقة (سعر GitHub المعلن)</td>
+</tr>
+<tr>
+<td>context-switch لكل فشل</td>
+<td><strong>$18.75</strong></td>
+<td>١٥ دقيقة × $75/ساعة</td>
+</tr>
+<tr>
+<td>تكلفة الإنذار الكاذب</td>
+<td><strong>$2.50</strong></td>
+<td>دقيقتين triage × $75/ساعة</td>
+</tr>
+<tr>
+<td>نسبة الفشل</td>
+<td><strong>10.97%</strong></td>
+<td>المقيسة، مش مفترضة</td>
+</tr>
+</tbody>
+</table>
+<p><code>caught      = pipelines_per_day × failure_rate × recall
+false_alarms = caught × (1 − precision) / precision
+net = caught × (0.064 + 18.75) − false_alarms × 2.50</code></p>
+<p><strong>⚠ أهم جملة تقولها عن الملف ده:</strong></p>
+<blockquote>
+<p>«النسخة القديمة كان فيها تلات عيوب كلهم بيرفعوا الرقم: كانت بتفترض نسبة فشل ٣٠٪ بدل ١١٪ المقيسة، وكانت بتسعّر الفايدة كدقايق triage موفّرة بدل تكلفة الـ compute والـ context-switch، و<strong>مكانتش بتخصم تكلفة الإنذار الكاذب خالص</strong>.</p>
+<p>والعيب التالت ده خلّى التقدير دالة في الـ recall وحده. وده اللي فسّر نتيجة غريبة كنت مستغربها: الموديل المضبوط كان بيوفّر <strong>أقل</strong> من الموديل غير المضبوط — لأنه باع precision علشان recall، والـ recall بس هو اللي كان بيتسعّر.</p>
+<p>دلوقتي الـ precision داخل في المعادلة، فالموديل <strong>مش قادر يشتري رقم أحسن بإنه يفلّج أكتر</strong>.»</p>
+</blockquote>
+<hr />
+<h1>٧. <code>run_corrected_evaluation.py</code> — ٩٧١ سطر</h1>
+<p><strong>مسؤول عن:</strong> المشغّل الرئيسي. <strong>كل رقم وكل figure في فصل ٧ بيطلع من هنا.</strong></p>
+<table>
+<thead>
+<tr>
+<th>السطر</th>
+<th>الدالة</th>
+<th>بتطلّع</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>104</strong></td>
+<td><strong><code>build_attribution_ladder()</code></strong></td>
+<td>سلم النسب (٠.٠٦٠ / ٠.١٢٦ / ٠.٠١٥)</td>
+</tr>
+<tr>
+<td>215</td>
+<td><code>plot_cv_metrics()</code></td>
+<td>Figure 14</td>
+</tr>
+<tr>
+<td>270</td>
+<td><code>plot_ablation()</code></td>
+<td>Figure 15</td>
+</tr>
+<tr>
+<td>323</td>
+<td><code>plot_attribution_waterfall()</code></td>
+<td>Figure 18</td>
+</tr>
+<tr>
+<td>392</td>
+<td><code>plot_business_sensitivity()</code></td>
+<td>Figure 19</td>
+</tr>
+<tr>
+<td>448</td>
+<td><code>plot_oof_curves()</code></td>
+<td>Figures 13 و 22</td>
+</tr>
+<tr>
+<td>508</td>
+<td><code>plot_oof_confusion()</code></td>
+<td>Figure 12</td>
+</tr>
+<tr>
+<td>551</td>
+<td><code>plot_threshold_curves()</code></td>
+<td>Figure 20</td>
+</tr>
+<tr>
+<td>632</td>
+<td><code>plot_before_after_threshold()</code></td>
+<td>Figure 21</td>
+</tr>
+<tr>
+<td>715</td>
+<td><code>evaluate_chronological()</code></td>
+<td>التقييم الزمني</td>
+</tr>
+</tbody>
+</table>
+<h2>سؤال: «إزاي عرفت إن الـ leakage كلّفت ٠.٠٦٠ بالظبط؟» — السطر ١٠٤</h2>
+<blockquote>
+<p>«<code>build_attribution_ladder()</code> بتعمل تفكيك بخطوة واحدة كل مرة. بتبدأ من الإعداد الأصلي بالظبط — stratified split و threshold على الـ test — وبتغيّر <strong>حاجة واحدة بس</strong> في كل درجة:</p>
+<p>A. الإعداد الأصلي → 0.5924
+B. + شيل الـ commit leakage → −0.060
+C. + اختار الـ threshold على validation → −0.126
+D. + متوسط على خمس folds → +0.015</p>
+<p>كل درجة نفس الداتا ونفس الـ hyperparameters ونفس الـ seed. الحاجة الوحيدة اللي بتتغيّر هي البروتوكول. علشان كده أنا <strong>بقيس</strong> التكلفة مش بقدّرها.»</p>
+</blockquote>
+<hr />
+<h1>٨. أسئلة الكود المتوقعة — إجابات سريعة</h1>
+<table>
+<thead>
+<tr>
+<th>السؤال</th>
+<th>الإجابة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>«فين الـ splits؟»</td>
+<td><code>data_preparation.py</code>، سطر ٤٩٠ للأساسية</td>
+</tr>
+<tr>
+<td>«فين الـ threshold بيتحدد؟»</td>
+<td><code>cross_validation.py</code> جوّه الـ inner split — أبداً مش على test</td>
+</tr>
+<tr>
+<td>«فين الأرقام المنشورة؟»</td>
+<td><code>results/*.json</code>. الرسالة بتقتبس منهم مش العكس</td>
+</tr>
+<tr>
+<td>«إزاي أعيد النتايج؟»</td>
+<td><code>./reproduce.sh</code> — ٣ دقايق من checkout نضيف</td>
+</tr>
+<tr>
+<td>«الـ random seed؟»</td>
+<td><code>42</code> في كل مكان</td>
+</tr>
+<tr>
+<td>«إصدارات المكتبات؟»</td>
+<td>مثبّتة في <code>requirements.txt</code> — scikit-learn 1.8.0، xgboost 3.2.0</td>
+</tr>
+<tr>
+<td>«فين الموديل المدرّب؟»</td>
+<td><code>models/best_tuned_threshold_xgb.joblib</code> + metadata sidecar</td>
+</tr>
+<tr>
+<td>«كام سطر كود؟»</td>
+<td>٣٤٠٥ سطر في الـ ٦ modules الأساسية</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1>٩. لو سألوك حاجة مش عارفها</h1>
+<p><strong>ما تخترعش. أبداً.</strong> أسوأ حاجة تعملها إنك تقول رقم غلط بثقة.</p>
+<blockquote>
+<p>«مش فاكر التفاصيل دي بالظبط دلوقتي، ومش عايز أقول حاجة غلط. الملف موجود معايا وأقدر أفتحه وأوريك السطر. الفكرة العامة إن...»</p>
+</blockquote>
+<p>وبعدين قول اللي إنت متأكد منه.</p>
+<p><strong>والـ fallback اللي دايماً صح:</strong></p>
+<blockquote>
+<p>«كل رقم في الرسالة بيتولّد من <code>results/*.json</code>، وكل ملف منهم بيتولّد بأمر واحد. مفيش رقم مكتوب بإيدي.»</p>
+</blockquote>
+<hr />
+<h1>١٠. قبل ما تدخل — احفظ التلاتة دول بس</h1>
+<ol>
+<li><strong><code>data_preparation.py</code> سطر ٤٩٠</strong> — الـ grouped split، والسبب (٩.٧١٪ مقابل ١٤.٧٢٪)</li>
+<li><strong><code>cross_validation.py</code> سطر ٩٦</strong> — الـ inner split اللي بيختار الـ threshold</li>
+<li><strong><code>run_corrected_evaluation.py</code> سطر ١٠٤</strong> — سلم النسب</li>
+</ol>
+<p><strong>التلات نقط دول هما المنهج كله.</strong> أي سؤال كود تاني تقدر تجاوبه بـ«الملف معايا، أوريك السطر».</p>
+</body>
+</html>
